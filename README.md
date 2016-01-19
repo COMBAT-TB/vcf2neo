@@ -16,3 +16,8 @@ $ export NEO4J_USERNAME=username
 $ export NEO4J_PASSWORD=password
 $ export NEO4J_REST_URL=http://$NEO4J_USERNAME:$NEO4J_PASSWORD@localhost:7474/db/data/
 ```
+
+**or**
+```
+chmod +x run.sh && ./run.sh
+``` 
