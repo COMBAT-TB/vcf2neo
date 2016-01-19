@@ -19,5 +19,5 @@ $ export NEO4J_REST_URL=http://$NEO4J_USERNAME:$NEO4J_PASSWORD@localhost:7474/db
 
 **or**
 ```
-chmod +x run.sh && ./run.sh
+$ chmod +x run.sh && ./run.sh
 ``` 
