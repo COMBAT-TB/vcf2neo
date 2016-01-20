@@ -17,6 +17,7 @@ class Gene(StructuredNode):
     start = IntegerProperty()
     end = IntegerProperty()
     strand = StringProperty()
+    location = StringProperty()
     length = IntegerProperty()
 
     # @property
@@ -30,10 +31,11 @@ class Transcript(StructuredNode):
     Transcripts
     """
     print 'Transcript Nodes'
-    transcript_id = IntegerProperty(Unique_Index=True, index=True, required=True)  # This will be the name
+    transcript_id = StringProperty(Unique_Index=True, index=True, required=True)  # This will be the name
     start = IntegerProperty()
     end = IntegerProperty()
     strand = IntegerProperty()
+    location = StringProperty()
     _type = StringProperty(index=True)  # I am planning to group these types [ncRNA, tRNA, rRNA, transcript]
     product = StringProperty(index=True)
     parent = StringProperty()  # The Parent gene
