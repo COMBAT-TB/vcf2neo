@@ -29,11 +29,11 @@ class Transcript(StructuredNode):
     Transcripts
     """
     print 'Transcript Nodes'
-    transcript_id = IntegerProperty(Unique_Index=True, required=True) # This will be the name
+    transcript_id = IntegerProperty(Unique_Index=True, required=True)  # This will be the name
     start = IntegerProperty()
     end = IntegerProperty()
     strand = IntegerProperty()
-    _type = StringProperty() # I am planning to group these types [ncRNA, tRNA, rRNA, transcript]
+    _type = StringProperty()  # I am planning to group these types [ncRNA, tRNA, rRNA, transcript]
     product = StringProperty()
     parent = StringProperty()
     gene = StringProperty()
