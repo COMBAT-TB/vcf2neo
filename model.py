@@ -14,6 +14,8 @@ class Gene(StructuredNode):
     gene_synonym = StringProperty(index=True)
     coding = BooleanProperty()  # Coding (Sub-Feature=CDS) or Non-Coding (Sub-Feature != CDS)
     protein_id = StringProperty(index=True)
+    pseudo = StringProperty()
+    sub_feature = StringProperty()
     start = IntegerProperty()
     end = IntegerProperty()
     strand = StringProperty()
@@ -66,6 +68,7 @@ class Exon(StructuredNode):
     _type = StringProperty()
     gene_id = StringProperty(index=True)
     parent = StringProperty()
+    codons = IntegerProperty()
     product = StringProperty(index=True)
     note = StringProperty()
 
