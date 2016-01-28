@@ -1,5 +1,5 @@
 from neomodel import (StructuredNode, StringProperty, BooleanProperty, IntegerProperty, RelationshipTo,
-                      RelationshipFrom, Relationship)
+                      RelationshipFrom, Relationship, One, OneOrMore)
 
 
 class Gene(StructuredNode):
@@ -30,6 +30,8 @@ class Gene(StructuredNode):
     # def getLocation(self):
     #   location = '{}...{} ({})'.format(self.start, self.end, self.strand)
     #   return location
+    transcribed = RelationshipTo('Transcript', 'TRANSCRIBED', One)
+    translated = RelationshipTo('CDS', 'TRANSLATED', One)
 
 
 class Pseudogene(StructuredNode):
@@ -65,6 +67,79 @@ class Transcript(StructuredNode):
     location = StringProperty()
     sequence = StringProperty()
 
+    translated = RelationshipTo('Protein', 'TRANSLATED', One)
+    encodes = RelationshipTo('CDS', 'ENCODES', One)
+
+
+class Trna(StructuredNode):
+    """
+    tRNA
+    """
+    print 'Trna Nodes'
+    trna_id = StringProperty(Unique_Index=True, index=True, required=True)
+    name = StringProperty()
+    gene_id = StringProperty(index=True)
+    note = StringProperty(index=True)
+    biotype = StringProperty()
+    start = IntegerProperty()
+    end = IntegerProperty()
+    strand = IntegerProperty()
+    location = StringProperty()
+    sequence = StringProperty()
+
+    has = RelationshipTo('Transcript', 'HAS', OneOrMore)
+
+
+class NCrna(StructuredNode):
+    """
+    ncRNA
+    """
+    print 'NCrna Nodes'
+    ncrna_id = StringProperty(Unique_Index=True, index=True, required=True)
+    name = StringProperty()
+    gene_id = StringProperty(index=True)
+    note = StringProperty(index=True)
+    biotype = StringProperty()
+    start = IntegerProperty()
+    end = IntegerProperty()
+    strand = IntegerProperty()
+    location = StringProperty()
+    sequence = StringProperty()
+
+    has = RelationshipTo('Transcript', 'HAS', OneOrMore)
+
+
+class Rrna(StructuredNode):
+    """
+    rRNA
+    """
+    print 'Rrna Nodes'
+    rrna_id = StringProperty(Unique_Index=True, index=True, required=True)
+    name = StringProperty()
+    gene_id = StringProperty(index=True)
+    note = StringProperty(index=True)
+    biotype = StringProperty()
+    start = IntegerProperty()
+    end = IntegerProperty()
+    strand = IntegerProperty()
+    location = StringProperty()
+    sequence = StringProperty()
+
+    has = RelationshipTo('Transcript', 'HAS', OneOrMore)
+
+
+class Exon(StructuredNode):
+    """
+    Exon
+    """
+    print 'Exon Nodes'
+    exon_id = StringProperty()
+    name = StringProperty()
+    location = StringProperty()
+    transcript = StringProperty(index=True)
+
+    part_of = RelationshipTo('Transcript', 'PART_OF', OneOrMore)
+
 
 class CDS(StructuredNode):
     """
@@ -77,16 +152,7 @@ class CDS(StructuredNode):
     product = StringProperty(index=True)
     protein_id = StringProperty(index=True)
 
-
-class Exon(StructuredNode):
-    """
-    Exon
-    """
-    print 'Exon Nodes'
-    exon_id = StringProperty()
-    name = StringProperty()
-    location = StringProperty()
-    transcript = StringProperty(index=True)
+    composed_of = RelationshipTo('Exon', 'COMPOSED_OF', OneOrMore)
 
 
 class Protein(StructuredNode):
