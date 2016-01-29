@@ -69,6 +69,7 @@ class Transcript(StructuredNode):
 
     translated = RelationshipTo('Protein', 'TRANSLATED', One)
     encodes = RelationshipTo('CDS', 'ENCODES', One)
+    # part_of = RelationshipFrom('Trna', 'HAS', OneOrMore)
 
 
 class Trna(StructuredNode):
@@ -87,7 +88,7 @@ class Trna(StructuredNode):
     location = StringProperty()
     sequence = StringProperty()
 
-    has = RelationshipTo('Transcript', 'HAS', OneOrMore)
+    holds = RelationshipTo('Transcript', 'HAS', OneOrMore)
 
 
 class NCrna(StructuredNode):
@@ -106,7 +107,7 @@ class NCrna(StructuredNode):
     location = StringProperty()
     sequence = StringProperty()
 
-    has = RelationshipTo('Transcript', 'HAS', OneOrMore)
+    holds = RelationshipTo('Transcript', 'HAS', OneOrMore)
 
 
 class Rrna(StructuredNode):
@@ -125,7 +126,7 @@ class Rrna(StructuredNode):
     location = StringProperty()
     sequence = StringProperty()
 
-    has = RelationshipTo('Transcript', 'HAS', OneOrMore)
+    holds = RelationshipTo('Transcript', 'HAS', OneOrMore)
 
 
 class Exon(StructuredNode):
