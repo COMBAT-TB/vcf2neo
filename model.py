@@ -179,7 +179,7 @@ class Protein(StructuredNode):
     name = StringProperty(index=True)
     sequence = StringProperty()
     length = IntegerProperty()
-    transcript = StringProperty(Unique_Index=True, required=True)
+    transcript = StringProperty(Unique_Index=True)
 
 
 class Ortholog(StructuredNode):
