@@ -33,6 +33,9 @@ class Gene(StructuredNode):
     #   return location
     transcribed = RelationshipTo('Transcript', 'TRANSCRIBED', One)
     translated = RelationshipTo('CDS', 'TRANSLATED', One)
+    has_ortholog = Relationship('Ortholog', 'ORTHOLOG', OneOrMore)
+    has_go_terms = Relationship('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
+    has_interpro_terms = Relationship('InterPro', 'ASSOCIATED_WITH',OneOrMore)
 
 
 class Pseudogene(StructuredNode):
@@ -187,7 +190,7 @@ class Ortholog(StructuredNode):
     Ortholog
     """
     # print 'Ortholog Nodes'
-    name = StringProperty(index=True)
+    locus_name = StringProperty(index=True)
     organism = StringProperty()
 
 
