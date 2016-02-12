@@ -6,8 +6,8 @@ class Gene(StructuredNode):
     """
     Genes
     """
-    print 'Gene Nodes'
-    gene_id = StringProperty(Unique_Index=True, index=True, required=True)
+    # print 'Gene Nodes'
+    gene_id = StringProperty(Unique_Index=True, index=True)
     uniprot_entry = StringProperty(index=True)
     dbxref = StringProperty(Unique_Index=True, index=True)
     ncbi_id = StringProperty(Unique_Index=True)
@@ -39,8 +39,8 @@ class Pseudogene(StructuredNode):
     """
     Transcripts
     """
-    print 'Pseudogene Nodes'
-    pseudogene_id = StringProperty(Unique_Index=True, index=True, required=True)
+    # print 'Pseudogene Nodes'
+    pseudogene_id = StringProperty(Unique_Index=True, index=True)
     name = StringProperty()
     gene_id = StringProperty(index=True)
     description = StringProperty(index=True)
@@ -56,8 +56,8 @@ class Transcript(StructuredNode):
     """
     Transcripts
     """
-    print 'Transcript Nodes'
-    transcript_id = StringProperty(Unique_Index=True, index=True, required=True)
+    # print 'Transcript Nodes'
+    transcript_id = StringProperty(Unique_Index=True, index=True)
     name = StringProperty()
     gene = StringProperty(index=True)
     note = StringProperty(index=True)
@@ -82,8 +82,8 @@ class Trna(StructuredNode):
     """
     tRNA
     """
-    print 'Trna Nodes'
-    trna_id = StringProperty(Unique_Index=True, index=True, required=True)
+    # print 'Trna Nodes'
+    trna_id = StringProperty(Unique_Index=True, index=True)
     name = StringProperty()
     gene_id = StringProperty(index=True)
     note = StringProperty(index=True)
@@ -101,8 +101,8 @@ class NCrna(StructuredNode):
     """
     ncRNA
     """
-    print 'NCrna Nodes'
-    ncrna_id = StringProperty(Unique_Index=True, index=True, required=True)
+    # print 'NCrna Nodes'
+    ncrna_id = StringProperty(Unique_Index=True, index=True)
     name = StringProperty()
     gene_id = StringProperty(index=True)
     note = StringProperty(index=True)
@@ -120,8 +120,8 @@ class Rrna(StructuredNode):
     """
     rRNA
     """
-    print 'Rrna Nodes'
-    rrna_id = StringProperty(Unique_Index=True, index=True, required=True)
+    # print 'Rrna Nodes'
+    rrna_id = StringProperty(Unique_Index=True, index=True)
     name = StringProperty()
     gene_id = StringProperty(index=True)
     note = StringProperty(index=True)
@@ -139,7 +139,7 @@ class Exon(StructuredNode):
     """
     Exon
     """
-    print 'Exon Nodes'
+    # print 'Exon Nodes'
     exon_id = StringProperty()
     name = StringProperty()
     location = StringProperty()
@@ -152,7 +152,7 @@ class CDS(StructuredNode):
     """
     CDS
     """
-    print 'CDS Nodes'
+    # print 'CDS Nodes'
     cds_id = StringProperty(Unique_Index=True)
     name = StringProperty(Unique_Index=True, index=True)
     transcript = StringProperty()
@@ -167,8 +167,8 @@ class Protein(StructuredNode):
     """
     Proteins
     """
-    print 'Protein Nodes'
-    protein_id = StringProperty(Unique_Index=True, required=True)
+    # print 'Protein Nodes'
+    protein_id = StringProperty(Unique_Index=True)
     dbxref = StringProperty(Unique_Index=True, index=True)
     ncbi_id = StringProperty(Unique_Index=True)
     ncbi_acc = StringProperty(Unique_Index=True)
@@ -186,7 +186,7 @@ class Ortholog(StructuredNode):
     """
     Ortholog
     """
-    print 'Ortholog Nodes'
+    # print 'Ortholog Nodes'
     name = StringProperty(index=True)
     organism = StringProperty()
 
@@ -195,7 +195,7 @@ class GoTerm(StructuredNode):
     """
     GO Terms
     """
-    print 'GO Nodes'
+    # print 'GO Nodes'
     go_id = StringProperty(Unique_Index=True, index=True)
     name = StringProperty(index=True)
     namespace = StringProperty(index=True)
@@ -205,7 +205,7 @@ class InterPro(StructuredNode):
     """
     InterPro
     """
-    print 'InterPro Nodes'
+    # print 'InterPro Nodes'
     interpro_id = StringProperty(Unique_Index=True, index=True)
     name = StringProperty()
 
@@ -214,11 +214,11 @@ class Pfam(StructuredNode):
     """
     Pfam
     """
-    print 'Pfam Nodes'
+    # print 'Pfam Nodes'
     pfam_id = StringProperty(Unique_Index=True)
     name = StringProperty()
 
 
 class Domain(StructuredNode):
-    print 'Domain Nodes'
+    # print 'Domain Nodes'
     name = StringProperty(index=True)
