@@ -24,6 +24,7 @@ class Gene(StructuredNode):
     start = IntegerProperty()
     end = IntegerProperty()
     strand = StringProperty()
+    description = StringProperty()
     location = StringProperty()
     length = IntegerProperty()
 
@@ -163,7 +164,7 @@ class CDS(StructuredNode):
     protein_id = StringProperty(index=True)
 
     composed_of = RelationshipTo('Exon', 'COMPOSED_OF', OneOrMore)
-    _trasnslated = RelationshipTo('Protein', 'TRANSLASTED', OneOrMore)
+    _translated = RelationshipTo('Protein', 'TRANSLASTED', OneOrMore)
 
 
 class Protein(StructuredNode):
