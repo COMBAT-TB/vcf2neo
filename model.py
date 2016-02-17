@@ -35,7 +35,7 @@ class Gene(StructuredNode):
     transcribed = RelationshipTo('Transcript', 'TRANSCRIBED', One)
     translated = RelationshipTo('CDS', 'TRANSLATED', One)
     has_ortholog = Relationship('Ortholog', 'ORTHOLOG', OneOrMore)
-    has_go_terms = Relationship('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
+    has_go_terms = RelationshipTo('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
     has_interpro_terms = Relationship('InterPro', 'ASSOCIATED_WITH',OneOrMore)
 
 
@@ -185,6 +185,8 @@ class Protein(StructuredNode):
     length = IntegerProperty()
     transcript = StringProperty(Unique_Index=True)
 
+    interacts = Relationship('Protein', 'INTERACTS_WITH', OneOrMore)
+
 
 class Ortholog(StructuredNode):
     """
@@ -203,6 +205,10 @@ class GoTerm(StructuredNode):
     go_id = StringProperty(Unique_Index=True, index=True)
     name = StringProperty(index=True)
     namespace = StringProperty(index=True)
+    is_a = StringProperty()
+
+    is_a_ = Relationship('GoTerm', 'is_a', OneOrMore)
+    _genes = RelationshipFrom('Gene', 'ASSOCIATED_WITH', OneOrMore)
 
 
 class InterPro(StructuredNode):
