@@ -34,9 +34,9 @@ class Gene(StructuredNode):
     #   return location
     transcribed = RelationshipTo('Transcript', 'TRANSCRIBED', One)
     translated = RelationshipTo('CDS', 'TRANSLATED', One)
-    has_ortholog = Relationship('Ortholog', 'ORTHOLOG', OneOrMore)
+    has_ortholog = RelationshipTo('Ortholog', 'ORTHOLOG', OneOrMore)
     has_go_terms = RelationshipTo('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
-    has_interpro_terms = Relationship('InterPro', 'ASSOCIATED_WITH',OneOrMore)
+    has_interpro_terms = RelationshipTo('InterPro', 'ASSOCIATED_WITH', OneOrMore)
 
 
 class Pseudogene(StructuredNode):
@@ -164,7 +164,7 @@ class CDS(StructuredNode):
     protein_id = StringProperty(index=True)
 
     composed_of = RelationshipTo('Exon', 'COMPOSED_OF', OneOrMore)
-    _translated = RelationshipTo('Protein', 'TRANSLASTED', OneOrMore)
+    translated_ = RelationshipTo('Protein', 'TRANSLATED', OneOrMore)
 
 
 class Protein(StructuredNode):
@@ -184,8 +184,14 @@ class Protein(StructuredNode):
     sequence = StringProperty()
     length = IntegerProperty()
     transcript = StringProperty(Unique_Index=True)
+    start = IntegerProperty()
+    end = IntegerProperty()
+    strand = IntegerProperty()
 
-    interacts = Relationship('Protein', 'INTERACTS_WITH', OneOrMore)
+    interacts = RelationshipTo('Protein', 'INTERACTS_WITH', OneOrMore)
+    associated_with = RelationshipTo('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
+    associated_ = RelationshipTo('InterPro', 'ASSOCIATED_WITH', OneOrMore)
+
 
 
 class Ortholog(StructuredNode):
