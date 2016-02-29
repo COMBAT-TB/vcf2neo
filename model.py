@@ -16,7 +16,7 @@ class Gene(StructuredNode):
     name = StringProperty(index=True)
     locus_tag = StringProperty(index=True)
     gene_synonym = StringProperty(index=True)
-    coding = StringProperty()  # Coding (Sub-Feature=CDS) or Non-Coding (Sub-Feature != CDS)
+    coding = StringProperty()
     protein_id = StringProperty(index=True)
     pseudo = StringProperty()
     cdc_ortholog = StringProperty(index=True)
@@ -176,10 +176,11 @@ class Protein(StructuredNode):
     dbxref = StringProperty(Unique_Index=True, index=True)
     ncbi_id = StringProperty(Unique_Index=True)
     ncbi_acc = StringProperty(Unique_Index=True)
-    uniprot_id = StringProperty(Unique_Index=True)
+    uniprot_id = StringProperty(index=True)
     swissprot_id = StringProperty(Unique_Index=True)
     pdb = StringProperty()
     ensembl_id = StringProperty(Unique_Index=True)
+    parent = StringProperty(index=True)
     name = StringProperty(index=True)
     sequence = StringProperty()
     length = IntegerProperty()
@@ -187,11 +188,11 @@ class Protein(StructuredNode):
     start = IntegerProperty()
     end = IntegerProperty()
     strand = IntegerProperty()
+    interactor = StringProperty(index=True)
 
     interacts = RelationshipTo('Protein', 'INTERACTS_WITH', OneOrMore)
     associated_with = RelationshipTo('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
     associated_ = RelationshipTo('InterPro', 'ASSOCIATED_WITH', OneOrMore)
-
 
 
 class Ortholog(StructuredNode):
@@ -213,7 +214,7 @@ class GoTerm(StructuredNode):
     namespace = StringProperty(index=True)
     is_a = StringProperty()
 
-    is_a_ = Relationship('GoTerm', 'is_a', OneOrMore)
+    is_a_ = Relationship('GoTerm', 'IS_A', OneOrMore)
     _genes = RelationshipFrom('Gene', 'ASSOCIATED_WITH', OneOrMore)
 
 
