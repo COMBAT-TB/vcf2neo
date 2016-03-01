@@ -191,6 +191,36 @@ class Protein(StructuredNode):
     interactor = StringProperty(index=True)
 
     interacts = RelationshipTo('Protein', 'INTERACTS_WITH', OneOrMore)
+    interacts_ = RelationshipTo('HumanProtein', 'INTACT_WITH', OneOrMore)
+    associated_with = RelationshipTo('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
+    associated_ = RelationshipTo('InterPro', 'ASSOCIATED_WITH', OneOrMore)
+
+
+class HumanProtein(StructuredNode):
+    """
+    HumanProteins
+    """
+    # print 'Protein Nodes'
+    protein_id = StringProperty(Unique_Index=True, index=True)
+    tb_protein = StringProperty(index=True)
+    dbxref = StringProperty(Unique_Index=True, index=True)
+    ncbi_id = StringProperty(Unique_Index=True)
+    ncbi_acc = StringProperty(Unique_Index=True)
+    uniprot_id = StringProperty(index=True)
+    swissprot_id = StringProperty(Unique_Index=True)
+    pdb = StringProperty()
+    ensembl_id = StringProperty(Unique_Index=True)
+    parent = StringProperty(index=True)
+    name = StringProperty(index=True)
+    sequence = StringProperty()
+    length = IntegerProperty()
+    transcript = StringProperty(Unique_Index=True)
+    start = IntegerProperty()
+    end = IntegerProperty()
+    strand = IntegerProperty()
+    interactor = StringProperty(index=True)
+
+    interacts = RelationshipTo('Protein', 'INTACT_WITH', OneOrMore)
     associated_with = RelationshipTo('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
     associated_ = RelationshipTo('InterPro', 'ASSOCIATED_WITH', OneOrMore)
 
