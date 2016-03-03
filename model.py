@@ -191,7 +191,7 @@ class Protein(StructuredNode):
     interactor = StringProperty(index=True)
 
     interacts = RelationshipTo('Protein', 'INTERACTS_WITH', OneOrMore)
-    interacts_ = RelationshipTo('HumanProtein', 'INTACT_WITH', OneOrMore)
+    interacts_ = RelationshipTo('HumanProtein', 'INTERACTS', OneOrMore)
     associated_with = RelationshipTo('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
     associated_ = RelationshipTo('InterPro', 'ASSOCIATED_WITH', OneOrMore)
 
@@ -220,9 +220,9 @@ class HumanProtein(StructuredNode):
     strand = IntegerProperty()
     interactor = StringProperty(index=True)
 
-    interacts = RelationshipTo('Protein', 'INTACT_WITH', OneOrMore)
-    associated_with = RelationshipTo('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
-    associated_ = RelationshipTo('InterPro', 'ASSOCIATED_WITH', OneOrMore)
+    interacts_ = RelationshipFrom('Protein', 'INTERACTS', OneOrMore)
+    # associated_with = RelationshipTo('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
+    # associated_ = RelationshipTo('InterPro', 'ASSOCIATED_WITH', OneOrMore)
 
 
 class Ortholog(StructuredNode):
@@ -231,7 +231,10 @@ class Ortholog(StructuredNode):
     """
     # print 'Ortholog Nodes'
     locus_name = StringProperty(index=True)
+    uniprot_id = StringProperty(Unique_Index=True, index=True)
     organism = StringProperty()
+
+    has_ortholog = RelationshipFrom('Gene', 'ORTHOLOG', OneOrMore)
 
 
 class GoTerm(StructuredNode):
