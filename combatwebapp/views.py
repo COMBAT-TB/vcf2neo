@@ -1,10 +1,11 @@
 from combat_tb_model import *
 from neomodel import DoesNotExist
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
 
+# Search nodes
 def search_nodes(name):
     try:
         print 'Searching Gene Nodes with Name=', name
@@ -16,5 +17,5 @@ def search_nodes(name):
 
 @app.route('/')
 def index():
-    gene = search_nodes('Rv0016c')
-    return gene.name
+    # gene = search_nodes('Rv0016c')
+    return render_template('index.html')
