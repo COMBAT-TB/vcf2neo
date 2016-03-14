@@ -1,5 +1,17 @@
 {% extends "base.html" %}
 
-{% block content%}
-{{ gene }}
+{% block content %}
+    <div class="section">
+{#        <h5>JBrowse</h5>#}
+        <iframe src="http://thoba.sanbi.ac.za:8080/?loc=NC_000962.3%3A{{ location }}&tracks=DNA%2CGenes&highlight="
+                frameborder="0"
+                scrolling="no" width="100%" height="600">
+        </iframe>
+    </div>
+    <div class="divider"></div>
+    <div class="section">
+{#        {{ gene }} {{ name }}#}
+    </div>
+{% endblock %}
+{% block js %}
 {% endblock %}
