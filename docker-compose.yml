@@ -2,7 +2,19 @@ web:
   restart: always
   build: .
   ports:
-    - 5000:5000
+    - "5000:5000"
+  links:
+    - "db"
+  environment:
+    NEO4J_REST_URL: http://neo4j:Neo4j@db:7474/db/data/
   volumes:
     - .:/code
   command: python run.py
+
+db:
+  restart: always
+  build: ./docker_neo4j
+  ports:
+    - "7474:7474"
+
+
