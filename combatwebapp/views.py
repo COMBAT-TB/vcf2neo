@@ -19,3 +19,8 @@ def search_nodes(name):
 def index():
     # gene = search_nodes('Rv0016c')
     return render_template('index.html')
+
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
