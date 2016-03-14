@@ -72,3 +72,4 @@ pip-selfcheck.json
 ###JetBrains
 .idea/
 # Created by .ignore support plugin (hsz.mobi)
+docker_neo4j/neo4j
