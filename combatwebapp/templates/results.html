@@ -1,17 +1,123 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="section">
-{#        <h5>JBrowse</h5>#}
-        <iframe src="http://thoba.sanbi.ac.za:8080/?loc=NC_000962.3%3A{{ location }}&tracks=DNA%2CGenes&highlight="
-                frameborder="0"
-                scrolling="no" width="100%" height="600">
-        </iframe>
-    </div>
-    <div class="divider"></div>
-    <div class="section">
-{#        {{ gene }} {{ name }}#}
-    </div>
+    {% if gene %}
+        <div class="section">
+            <h5>Showing results for {{ gene.name }}</h5><br>
+            <iframe src="http://thoba.sanbi.ac.za:8080/?loc=NC_000962.3%3A{{ location }}&tracks=DNA%2CGenes&highlight="
+                    frameborder="0"
+                    scrolling="no" width="100%" height="370">
+            </iframe>
+        </div>
+        <div class="divider"></div>
+        <div class="section">
+            {#        {{ gene }} {{ name }}#}
+            <div class="row">
+                <div class="col s12">
+                    <ul class="tabs ">
+                        <li class="tab col s3"><a class="green-text active" href="#gi">General annotation</a>
+                        </li>
+                        <li class="tab col s3"><a class="green-text" href="#coords">Coordinates</a></li>
+                        <li class="tab col s3"><a class="green-text" href="#orth">Orthologs/Cross-references</a></li>
+                        <li class="tab col s3"><a class="green-text" href="#bib">Bibliography</a></li>
+                    </ul>
+                </div>
+                <div id="gi" class="col s12">
+                    <table class="bordered">
+                        <tbody>
+                        <tr>
+                            <th>Gene name</th>
+                            <td>{{ gene.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Rv number</th>
+                            <td>{{ gene.locus_tag or gene.name}}</td>
+                        </tr>
+                        <tr></tr>
+                        <tr>
+                            <th>Type</th>
+                            <td>{{ gene.coding or pseudogene}}</td>
+{#                        </tr>#}
+{#                        <tr>#}
+{#                            <th>Function</th>#}
+{#                            <td>{{ gene.description }}</td>#}
+{#                        </tr>#}
+{#                        <tr>#}
+{#                            <th>Product</th>#}
+{#                            <td>{{ gene.description }}</td>#}
+{#                        </tr>#}
+{#                        <tr></tr>#}
+                        <tr>
+                            <th>Comments</th>
+                            <td>{{ gene.description }}</td>
+                        </tr>
+{#                        <tr>#}
+{#                            <th>Molecular mass (Da)</th>#}
+{#                            <td>38616.9</td>#}
+{#                        </tr>#}
+{#                        <tr>#}
+{#                            <td><b>Isoelectric point</b></td>#}
+{#                            <td>5.7066</td>#}
+{#                        </tr>#}
+{#                        <tr>#}
+{#                            <td><b>Gene length (bp)</b></td>#}
+{#                            <td>1074</td>#}
+{#                        </tr>#}
+{#                        <tr>#}
+{#                            <td><b>Protein length</b></td>#}
+{#                            <td>357</td>#}
+{#                        </tr>#}
+{#                        <tr>#}
+{#                            <td><b>Location (kb)</b></td>#}
+{#                            <td>257.783</td>#}
+{#                        </tr>#}
+                        </tbody>
+                    </table>
+                </div>
+                <div id="coords" class="col s12">
+                    <table class="bordered">
+                        <thead>
+                        <tr>
+                            <th data-field="coding">Type</th>
+                            <th data-field="start">Start</th>
+                            <th data-field="end">End</th>
+                            <th data-field="strand">Strand</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr>
+                            <td>{{ gene.coding or pseudogene}}</td>
+                            <td>{{ gene.start }}</td>
+                            <td>{{ gene.end }}</td>
+                            <td>{{ gene.strand }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="orth" class="col s12">
+                <table class="bordered">
+                        <tbody>
+                        <tr>
+                            <th>CDC1551</th>
+                            <td>{{ ortholog_name}}</td>
+                        </tr>
+                        <tr>
+                            <th>UniProt</th>
+                            <td>{{ gene.uniprot_entry }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="bib" class="col s12">Bibliography</div>
+            </div>
+        </div>
+    {% else %}
+        <div class="section">
+            <h5>No Results</h5>
+            <p>Could not find {{ term }}</p>
+        </div>
+    {% endif %}
 {% endblock %}
 {% block js %}
 {% endblock %}
