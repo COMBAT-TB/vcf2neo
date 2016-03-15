@@ -12,3 +12,7 @@
 .icon-block .material-icons {
 	font-size: inherit;
 }
+
+.tabs .indicator{
+    background-color: #4caf50;
+}
