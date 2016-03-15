@@ -31,7 +31,7 @@ def search_nodes(name):
         return node
     except DoesNotExist, e:
         pass
-    return 'Nothing found!'
+    return None
 
 
 @app.route('/')
@@ -41,14 +41,21 @@ def index():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    gene = name = location = None
+    term = gene = pseudogene = ortholog_name = location = None
     if request.method == 'POST':
         term = request.form['gene']
-        gene = search_nodes(term)
-        location = str(gene.start)+'..'+str(gene.end)
-        for ortholog in gene.has_ortholog.match():
-            name = ortholog.locus_name
-    return render_template('results.html', gene=gene.name, name=name, location=location)
+        gene = search_nodes(term.capitalize())
+        class_name = gene.__class__.__name__
+        print class_name
+        if gene:
+            location = str(gene.start) + '..' + str(gene.end)
+            if 'Ps' not in class_name:
+                for ortholog in gene.has_ortholog.match():
+                    ortholog_name = ortholog.locus_name
+            elif 'Ps' in class_name:
+                pseudogene = gene.biotype
+    return render_template('results.html', term=term, gene=gene, pseudogene=pseudogene, ortholog_name=ortholog_name,
+                           location=location)
 
 
 @app.route('/about')
