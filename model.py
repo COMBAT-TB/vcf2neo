@@ -14,6 +14,7 @@ class Gene(StructuredNode):
     ncbi_acc = StringProperty(Unique_Index=True)
     ensembl_id = StringProperty(Unique_Index=True)
     name = StringProperty(index=True)
+    preffered_name = StringProperty()
     locus_tag = StringProperty(index=True)
     gene_synonym = StringProperty(index=True)
     coding = StringProperty()
@@ -25,6 +26,7 @@ class Gene(StructuredNode):
     end = IntegerProperty()
     strand = StringProperty()
     description = StringProperty()
+    citation = StringProperty()
     location = StringProperty()
     length = IntegerProperty()
 
@@ -54,6 +56,8 @@ class Pseudogene(StructuredNode):
     strand = IntegerProperty()
     location = StringProperty()
     sequence = StringProperty()
+
+    has_ortholog = RelationshipTo('Ortholog', 'ORTHOLOG', OneOrMore)
 
 
 class Transcript(StructuredNode):
@@ -182,8 +186,13 @@ class Protein(StructuredNode):
     ensembl_id = StringProperty(Unique_Index=True)
     parent = StringProperty(index=True)
     name = StringProperty(index=True)
+    recommended_name = StringProperty()
     sequence = StringProperty()
+    domain = StringProperty()
+    function = StringProperty()
+    three_d = StringProperty()
     length = IntegerProperty()
+    mass = StringProperty()
     transcript = StringProperty(Unique_Index=True)
     start = IntegerProperty()
     end = IntegerProperty()
