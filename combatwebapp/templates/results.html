@@ -15,11 +15,15 @@
             <div class="row">
                 <div class="col s12">
                     <ul class="tabs ">
-                        <li class="tab col s3"><a class="green-text active" href="#gi">General annotation</a>
+                        <li class="tab col s3"><a class="light-blue-text text-darken-4 active" href="#gi">General
+                            annotation</a>
                         </li>
-                        <li class="tab col s3"><a class="green-text" href="#coords">Coordinates</a></li>
-                        <li class="tab col s3"><a class="green-text" href="#orth">Orthologs/Cross-references</a></li>
-                        <li class="tab col s3"><a class="green-text" href="#bib">Bibliography</a></li>
+                        <li class="tab col s3"><a class="light-blue-text text-darken-4" href="#coords">Coordinates</a>
+                        </li>
+                        <li class="tab col s3"><a class="light-blue-text text-darken-4" href="#orth">Orthologs/Cross-references</a>
+                        </li>
+                        <li class="tab col s3"><a class="light-blue-text text-darken-4" href="#bib">Bibliography</a>
+                        </li>
                     </ul>
                 </div>
                 <div id="gi" class="col s12">
@@ -31,46 +35,50 @@
                         </tr>
                         <tr>
                             <th>Rv number</th>
-                            <td>{{ gene.locus_tag or gene.name}}</td>
+                            <td>{{ gene.locus_tag or gene.name }}</td>
                         </tr>
                         <tr></tr>
                         <tr>
                             <th>Type</th>
-                            <td>{{ gene.coding or pseudogene}}</td>
-{#                        </tr>#}
-{#                        <tr>#}
-{#                            <th>Function</th>#}
-{#                            <td>{{ gene.description }}</td>#}
-{#                        </tr>#}
-{#                        <tr>#}
-{#                            <th>Product</th>#}
-{#                            <td>{{ gene.description }}</td>#}
-{#                        </tr>#}
-{#                        <tr></tr>#}
+                            <td>{{ gene.coding or pseudogene }}</td>
+                        </tr>
+                        <tr>
+                            <th>Function</th>
+                            {% if protein.function %}
+                                <td>{{ protein.function[9:] }}</td>
+                            {% else %}
+                                <td>{{ protein.function }}</td>
+                            {% endif %}
+                        </tr>
+                        {#                        <tr>#}
+                        {#                            <th>Product</th>#}
+                        {#                            <td>{{ gene.description }}</td>#}
+                        {#                        </tr>#}
+                        {#                        <tr></tr>#}
                         <tr>
                             <th>Comments</th>
                             <td>{{ gene.description }}</td>
                         </tr>
-{#                        <tr>#}
-{#                            <th>Molecular mass (Da)</th>#}
-{#                            <td>38616.9</td>#}
-{#                        </tr>#}
-{#                        <tr>#}
-{#                            <td><b>Isoelectric point</b></td>#}
-{#                            <td>5.7066</td>#}
-{#                        </tr>#}
-{#                        <tr>#}
-{#                            <td><b>Gene length (bp)</b></td>#}
-{#                            <td>1074</td>#}
-{#                        </tr>#}
-{#                        <tr>#}
-{#                            <td><b>Protein length</b></td>#}
-{#                            <td>357</td>#}
-{#                        </tr>#}
-{#                        <tr>#}
-{#                            <td><b>Location (kb)</b></td>#}
-{#                            <td>257.783</td>#}
-{#                        </tr>#}
+                        <tr>
+                            <th>Molecular mass (Da)</th>
+                            <td>{{ protein.mass }}</td>
+                        </tr>
+                        {#                        <tr>#}
+                        {#                            <td><b>Isoelectric point</b></td>#}
+                        {#                            <td>5.7066</td>#}
+                        {#                        </tr>#}
+                        {#                        <tr>#}
+                        {#                            <td><b>Gene length (bp)</b></td>#}
+                        {#                            <td>1074</td>#}
+                        {#                        </tr>#}
+                        <tr>
+                            <td><b>Protein length</b></td>
+                            <td>{{ protein.length }}</td>
+                        </tr>
+                        {#                        <tr>#}
+                        {#                            <td><b>Location (kb)</b></td>#}
+                        {#                            <td>257.783</td>#}
+                        {#                        </tr>#}
                         </tbody>
                     </table>
                 </div>
@@ -87,7 +95,7 @@
 
                         <tbody>
                         <tr>
-                            <td>{{ gene.coding or pseudogene}}</td>
+                            <td>{{ gene.coding or pseudogene }}</td>
                             <td>{{ gene.start }}</td>
                             <td>{{ gene.end }}</td>
                             <td>{{ gene.strand }}</td>
@@ -96,20 +104,57 @@
                     </table>
                 </div>
                 <div id="orth" class="col s12">
-                <table class="bordered">
+                    <table class="bordered">
                         <tbody>
                         <tr>
                             <th>CDC1551</th>
-                            <td>{{ ortholog_name}}</td>
+                            <td>{{ ortholog_name }}</td>
                         </tr>
                         <tr>
                             <th>UniProt</th>
-                            <td>{{ gene.uniprot_entry }}</td>
+                            <td>
+                                <a target="_blank"
+                                   href="http://www.uniprot.org/uniprot/{{ gene.uniprot_entry }}">{{ gene.uniprot_entry }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>GO</th>
+                            <td>
+                                {% for entry in go_terms %}
+                                    <a target="_blank"
+                                       href="http://amigo.geneontology.org/amigo/term/{{ entry }}">{{ entry }}</a><br>
+                                {% endfor %}
+                            </td>
+                            {#                            <td>{{ go_terms }}</td>#}
+                        <tr>
+                            <th>InterPro</th>
+                            <td>
+                                {% for entry in inter_pro %}
+                                    <a target="_blank"
+                                       href="https://www.ebi.ac.uk/interpro/entry/{{ entry }}">{{ entry }} </a><br>
+                                {% endfor %}
+                            </td>
+                            {#                            <td>{{ inter_pro }}</td>#}
                         </tr>
                         </tbody>
                     </table>
                 </div>
-                <div id="bib" class="col s12">Bibliography</div>
+                <div id="bib" class="col s12">
+                    <table class="bordered">
+                        <tbody>
+                        <th>Bibliography</th>
+                        <td>
+                            {% if gene.citation %}
+                                {% for entry in gene.citation.split(', ') %}
+                                    <a>{{ entry }}</a>
+                                {% endfor %}
+                            {% else %}
+                                {{ '' }}
+                            {% endif %}
+                        </td>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     {% else %}
