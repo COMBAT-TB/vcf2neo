@@ -18,51 +18,60 @@
             </div>
         </div>
     </div>
-    {#        <div class="row">#}
-    {#            <div class="col s4 m4">#}
-    {#                <div class="card">#}
-    {#                    <div class="card-image">#}
-    {#                        <img src="{{ url_for('static', filename='img/sanbi_logo.png') }}">#}
-    {#                        <span class="card-title">Card Title</span>#}
-    {#                    </div>#}
-    {#                    <div class="card-content">#}
-    {#                        <p>I am a very simple card. I am good at containing small bits of information.#}
-    {#                            I am convenient because I require little markup to use effectively.</p>#}
-    {#                    </div>#}
-    {#                    <div class="card-action">#}
-    {#                        <a href="#">This is a link</a>#}
-    {#                    </div>#}
-    {#                </div>#}
-    {#            </div>#}
-    {#            <div class="col s4 m4">#}
-    {#                <div class="card">#}
-    {#                    <div class="card-image">#}
-    {#                        <img src="{{ url_for('static', filename='img/newmrcbanner.png') }}">#}
-    {#                        <span class="card-title">Card Title</span>#}
-    {#                    </div>#}
-    {#                    <div class="card-content">#}
-    {#                        <p>I am a very simple card. I am good at containing small bits of information.#}
-    {#                            I am convenient because I require little markup to use effectively.</p>#}
-    {#                    </div>#}
-    {#                    <div class="card-action">#}
-    {#                        <a href="#">This is a link</a>#}
-    {#                    </div>#}
-    {#                </div>#}
-    {#            </div>#}
-    {#            <div class="col s4 m4">#}
-    {#                <div class="card">#}
-    {#                    <div class="card-image">#}
-    {#                        <img src="{{ url_for('static', filename='img/uwc_trans_logo_.gif') }}">#}
-    {#                        <span class="card-title">Card Title</span>#}
-    {#                    </div>#}
-    {#                    <div class="card-content">#}
-    {#                        <p>I am a very simple card. I am good at containing small bits of information.#}
-    {#                            I am convenient because I require little markup to use effectively.</p>#}
-    {#                    </div>#}
-    {#                    <div class="card-action">#}
-    {#                        <a href="#">This is a link</a>#}
-    {#                    </div>#}
-    {#                </div>#}
-    {#            </div>#}
-    {#        </div>#}
+{#    <div class="section">#}
+        <h3 class="header center-on-small-only">Made possible by</h3>
+        <div class="divider"></div>
+        <br>
+        <div class="row">
+            <div class="col s4 m4">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="{{ url_for('static', filename='img/sanbi_logo.png') }}" width="400" height="150">
+                        {#                            <span class="card-title">Card Title</span>#}
+                    </div>
+                    <div class="card-content">
+                        <p>SANBI is a well-established bioinformatics centre at the University of the Western Cape and
+                            has been running a bioinformatics post-graduate training centre as well as a centre for
+                            bioinformatics research since it was founded in 1996.</p>
+                    </div>
+                    <div class="card-action">
+                        <a target="_blank" href="http://www.sanbi.ac.za/">SANBI</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col s4 m4">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="{{ url_for('static', filename='img/newmrcbanner.png') }}" width="400" height="150">
+                        {#                            <span class="card-title">Card Title</span>#}
+                    </div>
+                    <div class="card-content">
+                        <p>The South African Medical Research Council (SAMRC) was established in 1969 with a mandate to
+                            improve the health of the country’s population, through research, development and technology
+                            transfer, so that people can enjoy a better quality of life.</p>
+                    </div>
+                    <div class="card-action">
+                        <a target="_blank" href="http://www.mrc.ac.za/">SAMRC</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col s4 m4">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="{{ url_for('static', filename='img/uwc_trans_logo_.gif') }}" width="400" height="150">
+                        {#                            <span class="card-title">Card Title</span>#}
+                    </div>
+                    <div class="card-content">
+                        <p>UWC is a national university, alert to its African and international context as it strives to
+                            be a place of quality, a place to grow. It is committed to excellence in teaching, learning
+                            and research, to nurturing the cultural diversity of South Africa.</p>
+                    </div>
+                    <div class="card-action">
+                        <a target="_blank" href="http://www.uwc.ac.za/">UWC</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+{#    </div>#}
+
 {% endblock %}
