@@ -34,6 +34,10 @@
                             <td>{{ gene.name }}</td>
                         </tr>
                         <tr>
+                            <th>Preferred name</th>
+                            <td>{{ gene.preffered_name }}</td>
+                        </tr>
+                        <tr>
                             <th>Rv number</th>
                             <td>{{ gene.locus_tag or gene.name }}</td>
                         </tr>
@@ -47,7 +51,7 @@
                             {% if protein.function %}
                                 <td>{{ protein.function[9:] }}</td>
                             {% else %}
-                                <td>{{ protein.function }}</td>
+                                <td>Function unknown</td>
                             {% endif %}
                         </tr>
                         {#                        <tr>#}
@@ -56,11 +60,11 @@
                         {#                        </tr>#}
                         {#                        <tr></tr>#}
                         <tr>
-                            <th>Comments</th>
+                            <th>Product</th>
                             <td>{{ gene.description }}</td>
                         </tr>
                         <tr>
-                            <th>Molecular mass (Da)</th>
+                            <th>Molecular mass</th>
                             <td>{{ protein.mass }}</td>
                         </tr>
                         {#                        <tr>#}
@@ -114,7 +118,7 @@
                             <th>UniProt</th>
                             <td>
                                 <a target="_blank"
-                                   href="http://www.uniprot.org/uniprot/{{ gene.uniprot_entry }}">{{ gene.uniprot_entry }}
+                                   href="http://www.uniprot.org/uniprot/{{ gene.uniprot_entry }}">{{ gene.uniprot_entry }}</a>
                             </td>
                         </tr>
                         <tr>
@@ -145,8 +149,8 @@
                         <th>Bibliography</th>
                         <td>
                             {% if gene.citation %}
-                                {% for entry in gene.citation.split(', ') %}
-                                    <a>{{ entry }}</a>
+                                {% for entry in gene.citation.encode('utf-8').split(', ') %}
+                                    <a>{{ entry[0] }}</a>
                                 {% endfor %}
                             {% else %}
                                 {{ '' }}
