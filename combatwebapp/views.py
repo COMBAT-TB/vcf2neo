@@ -59,7 +59,7 @@ def index():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    term = gene = pseudogene = ortholog_name = location = protein = None
+    term = pseudogene = ortholog_name = protein = None
     go_terms = []
     inter_pro = []
     print 'ITEMS:', request.args.items()
@@ -90,8 +90,12 @@ def search():
                     protein = prot
         elif 'Ps' in class_name:
             pseudogene = gene[0].biotype
-        return render_template('results.html', term=term, gene=gene[0], pseudogene=pseudogene, ortholog_name=ortholog_name,
-                           location=location, go_terms=go_terms, inter_pro=inter_pro, protein=protein)
+        return render_template('results.html', term=term, gene=gene[0], pseudogene=pseudogene,
+                               ortholog_name=ortholog_name,
+                               location=location, go_terms=go_terms, inter_pro=inter_pro, protein=protein)
+    else:
+        gene = None
+        return render_template('results.html', term=term, gene=gene)
 
 
 @app.route('/about')
