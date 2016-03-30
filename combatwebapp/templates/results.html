@@ -148,9 +148,11 @@
                         <tbody>
                         <th>Bibliography</th>
                         <td>
-                            {% if gene.citation %}
-                                {% for entry in gene.citation.encode('utf-8').split(', ') %}
-                                    <a>{{ entry[0] }}</a>
+                            {% if citation %}
+                                {% for entry in citation %}
+{#                                    <a>{{ entry }}</a>#}
+                                    <a target="_blank"
+                                       href="http://www.ncbi.nlm.nih.gov/pubmed/?term={{ entry }}">{{ entry }}</a><br>
                                 {% endfor %}
                             {% else %}
                                 {{ '' }}

@@ -90,8 +90,11 @@ def search():
                     protein = prot
         elif 'Ps' in class_name:
             pseudogene = gene[0].biotype
+        citation = gene[0].citation.encode('utf-8').replace('[', '').replace(']', '').split(', ')
+        cite = [ct[1:-1] for ct in citation]
+
         return render_template('results.html', term=term, gene=gene[0], pseudogene=pseudogene,
-                               ortholog_name=ortholog_name,
+                               ortholog_name=ortholog_name, citation=cite,
                                location=location, go_terms=go_terms, inter_pro=inter_pro, protein=protein)
     else:
         gene = None
