@@ -22,6 +22,8 @@
                         </li>
                         <li class="tab col s3"><a class="light-blue-text text-darken-4" href="#orth">Orthologs/Cross-references</a>
                         </li>
+                        <li class="tab col s3"><a class="light-blue-text text-darken-4" href="#actor">Interaction</a>
+                        </li>
                         <li class="tab col s3"><a class="light-blue-text text-darken-4" href="#bib">Bibliography</a>
                         </li>
                     </ul>
@@ -122,6 +124,13 @@
                             </td>
                         </tr>
                         <tr>
+                            <th>TubercuList</th>
+                            <td>
+                                <a target="_blank"
+                                   href="http://tuberculist.epfl.ch/quicksearch.php?gene+name={{ gene.locus_tag }}">{{ gene.locus_tag }}</a>
+                            </td>
+                        </tr>
+                        <tr>
                             <th>GO</th>
                             <td>
                                 {% for entry in go_terms %}
@@ -143,6 +152,27 @@
                         </tbody>
                     </table>
                 </div>
+                <div id="actor" class="col s12">
+                    <table class="bordered">
+                        <tbody>
+                        <tr>
+                            <th>MTB</th>
+                            {% for actor in interactor %}
+                                <td>{{ actor }}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <th>Human</th>
+                            {% for actor in h_interact %}
+                                <td>
+                                    <a target="_blank"
+                                       href="http://www.uniprot.org/uniprot/{{ actor }}">{{ actor }}</a>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div id="bib" class="col s12">
                     <table class="bordered">
                         <tbody>
@@ -150,7 +180,7 @@
                         <td>
                             {% if citation %}
                                 {% for entry in citation %}
-{#                                    <a>{{ entry }}</a>#}
+                                    {#                                    <a>{{ entry }}</a>#}
                                     <a target="_blank"
                                        href="http://www.ncbi.nlm.nih.gov/pubmed/?term={{ entry }}">{{ entry }}</a><br>
                                 {% endfor %}
