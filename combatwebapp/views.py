@@ -59,9 +59,11 @@ def index():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    term = pseudogene = ortholog_name = protein = None
+    term = pseudogene = ortholog_name = protein = interact = h_interact = None
     go_terms = []
     inter_pro = []
+    ints = []
+    h_ints = []
     print 'ITEMS:', request.args.items()
     if request.method == 'GET':
         term = request.args.get('gene')
@@ -88,6 +90,12 @@ def search():
             for cdc in gene[0].translated.match():
                 for prot in cdc.translated_.match():
                     protein = prot
+            for actor in protein.interacts.match():
+                ints.append(actor)
+            for h_actor in protein.interacts_.match():
+                h_ints.append(h_actor)
+            interact = [a.uniprot_id for a in ints]
+            h_interact = [a.protein_id for a in h_ints]
         elif 'Ps' in class_name:
             pseudogene = gene[0].biotype
         citation = gene[0].citation.encode('utf-8').replace('[', '').replace(']', '').split(', ')
@@ -95,7 +103,8 @@ def search():
 
         return render_template('results.html', term=term, gene=gene[0], pseudogene=pseudogene,
                                ortholog_name=ortholog_name, citation=cite,
-                               location=location, go_terms=go_terms, inter_pro=inter_pro, protein=protein)
+                               location=location, go_terms=go_terms, inter_pro=inter_pro, protein=protein,
+                               interactor=interact, h_interact=h_interact)
     else:
         gene = None
         return render_template('results.html', term=term, gene=gene)
