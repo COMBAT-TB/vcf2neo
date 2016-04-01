@@ -24,7 +24,7 @@
                         </li>
                         <li class="tab col s3"><a class="light-blue-text text-darken-4" href="#actor">Interaction</a>
                         </li>
-                        <li class="tab col s3"><a class="light-blue-text text-darken-4" href="#bib">Bibliography</a>
+                        <li class="tab col s3"><a class="light-blue-text text-darken-4" href="#pub">Publications</a>
                         </li>
                     </ul>
                 </div>
@@ -157,23 +157,27 @@
                         <tbody>
                         <tr>
                             <th>MTB</th>
-                            {% for actor in interactor %}
-                                <td>{{ actor }}</td>
-                            {% endfor %}
+                            <td>
+                                {% for actor in interactor %}
+                                    <a target="_blank"
+                                       href="http://www.uniprot.org/uniprot/{{ actor }}">{{ actor }}</a><br>
+
+                                {% endfor %}
+                            </td>
                         </tr>
                         <tr>
                             <th>Human</th>
-                            {% for actor in h_interact %}
-                                <td>
+                            <td>
+                                {% for actor in h_interact %}
                                     <a target="_blank"
-                                       href="http://www.uniprot.org/uniprot/{{ actor }}">{{ actor }}</a>
-                                </td>
-                            {% endfor %}
+                                       href="http://www.uniprot.org/uniprot/{{ actor }}">{{ actor }}</a><br>
+                                {% endfor %}
+                            </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
-                <div id="bib" class="col s12">
+                <div id="pub" class="col s12">
                     <table class="bordered">
                         <tbody>
                         <th>Bibliography</th>
