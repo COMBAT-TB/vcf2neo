@@ -29,6 +29,7 @@ class Gene(StructuredNode):
     citation = StringProperty()
     location = StringProperty()
     length = IntegerProperty()
+    fasta = StringProperty()
 
     # @property
     # def getLocation(self):
@@ -189,10 +190,12 @@ class Protein(StructuredNode):
     recommended_name = StringProperty()
     sequence = StringProperty()
     domain = StringProperty()
+    family = StringProperty()
     function = StringProperty()
     three_d = StringProperty()
     length = IntegerProperty()
     mass = StringProperty()
+    pdb_id = StringProperty()
     transcript = StringProperty(Unique_Index=True)
     start = IntegerProperty()
     end = IntegerProperty()
