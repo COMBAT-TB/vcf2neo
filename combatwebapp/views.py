@@ -10,7 +10,8 @@ def cypher_search(name):
     arr = []
     res = None
     query = "MATCH (n:Gene) where n.name=~'(?i){}.*' OR n.locus_tag=~'(?i){}.*' " \
-            "OR n.preffered_name=~'(?i){}.*' OR n.uniprot_entry=~'(?i){}.*' RETURN n".format(name, name, name, name)
+            "OR n.preffered_name=~'(?i){}.*' OR n.uniprot_entry=~'(?i){}.*' RETURN n " \
+            "UNION MATCH (n:Pseudogene) where n.name=~'(?i){}.*' RETURN n ".format(name, name, name, name, name)
     result, meta = db.cypher_query(query)
     for row in result:
         res = Gene.inflate(row[0])
@@ -52,6 +53,27 @@ def search_nodes(name):
     return None
 
 
+def search_node(name):
+    nodes = []
+    try:
+        print 'Searching Gene Nodes with Name=', name
+        node = Gene.nodes.get(name=name)
+        if node:
+            print node
+            nodes.append(node)
+        return nodes
+    except DoesNotExist, e:
+        try:
+            print 'Searching Pseudogene Nodes with Name=', name
+            node = Pseudogene.nodes.get(name=name)
+            if node:
+                print node
+                nodes.append(node)
+            return nodes
+        except DoesNotExist, e:
+            raise e
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -59,7 +81,7 @@ def index():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    term = pseudogene = ortholog_name = protein = interact = h_interact = None
+    gene = term = pseudogene = ortholog_name = protein = interact = h_interact = cite = None
     go_terms = []
     inter_pro = []
     ints = []
@@ -67,10 +89,11 @@ def search():
     print 'ITEMS:', request.args.items()
     if request.method == 'GET':
         term = request.args.get('gene')
+        gene = search_node(term)
     if request.method == 'POST':
         term = request.form['gene']
+        gene = search_nodes(term)
     print term
-    gene = search_nodes(term)
     class_name = gene.__class__.__name__
     print class_name
     if gene and len(gene) > 1:
@@ -79,27 +102,36 @@ def search():
         print 'Gene is an array...', len(gene)
         return render_template('m_results.html', genes=gene, length=length)
     elif gene and len(gene) == 1:
-        location = str(gene[0].start) + '..' + str(gene[0].end)
-        if 'Ps' not in class_name:
+        # Trying to zoom out
+        location = str(int(gene[0].start)) + '..' + str(int(gene[0].end))
+        if 'Ps' not in gene[0].__class__.__name__:
+            print gene[0].__class__.__name__
             for ortholog in gene[0].has_ortholog.match():
                 ortholog_name = ortholog.locus_name
             for go in gene[0].has_go_terms.match():
-                go_terms.append(str(go.go_id))
+                go_terms.append(go)
             for inter in gene[0].has_interpro_terms.match():
                 inter_pro.append(str(inter.interpro_id))
             for cdc in gene[0].translated.match():
                 for prot in cdc.translated_.match():
                     protein = prot
-            for actor in protein.interacts.match():
-                ints.append(actor)
-            for h_actor in protein.interacts_.match():
-                h_ints.append(h_actor)
+            try:
+                for actor in protein.interacts.match():
+                    ints.append(actor)
+            except Exception, e:
+                pass
+            try:
+                for h_actor in protein.interacts_.match():
+                    h_ints.append(h_actor)
+            except Exception, e:
+                pass
             interact = [a.uniprot_id for a in ints]
             h_interact = [a.protein_id for a in h_ints]
-        elif 'Ps' in class_name:
+            if gene[0].citation:
+                citation = gene[0].citation.encode('utf-8').replace('[', '').replace(']', '').split(', ')
+                cite = [ct[1:-1] for ct in citation]
+        elif 'Ps' in gene[0].__class__.__name__:
             pseudogene = gene[0].biotype
-        citation = gene[0].citation.encode('utf-8').replace('[', '').replace(']', '').split(', ')
-        cite = [ct[1:-1] for ct in citation]
 
         return render_template('results.html', term=term, gene=gene[0], pseudogene=pseudogene,
                                ortholog_name=ortholog_name, citation=cite,
