@@ -7,12 +7,12 @@ class Gene(StructuredNode):
     Genes
     """
     # print 'Gene Nodes'
-    gene_id = StringProperty(Unique_Index=True, index=True)
+    gene_id = StringProperty(unique_index=True)
     uniprot_entry = StringProperty(index=True)
-    dbxref = StringProperty(Unique_Index=True, index=True)
-    ncbi_id = StringProperty(Unique_Index=True)
-    ncbi_acc = StringProperty(Unique_Index=True)
-    ensembl_id = StringProperty(Unique_Index=True)
+    dbxref = StringProperty(index=True)
+    ncbi_id = StringProperty(index=True)
+    ncbi_acc = StringProperty(index=True)
+    ensembl_id = StringProperty(index=True)
     name = StringProperty(index=True)
     preffered_name = StringProperty()
     locus_tag = StringProperty(index=True)
@@ -40,6 +40,7 @@ class Gene(StructuredNode):
     has_ortholog = RelationshipTo('Ortholog', 'ORTHOLOG', OneOrMore)
     has_go_terms = RelationshipTo('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
     has_interpro_terms = RelationshipTo('InterPro', 'ASSOCIATED_WITH', OneOrMore)
+    mentioned_in = RelationshipTo('Publication', 'MENTIONED_IN', OneOrMore)
 
 
 class Pseudogene(StructuredNode):
@@ -47,7 +48,7 @@ class Pseudogene(StructuredNode):
     Transcripts
     """
     # print 'Pseudogene Nodes'
-    pseudogene_id = StringProperty(Unique_Index=True, index=True)
+    pseudogene_id = StringProperty(unique_index=True)
     name = StringProperty()
     gene_id = StringProperty(index=True)
     description = StringProperty(index=True)
@@ -66,7 +67,7 @@ class Transcript(StructuredNode):
     Transcripts
     """
     # print 'Transcript Nodes'
-    transcript_id = StringProperty(Unique_Index=True, index=True)
+    transcript_id = StringProperty(unique_index=True)
     name = StringProperty()
     gene = StringProperty(index=True)
     note = StringProperty(index=True)
@@ -92,7 +93,7 @@ class Trna(StructuredNode):
     tRNA
     """
     # print 'Trna Nodes'
-    trna_id = StringProperty(Unique_Index=True, index=True)
+    trna_id = StringProperty(unique_index=True)
     name = StringProperty()
     gene_id = StringProperty(index=True)
     note = StringProperty(index=True)
@@ -103,7 +104,7 @@ class Trna(StructuredNode):
     location = StringProperty()
     sequence = StringProperty()
 
-    holds = RelationshipTo('Transcript', 'HAS', OneOrMore)
+    holds = RelationshipFrom('Transcript', OneOrMore)
 
 
 class NCrna(StructuredNode):
@@ -111,7 +112,7 @@ class NCrna(StructuredNode):
     ncRNA
     """
     # print 'NCrna Nodes'
-    ncrna_id = StringProperty(Unique_Index=True, index=True)
+    ncrna_id = StringProperty(unique_index=True)
     name = StringProperty()
     gene_id = StringProperty(index=True)
     note = StringProperty(index=True)
@@ -122,7 +123,7 @@ class NCrna(StructuredNode):
     location = StringProperty()
     sequence = StringProperty()
 
-    holds = RelationshipTo('Transcript', 'HAS', OneOrMore)
+    holds = RelationshipFrom('Transcript', OneOrMore)
 
 
 class Rrna(StructuredNode):
@@ -130,7 +131,7 @@ class Rrna(StructuredNode):
     rRNA
     """
     # print 'Rrna Nodes'
-    rrna_id = StringProperty(Unique_Index=True, index=True)
+    rrna_id = StringProperty(unique_index=True)
     name = StringProperty()
     gene_id = StringProperty(index=True)
     note = StringProperty(index=True)
@@ -141,7 +142,7 @@ class Rrna(StructuredNode):
     location = StringProperty()
     sequence = StringProperty()
 
-    holds = RelationshipTo('Transcript', 'HAS', OneOrMore)
+    holds = RelationshipFrom('Transcript', OneOrMore)
 
 
 class Exon(StructuredNode):
@@ -154,7 +155,7 @@ class Exon(StructuredNode):
     location = StringProperty()
     transcript = StringProperty(index=True)
 
-    part_of = RelationshipTo('Transcript', 'PART_OF', OneOrMore)
+    part_of = RelationshipFrom('Transcript', OneOrMore)
 
 
 class CDS(StructuredNode):
@@ -162,8 +163,8 @@ class CDS(StructuredNode):
     CDS
     """
     # print 'CDS Nodes'
-    cds_id = StringProperty(Unique_Index=True)
-    name = StringProperty(Unique_Index=True, index=True)
+    cds_id = StringProperty(unique_index=True)
+    name = StringProperty(index=True)
     transcript = StringProperty()
     product = StringProperty(index=True)
     protein_id = StringProperty(index=True)
@@ -177,14 +178,14 @@ class Protein(StructuredNode):
     Proteins
     """
     # print 'Protein Nodes'
-    protein_id = StringProperty(Unique_Index=True)
-    dbxref = StringProperty(Unique_Index=True, index=True)
-    ncbi_id = StringProperty(Unique_Index=True)
-    ncbi_acc = StringProperty(Unique_Index=True)
+    protein_id = StringProperty(unique_index=True)
+    dbxref = StringProperty(index=True)
+    ncbi_id = StringProperty(index=True)
+    ncbi_acc = StringProperty(index=True)
     uniprot_id = StringProperty(index=True)
-    swissprot_id = StringProperty(Unique_Index=True)
+    swissprot_id = StringProperty(index=True)
     pdb = StringProperty()
-    ensembl_id = StringProperty(Unique_Index=True)
+    ensembl_id = StringProperty(index=True)
     parent = StringProperty(index=True)
     name = StringProperty(index=True)
     recommended_name = StringProperty()
@@ -196,14 +197,14 @@ class Protein(StructuredNode):
     length = IntegerProperty()
     mass = StringProperty()
     pdb_id = StringProperty()
-    transcript = StringProperty(Unique_Index=True)
+    transcript = StringProperty(index=True)
     start = IntegerProperty()
     end = IntegerProperty()
     strand = IntegerProperty()
     interactor = StringProperty(index=True)
 
     interacts = RelationshipTo('Protein', 'INTERACTS_WITH', OneOrMore)
-    interacts_ = RelationshipTo('HumanProtein', 'INTERACTS', OneOrMore)
+    interacts_ = RelationshipTo('HumanProtein', 'INTERACTS_WITH', OneOrMore)
     associated_with = RelationshipTo('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
     associated_ = RelationshipTo('InterPro', 'ASSOCIATED_WITH', OneOrMore)
 
@@ -213,26 +214,26 @@ class HumanProtein(StructuredNode):
     HumanProteins
     """
     # print 'Protein Nodes'
-    protein_id = StringProperty(Unique_Index=True, index=True)
+    protein_id = StringProperty(unique_index=True)
     tb_protein = StringProperty(index=True)
-    dbxref = StringProperty(Unique_Index=True, index=True)
-    ncbi_id = StringProperty(Unique_Index=True)
-    ncbi_acc = StringProperty(Unique_Index=True)
+    dbxref = StringProperty(index=True)
+    ncbi_id = StringProperty(index=True)
+    ncbi_acc = StringProperty(index=True)
     uniprot_id = StringProperty(index=True)
-    swissprot_id = StringProperty(Unique_Index=True)
+    swissprot_id = StringProperty(index=True)
     pdb = StringProperty()
-    ensembl_id = StringProperty(Unique_Index=True)
+    ensembl_id = StringProperty(index=True)
     parent = StringProperty(index=True)
     name = StringProperty(index=True)
     sequence = StringProperty()
     length = IntegerProperty()
-    transcript = StringProperty(Unique_Index=True)
+    transcript = StringProperty(index=True)
     start = IntegerProperty()
     end = IntegerProperty()
     strand = IntegerProperty()
     interactor = StringProperty(index=True)
 
-    interacts_ = RelationshipFrom('Protein', 'INTERACTS', OneOrMore)
+    interacts_ = RelationshipFrom('Protein', OneOrMore)
     # associated_with = RelationshipTo('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
     # associated_ = RelationshipTo('InterPro', 'ASSOCIATED_WITH', OneOrMore)
 
@@ -242,11 +243,11 @@ class Ortholog(StructuredNode):
     Ortholog
     """
     # print 'Ortholog Nodes'
-    locus_name = StringProperty(index=True)
-    uniprot_id = StringProperty(Unique_Index=True, index=True)
+    locus_name = StringProperty(unique_index=True)
+    uniprot_id = StringProperty(index=True)
     organism = StringProperty()
 
-    has_ortholog = RelationshipFrom('Gene', 'ORTHOLOG', OneOrMore)
+    has_ortholog = RelationshipFrom('Gene', OneOrMore)
 
 
 class GoTerm(StructuredNode):
@@ -254,13 +255,13 @@ class GoTerm(StructuredNode):
     GO Terms
     """
     # print 'GO Nodes'
-    go_id = StringProperty(Unique_Index=True, index=True)
+    go_id = StringProperty(unique_index=True)
     name = StringProperty(index=True)
     namespace = StringProperty(index=True)
     is_a = StringProperty()
 
     is_a_ = Relationship('GoTerm', 'IS_A', OneOrMore)
-    _genes = RelationshipFrom('Gene', 'ASSOCIATED_WITH', OneOrMore)
+    _genes = RelationshipFrom('Gene', OneOrMore)
 
 
 class InterPro(StructuredNode):
@@ -268,8 +269,9 @@ class InterPro(StructuredNode):
     InterPro
     """
     # print 'InterPro Nodes'
-    interpro_id = StringProperty(Unique_Index=True, index=True)
+    interpro_id = StringProperty(unique_index=True)
     name = StringProperty()
+    _genes = RelationshipFrom('Gene', OneOrMore)
 
 
 class Pfam(StructuredNode):
@@ -277,10 +279,21 @@ class Pfam(StructuredNode):
     Pfam
     """
     # print 'Pfam Nodes'
-    pfam_id = StringProperty(Unique_Index=True)
+    pfam_id = StringProperty(index=True)
     name = StringProperty()
 
 
 class Domain(StructuredNode):
     # print 'Domain Nodes'
     name = StringProperty(index=True)
+
+
+class Publication(StructuredNode):
+    pubmed_id = StringProperty(unique_index=True)
+    pubmed_ci = StringProperty()
+    title = StringProperty(index=True)
+    authors = StringProperty(index=True)
+    source = StringProperty()
+    journal = StringProperty(index=True)
+
+    mentioned_in = RelationshipFrom('Gene', OneOrMore)
