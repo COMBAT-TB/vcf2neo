@@ -128,6 +128,7 @@ def search():
             interact = [a.uniprot_id for a in ints]
             h_interact = [a.protein_id for a in h_ints]
             if gene[0].citation:
+                # Dealing with unicode
                 citation = gene[0].citation.encode('utf-8').replace('[', '').replace(']', '').split(', ')
                 cite = [ct[1:-1] for ct in citation]
         elif 'Ps' in gene[0].__class__.__name__:
