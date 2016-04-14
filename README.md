@@ -1,43 +1,23 @@
-# combattb_web
-A Web interface to the COMBAT-TB Neo4j Graph Database
+# **combat-tb neomodel**
 
-### Installation
-**NB: We assume you have a running instance of the Graph DB**
+A Graph Model for the COMBAT-TB Project
 
-**Clone this repository:**
+## Usage
 
-    $ git clone git@bitbucket.org:sanbidev/combattb_web.git
-    $ cd combattb_web
+**Make sure [Neo4j](http://neo4j.com/download/other-releases/) is running first!**
+```
+$ $NEO4J_HOME/bin/neo4j status
+```
 
-**Create a virtualenv, and activate it:**
+**Set location of your Neo4j Database via environment variables [`NEO4J_USERNAME`, `NEO4J_PASSWORD`, `NEO4J_REST_URL`]:**
 
-    $ virtualenv ctbweb 
-    $ source ctbweb/bin/activate
+```
+$ export NEO4J_USERNAME=username
+$ export NEO4J_PASSWORD=password
+$ export NEO4J_REST_URL=http://$NEO4J_USERNAME:$NEO4J_PASSWORD@localhost:7474/db/data/
+```
 
-**After that, install all necessary dependencies by running:**
-
-    $ pip install -r requirements.txt
-    
-**Then, run the aplication:**
-
-	$ python run.py
-    
-**To see CombatTbWeb, access this url in your browser:** 
-
-	http://localhost:5000
-	
-### Running CombatTbWeb inside a [Docker](https://www.docker.com/) container
-
-*To run CombatTbWeb inside a Docker container, you need to have [Docker installed](https://docs.docker.com/installation/ubuntulinux/). Then:*
-     
-**Build the image using:**
-
-    $ docker build -t docker-combattb . 
-   
-**Run the image:**
-    
-    $ docker run -it -p 5001:5000 --name combattb-on-docker docker-combattb
-    
-**Access CombatTbWeb on `0.0.0.0:5001`:** 
-        
-    http://0.0.0.0:5001/
+**or**
+```
+$ chmod +x run.sh && ./run.sh
+``` 
