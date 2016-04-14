@@ -18,23 +18,27 @@
             <br><br>
             <div class="row center">
                 <div class="section col s6 offset-s3">
-{#                    <div class="divider"></div>#}
-{#                    <br><br>#}
+                    {#                    <div class="divider"></div>#}
+                    {#                    <br><br>#}
                     <div id="preloader" class="progress blue lighten-4">
                         <div class="indeterminate blue darken-2"></div>
                     </div>
                     <br>
-{#                    <p>Enter name, Rv number or UniProt ID</p>#}
+                    {#                    <p>Enter name, Rv number or UniProt ID</p>#}
                     <div class="divider"></div>
                     <br><br>
                     <form class="tooltipped" role="form" method='POST' action='/search' data-position="bottom"
-                          data-delay="50" data-tooltip="Search for gene. E.g. Rv2421c, clpC1 or P9WGE7">
+                          data-delay="50" data-tooltip="Search for gene. E.g. Rv0009, clpC1 or P9WGE7">
                         <div class="input-field">
                             <input id="search" name="gene" type="search" placeholder="Search for gene..." required>
                             <label for="search"><i class="material-icons">search</i></label>
                             <i class="material-icons">close</i>
                         </div>
-                    </form>
+                    </form><br>
+                    <p class="tooltipped z-depth-3 red white-text" data-position="bottom"
+                          data-delay="50" data-tooltip="In Active Development...">
+                        <i class="small material-icons">warning</i><br>
+                    </p>
                 </div>
             </div>
         </div>
