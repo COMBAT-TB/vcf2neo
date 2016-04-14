@@ -1,6 +1,7 @@
-from combat_tb_model import *
+from combat_tb_model.model import *
 from neomodel import DoesNotExist, db
 from flask import Flask, render_template, request
+
 
 app = Flask(__name__)
 

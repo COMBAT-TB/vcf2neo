@@ -1,6 +1,7 @@
 FROM python:2.7
 MAINTAINER Thoba Lose "thoba@sanbi.ac.za"
-RUN pip install -U pip
+RUN pip install -U pip \
+    && pip install Flask==0.10.1 neomodel==2.0.2
 ADD . /code
 WORKDIR /code
 ##Not good practice
