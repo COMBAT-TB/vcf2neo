@@ -1,9 +1,13 @@
-web:
-  restart: always
-  build: .
-  ports:
-    - "5000:5000"
-  environment:
-    NEO4J_REST_URL: http://neo4j:Neo4j@thoba.sanbi.ac.za:7476/db/data/
+version: '2'
+services:
+  web:
+    restart: always
+    build: .
+    image: combat_tb_web
+    container_name: combat_tb_web
+    ports:
+      - "5000:5000"
+    environment:
+      NEO4J_REST_URL: http://neo4j:Neo4j@thoba.sanbi.ac.za:7476/db/data/
 
 
