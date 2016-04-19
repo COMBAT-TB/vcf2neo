@@ -2,7 +2,6 @@ from combat_tb_model.model import *
 from neomodel import DoesNotExist, db
 from flask import Flask, render_template, request
 
-
 app = Flask(__name__)
 
 
@@ -82,11 +81,12 @@ def index():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    gene = term = pseudogene = ortholog_name = protein = interact = h_interact = cite = None
+    gene = term = pseudogene = ortholog_name = protein = interact = h_interact = None
     go_terms = []
     inter_pro = []
     ints = []
     h_ints = []
+    publications = []
     print 'ITEMS:', request.args.items()
     if request.method == 'GET':
         term = request.args.get('gene')
@@ -132,11 +132,18 @@ def search():
                 # Dealing with unicode
                 citation = gene[0].citation.encode('utf-8').replace('[', '').replace(']', '').split(', ')
                 cite = [ct[1:-1] for ct in citation]
+                for entry in cite:
+                    if len(entry) > 0:
+                        pub = Publication.nodes.get(pubmed_id=entry)
+                        publications.append(pub)
+                structure_ids = protein.pdb_id.encode('utf-8').replace('[', '').replace(']', '').split(', ')
+                pdb_ids = [struc[2:-1] for struc in structure_ids]
+
         elif 'Ps' in gene[0].__class__.__name__:
             pseudogene = gene[0].biotype
 
         return render_template('results.html', term=term, gene=gene[0], pseudogene=pseudogene,
-                               ortholog_name=ortholog_name, citation=cite,
+                               ortholog_name=ortholog_name, citation=publications, pdb_ids=pdb_ids,
                                location=location, go_terms=go_terms, inter_pro=inter_pro, protein=protein,
                                interactor=interact, h_interact=h_interact)
     else:
