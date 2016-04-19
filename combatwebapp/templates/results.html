@@ -6,7 +6,7 @@
             <h5>Showing results for {{ gene.name }}</h5><br>
             <iframe src="http://thoba.sanbi.ac.za:8080/?loc=NC_000962.3%3A{{ location }}&tracks=DNA%2CGenes&highlight="
                     frameborder="0"
-                    scrolling="no" width="100%" height="370">
+                    scrolling="no" width="100%" height="450">
             </iframe>
         </div>
         <div class="divider"></div>
@@ -20,12 +20,13 @@
                         </li>
                         <li class="tab col s3"><a class="light-blue-text text-darken-4" href="#coords">Coordinates</a>
                         </li>
-                        <li class="tab col s3"><a class="light-blue-text text-darken-4" href="#orth">Cross-references</a>
+                        <li class="tab col s3"><a class="light-blue-text text-darken-4"
+                                                  href="#orth">Cross-references</a>
                         </li>
                         <li class="tab col s3"><a class="light-blue-text text-darken-4" href="#actor">Interaction</a>
-{#                        </li>#}
-{#                        <li class="tab col s3"><a class="light-blue-text text-darken-4" href="#pub">Publications</a>#}
-{#                        </li>#}
+                        </li>
+                        <li class="tab col s3"><a class="light-blue-text text-darken-4" href="#str">Structure</a>
+                        </li>
                     </ul>
                 </div>
                 <div id="gi" class="col s12">
@@ -56,11 +57,6 @@
                                 <td>Function unknown</td>
                             {% endif %}
                         </tr>
-                        {#                        <tr>#}
-                        {#                            <th>Product</th>#}
-                        {#                            <td>{{ gene.description }}</td>#}
-                        {#                        </tr>#}
-                        {#                        <tr></tr>#}
                         <tr>
                             <th>Product</th>
                             <td>{{ gene.description }}</td>
@@ -69,38 +65,35 @@
                             <th>Molecular mass</th>
                             <td>{{ protein.mass }}</td>
                         </tr>
-                        {#                        <tr>#}
-                        {#                            <td><b>Isoelectric point</b></td>#}
-                        {#                            <td>5.7066</td>#}
-                        {#                        </tr>#}
-                        {#                        <tr>#}
-                        {#                            <td><b>Gene length (bp)</b></td>#}
-                        {#                            <td>1074</td>#}
-                        {#                        </tr>#}
                         <tr>
                             <td><b>Protein length</b></td>
                             <td>{{ protein.length }}</td>
                         </tr>
-                        {#                        <tr>#}
-                        {#                            <td><b>Location (kb)</b></td>#}
-                        {#                            <td>257.783</td>#}
-                        {#                        </tr>#}
-                        <tr>
-                            <td><b>Publications</b></td>
-                            <td>
-                            {% if citation %}
-                                {% for entry in citation %}
-                                    {#                                    <a>{{ entry }}</a>#}
-                                    <a target="_blank"
-                                       href="http://www.ncbi.nlm.nih.gov/pubmed/?term={{ entry }}">{{ entry }}</a><br>
-                                {% endfor %}
-                            {% else %}
-                                {{ '' }}
-                            {% endif %}
-                        </td>
-                        </tr>
                         </tbody>
                     </table>
+                    {% if citation %}
+                        <ul class="collection with-header">
+                            <li class="collection-header"><h4>Publications</h4></li>
+                            {% for entry in citation %}
+                                {#                                    <a>{{ entry }}</a>#}
+                                {#                                            <a target="_blank"#}
+                                {#                                               href="http://www.ncbi.nlm.nih.gov/pubmed/?term={{ entry.pubmed_id }}">{{ entry.title }}</a>#}
+                                {#                                            <br>#}
+                                <li class="collection-item">
+                                    <span class="title">{{ entry.title }}</span>
+                                    <p>{{ entry.source }}<br><br>
+                                        <a target="_blank"
+                                           href="http://www.ncbi.nlm.nih.gov/pubmed/?term={{ entry.pubmed_id }}">{{ entry.pubmed_id }}</a>
+                                    </p>
+                                    {#                                                <a href="#!" class="secondary-content"><i#}
+                                    {#                                                        class="material-icons">grade</i></a>#}
+                                </li>
+                            {% endfor %}
+
+                        </ul>
+                    {% else %}
+                        {{ '' }}
+                    {% endif %}
                 </div>
                 <div id="coords" class="col s12">
                     <table class="bordered">
@@ -126,15 +119,22 @@
                 <div id="orth" class="col s12">
                     <table class="bordered">
                         <tbody>
-{#                        <tr>#}
-{#                            <th>CDC1551</th>#}
-{#                            <td>{{ ortholog_name or '' }}</td>#}
-{#                        </tr>#}
+                        {#                        <tr>#}
+                        {#                            <th>CDC1551</th>#}
+                        {#                            <td>{{ ortholog_name or '' }}</td>#}
+                        {#                        </tr>#}
                         <tr>
                             <th>UniProt</th>
                             <td>
                                 <a target="_blank"
-                                   href="http://www.uniprot.org/uniprot/{{ gene.uniprot_entry or gene.gene_id }}">{{ gene.uniprot_entry or gene.gene_idthoba}}</a>
+                                   href="http://www.uniprot.org/uniprot/{{ gene.uniprot_entry or gene.gene_id }}">{{ gene.uniprot_entry or gene.gene_idthoba }}</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>EnsemblBacteria</th>
+                            <td>
+                                <a target="_blank"
+                                   href="http://bacteria.ensembl.org/Mycobacterium_tuberculosis_h37rv/Gene/Summary?t={{ protein.ensembl_id or gene.locus_tag }}">{{ protein.ensembl_id or gene.locus_tag }}</a>
                             </td>
                         </tr>
                         <tr>
@@ -149,7 +149,8 @@
                             <td>
                                 {% for entry in go_terms %}
                                     <a target="_blank"
-                                       href="http://amigo.geneontology.org/amigo/term/{{ entry.go_id }}">{{ entry.name }}</a><br>
+                                       href="http://amigo.geneontology.org/amigo/term/{{ entry.go_id }}">{{ entry.name }}</a>
+                                    <br>
                                 {% endfor %}
                             </td>
                             {#                            <td>{{ go_terms }}</td>#}
@@ -200,24 +201,25 @@
                         </tbody>
                     </table>
                 </div>
-{#                <div id="pub" class="col s12">#}
-{#                    <table class="bordered">#}
-{#                        <tbody>#}
-{#                        <th>Publications</th>#}
-{#                        <td>#}
-{#                            {% if citation %}#}
-{#                                {% for entry in citation %}#}
-                                    {#                                    <a>{{ entry }}</a>#}
-{#                                    <a target="_blank"#}
-{#                                       href="http://www.ncbi.nlm.nih.gov/pubmed/?term={{ entry }}">{{ entry }}</a><br>#}
-{#                                {% endfor %}#}
-{#                            {% else %}#}
-{#                                {{ '' }}#}
-{#                            {% endif %}#}
-{#                        </td>#}
-{#                        </tbody>#}
-{#                    </table>#}
-{#                </div>#}
+                <div id="str" class="col s12">
+                    <table class="bordered">
+                        <tbody>
+                        <th>Structure</th>
+                        <td>
+                            {#                            {% if protein %}#}
+                            {% for entry in pdb_ids %}
+                                {#                                    <a>{{ entry }}</a>#}
+                                <a target="_blank"
+                                   href="http://www.rcsb.org/pdb/explore/explore.do?pdbId={{ entry }}">{{ entry }}</a>
+                                <br>
+                            {% endfor %}
+                            {#                            {% else %}#}
+                            {#                                {{ '' }}#}
+                            {#                            {% endif %}#}
+                        </td>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     {% else %}

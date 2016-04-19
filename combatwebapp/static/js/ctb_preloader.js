@@ -21,6 +21,8 @@ ga('send', 'pageview');
 
 $(function () {
 
+    $('.slider').slider();
+
     $('#preloader').hide();
 
     $('#search').keypress(function (e) {
@@ -28,6 +30,8 @@ $(function () {
             $('#preloader').show();
         }
     });
+
+
 });
 
 

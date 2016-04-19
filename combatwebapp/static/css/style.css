@@ -7,12 +7,21 @@
  */
 
 .icon-block {
-  padding: 0 15px;
-}
-.icon-block .material-icons {
-	font-size: inherit;
+    padding: 0 15px;
 }
 
-.tabs .indicator{
+.icon-block .material-icons {
+    font-size: inherit;
+}
+
+.tabs .indicator {
     background-color: #01579b;
+}
+
+/*.slider .indicator .indicator-item.active {*/
+    /*background-color: #01579b;*/
+/*}*/
+
+.slider .indicators .indicator-item.active {
+  background-color: #01579B;
 }
