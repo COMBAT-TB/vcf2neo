@@ -132,10 +132,16 @@ def search():
                 # Dealing with unicode
                 citation = gene[0].citation.encode('utf-8').replace('[', '').replace(']', '').split(', ')
                 cite = [ct[1:-1] for ct in citation]
+                aus = dict()
                 for entry in cite:
                     if len(entry) > 0:
                         pub = Publication.nodes.get(pubmed_id=entry)
                         publications.append(pub)
+                # Dealing with Unicode
+                for p in publications:
+                    au = p.authors.encode('utf-8').replace('[', '').replace(']', '').split(', ')
+                    aus[p.pubmed_id] = [a[1:-1] for a in au]
+                # Dealing with Unicode
                 structure_ids = protein.pdb_id.encode('utf-8').replace('[', '').replace(']', '').split(', ')
                 pdb_ids = [struc[2:-1] for struc in structure_ids]
 
@@ -143,7 +149,7 @@ def search():
             pseudogene = gene[0].biotype
 
         return render_template('results.html', term=term, gene=gene[0], pseudogene=pseudogene,
-                               ortholog_name=ortholog_name, citation=publications, pdb_ids=pdb_ids,
+                               ortholog_name=ortholog_name, citation=publications, authors=aus, pdb_ids=pdb_ids,
                                location=location, go_terms=go_terms, inter_pro=inter_pro, protein=protein,
                                interactor=interact, h_interact=h_interact)
     else:
