@@ -1,9 +1,21 @@
+import os
+import json
 from combat_tb_model.model import *
 from neomodel import DoesNotExist, db
-from flask import Flask, render_template, request
+from flask import Flask, Response, render_template, request
+from gsea import enrichment_analysis
 
 app = Flask(__name__)
 
+CACHE_DIR = 'cache'
+TMP_DIR = 'tmp'
+
+def mkdir_if_needed(dir):
+    if not os.path.isdir(dir):
+        os.mkdir(dir)
+
+mkdir_if_needed(CACHE_DIR)
+mkdir_if_needed(TMP_DIR)
 
 def cypher_search(name):
     print 'cypher_search...'
@@ -160,3 +172,54 @@ def search():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+@app.route('/gsea')
+def gsea():
+    return render_template('gsea.html')
+
+
+@app.route('/api/gsea/<hash>/download')
+def download_gsea(hash):
+    cache_filename = os.path.join(CACHE_DIR, hash + '.json')
+    if (os.path.exists(cache_filename)):
+        data = json.load(open(cache_filename))
+    data_str = 'GO Term ID\tGO Term Name\tRaw p-value\tCorrected p-value\r\n' + \
+               '\r\n'.join(['\t'.join([ str(cell) for cell in row ]) for row in data]) + '\r\n'
+
+    return Response(data_str, mimetype='text/tab-separated-values',
+                    headers={'Content-Disposition': 'attachment; filename=gsea.tsv'})
+
+
+@app.route('/api/gsea/<hash>', methods=['GET', 'POST'])
+def process_gsea(hash):
+    cache_filename = os.path.join(CACHE_DIR, hash + '.json')
+    if request.method == 'POST' and not os.path.isfile(cache_filename):
+        # don't recompute if we already have this data
+        gsea_request = request.get_json()
+        geneset = gsea_request['geneset']
+        mode = gsea_request['mode']
+        multipletest_corr = gsea_request['multipletest_comp']
+
+        results = enrichment_analysis(geneset, mode=mode, multipletest_method=multipletest_corr)
+        json_filename = os.path.join(TMP_DIR, hash + '.json')
+        with open(json_filename, 'w') as output:
+            output.write(json.dumps(results))
+        os.rename(json_filename, cache_filename)
+
+    json_result_str = '{}'
+    try:
+        with open(cache_filename) as input:
+            results = json.loads(input.read())
+            json_result_str = json.dumps(results)
+    except IOError:
+        pass
+
+    return Response(
+        json_result_str,
+        mimetype='application/json',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        }
+    )
+
