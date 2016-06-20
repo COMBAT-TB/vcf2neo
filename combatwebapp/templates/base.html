@@ -12,11 +12,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.16/browser.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <script src="{{ url_for('static', filename='js/forge-sha256.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/require.js') }}"></script>
-    <link href="{{ url_for('static', filename='css/materialize.css') }}" type="text/css" rel="stylesheet"
+    <script src="static/js/forge-sha256.min.js"></script>
+    <script src="static/js/require.js"></script>
+    <link href="static/css/materialize.css" type="text/css" rel="stylesheet"
           media="screen,projection"/>
-    <link href="{{ url_for('static', filename='css/style.css') }}" type="text/css" rel="stylesheet"
+    <link href="static/css/style.css" type="text/css" rel="stylesheet"
           media="screen,projection"/>
     {% block css %}{% endblock %}
 </head>
@@ -46,11 +46,11 @@
 
 <!-- scripts -->
 {#<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>#}
-<script src="{{ url_for('static', filename='js/jquery-1.12.2.min.js') }}" type="text/javascript"></script>
-<script src="{{ url_for('static', filename='js/materialize.js') }}" type="text/javascript"></script>
-<script src="{{ url_for('static', filename='js/init.js') }}" type="text/javascript"></script>
-<script src="{{ url_for('static', filename='js/ctb_preloader.js') }}" type="text/javascript"></script>
-<script src="{{ url_for('static', filename='js/bio-pv.min.js') }}" type="text/javascript"></script>
+<script src="static/js/jquery-1.12.2.min.js" type="text/javascript"></script>
+<script src="static/js/materialize.js" type="text/javascript"></script>
+<script src="static/js/init.js" type="text/javascript"></script>
+<script src="static/js/ctb_preloader.js" type="text/javascript"></script>
+<script src="static/js/bio-pv.min.js" type="text/javascript"></script>
 {% block js %}{% endblock %}
 
 </body>
