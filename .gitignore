@@ -89,3 +89,5 @@ combatwebapp/static/js/interactions.js
 combatwebapp/static/js/json2.js
 combatwebapp/static/js/json2.min.js
 combatwebapp/static/swf/
+
+docker-compose.yml

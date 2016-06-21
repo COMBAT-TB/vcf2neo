@@ -197,7 +197,7 @@ def find_interacting_proteins(locus_tag):
     #         target: 'b'
     #     }
     # } ]
-    return (dict(elements=interactions_graph, styles=styles))
+    return dict(elements=interactions_graph, styles=styles)
 
 
 @app.route('/')
