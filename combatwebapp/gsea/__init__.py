@@ -17,14 +17,10 @@
 
 from __future__ import print_function, division
 
-import os.path
-import socket
 import sys
-import time
 from operator import itemgetter
 
 import click
-import yaml
 from scipy.stats import fisher_exact
 from statsmodels.sandbox.stats.multicomp import multipletests
 
@@ -33,7 +29,6 @@ try:
 except ImportError:
     from urlparse import urlparse
 
-<<<<<<< HEAD
 # if 'NEO4J_REST_URL' not in os.environ:
 #     NEO4J_CONFIG_FILE = os.environ.get('NEO4J_LOGIN_FILE', os.path.expanduser('~/.neo4j'))
 #     if not os.path.isfile(NEO4J_CONFIG_FILE):
@@ -63,7 +58,7 @@ except ImportError:
 #     sys.exit('timed out trying to connect to {}'.format(os.environ['NEO4J_REST_URL']))
 
 
-from combat_tb_model import model
+from ..combat_tb_model import model
 from neomodel import db
 
 
