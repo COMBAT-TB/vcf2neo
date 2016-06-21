@@ -7,9 +7,11 @@ from neomodel import DoesNotExist, db
 from neomodel.cardinality import CardinalityViolation
 from flask import Flask, Response, render_template, request
 from neomodel import DoesNotExist, db
-
 from combat_tb_model.model import *
 from gsea import enrichment_analysis
+from bioblend import galaxy
+from bioblend.galaxy.datasets import DatasetClient, DatasetTimeoutException
+from bioblend.galaxy.client import ConnectionError
 
 app = Flask(__name__)
 
@@ -24,6 +26,13 @@ def mkdir_if_needed(dir):
 
 mkdir_if_needed(CACHE_DIR)
 mkdir_if_needed(TMP_DIR)
+
+
+def connect_to_galaxy(galaxy_url='http://demo.sanbi.ac.za/', api_key=None):
+    if api_key is None:
+        api_key = os.environ.get('GALAXY_API_KEY')
+    gi = galaxy.GalaxyInstance(url=galaxy_url, key=api_key)
+    return gi
 
 
 def cypher_search(name):
@@ -353,3 +362,73 @@ def ppi_data(locus_tag):
         }
     )
 
+@app.route('/api/galaxy_histories')
+def galaxy_histories():
+    try:
+        gi = connect_to_galaxy()
+    except ConnectionError as e:
+        print(e, file=sys.stderr)
+        hist_list = []
+    else:
+        hist_list = [ history for history in gi.histories.get_histories() if history.get('deleted') == False and
+                      history.get('purged') == False]
+    return Response(
+        json.dumps(hist_list),
+        mimetype='application/json',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        }
+    )
+
+
+@app.route('/api/galaxy_datasets/<history_id>')
+def galaxy_dataset(history_id):
+    try:
+        gi = connect_to_galaxy()
+    except ConnectionError as e:
+        print(e, file=sys.stderr)
+        dataset_list = []
+    else:
+        dataset_list = [ dataset for dataset in gi.histories.show_history(history_id, contents=True) if
+                         dataset.get('extension') == 'txt' and dataset.get('deleted') == False and dataset.get('purged') == False ]
+
+    return Response(
+        json.dumps(dataset_list),
+        mimetype='application/json',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        }
+    )
+
+
+@app.route('/api/galaxy_dataset/<dataset_id>')
+def load_galaxy_dataset(dataset_id):
+    timeout = 10000 # 10 seconds
+    try:
+        gi = connect_to_galaxy()
+    except ConnectionError as e:
+        print(e, file=sys.stderr)
+        data = ''
+    else:
+        try:
+            dc = DatasetClient(gi)
+            data = dc.download_dataset(dataset_id, wait_for_completion=True, maxwait=timeout)
+        except (AssertionError, DatasetTimeoutException) as e:
+            print(e, file=sys.stderr)
+            data = ''
+
+    return Response(
+        json.dumps(data),
+        mimetype='application/json',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        }
+    )
+
+
+# @app.route('/testjsx')
+# def testjsx():
+#     return render_template('test.html')

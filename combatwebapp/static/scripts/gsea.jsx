@@ -18,7 +18,7 @@ Copyright 2016 SANBI, University of the Western Cape
 
 var GseaBox = React.createClass({
     getInitialState: function() {
-        return { results: [], hash: ''};
+        return { results: [], hash: '', gene_names: [] };
     },
     loadResultsFromServer: function () {
         if (this.state.hash != '') {
@@ -68,15 +68,208 @@ var GseaBox = React.createClass({
           <div className="GseaBox">
             <h2 className="center-align">geneset enrichment analysis</h2>
               <GseaResultList results={this.state.results} hash={this.state.hash} />
-              <GseaForm onGenesetSubmit={this.handleGenesetSubmit} />
+              <GseaForm onGenesetSubmit={this.handleGenesetSubmit} gene_names={this.state.gene_names} />
           </div>
         );
     }
 });
 
+var GseaGalaxyForm = React.createClass({
+    getInitialState: function() {
+        return({histories: [], datasets: [], history_id: '', something: ''});
+    },
+    loadHistories: function() {
+        $.ajax({
+            url: '/api/galaxy_histories',
+            dataType: 'json',
+            cache: false,
+            success: function(histories) {
+                var history_list = [];
+                var history_length = histories.length;
+                for (var i = 0; i < history_length; i++) {
+                    history_list.push({'name': histories[i]['name'], id: histories[i]['id']});
+                }
+                this.setState({histories: history_list, history_id: history_list[0].id});
+                $('select').material_select();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(status, err.toString());
+            }.bind(this)
+        });
+    },
+    loadDatasetList: function(history_id) {
+        var url = '/api/galaxy_datasets/' + history_id;
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            cache: false,
+            success: function(datasets) {
+                var dataset_list = [];
+                var dataset_list_length = datasets.length;
+                for (var i = 0; i < dataset_list_length; i++) {
+                    dataset_list.push({'name': datasets[i]['name'], id: datasets[i]['id']});
+                }
+                this.setState({datasets: dataset_list});
+                $('select').material_select();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(status, err.toString());
+            }.bind(this)
+        });
+    },
+    handleHistoryChange: function(e) {
+        this.setState({history_id: e.target.value});
+    },
+    handleDatasetChange: function(e) {
+
+    },
+    handleHistoryQueryClick: function() {
+        this.loadHistories();
+    },
+    handleDatasetQueryClick: function() {
+        this.loadDatasetList(this.state.history_id);
+    },
+    populateQueryForm: function() {
+
+    },
+    componentDidMount: function() {
+        $(document).ready(function() {
+        $('history_select').material_select();
+        });
+    },
+    render: function() {
+        var history_options = this.state.histories.map(function(history) {
+           return(
+               <option key={history.id} value={history.id}>{history.name}</option>
+           )
+        });
+        var dataset_options = this.state.datasets.map(function(dataset){
+           return(
+               <option key={dataset.id} value={dataset.id}>{dataset.name}</option>
+           )
+        });
+        var history_select;
+        var dataset_query;
+        if (this.state.histories.length > 0) {
+            history_select =
+                <div className="input-field col-3">
+                    <select id="history_select" value={this.state.history_id} onChange={this.handleHistoryChange}>
+                        { history_options }
+                    </select>
+                </div>;
+            dataset_query =
+                <div className="input-field col-3">
+                    <button className="btn waves-effect waves-light light-blue darken-4" onClick={this.handleDatasetQueryClick}>Query Galaxy Datasets</button>
+                </div>;
+        }
+        var dataset_select;
+        var dataset_populate;
+        if (this.state.datasets.length > 0) {
+            dataset_select =
+                <div className="input-field col-3">
+                    <select id="dataset_set" value={this.state.dataset_id} onChange={this.handleDatasetChange}>
+                        { dataset_options }
+                    </select>
+                </div>;
+            dataset_populate =
+                <div className="input-field col-3">
+                    <button className="btn waves-effect waves-light light-blue darken-4" onclick={this.populateQueryForm}>Load Dataset to Query</button>
+                </div>
+        }
+        return(
+            <div className="row">
+                <div classname="col s12">
+                    <div className="input-field col-6">
+                        <button className="btn waves-effect waves-light light-blue darken-4" onClick={this.handleHistoryQueryClick}>Query Galaxy Histories</button>
+                        { dataset_query }
+                        { dataset_populate }
+                    </div>
+                    { history_select }
+                    { dataset_select }
+                </div>
+            </div>
+        )
+    }
+});
+
 var GseaForm = React.createClass({
     getInitialState: function() {
-        return {text: '', mode: 'over', multi_comp: 'fdr_bh'};
+        return { text: '', mode: 'over', multi_comp: 'fdr_bh',
+                 histories: [], datasets: [],
+                 history_id: '', dataset_id: '' };
+    },
+    loadHistories: function() {
+        $.ajax({
+            url: '/api/galaxy_histories',
+            dataType: 'json',
+            cache: false,
+            success: function(histories) {
+                var history_list = [];
+                var history_length = histories.length;
+                for (var i = 0; i < history_length; i++) {
+                    history_list.push({'name': histories[i]['name'], id: histories[i]['id']});
+                }
+                this.setState({histories: history_list, history_id: history_list[0].id});
+                $('select').material_select();
+                $('#historyselectdiv').on('change', 'select', null, this.handleHistoryChange);
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(status, err.toString());
+            }.bind(this)
+        });
+    },
+    loadDatasetList: function(history_id) {
+        var url = '/api/galaxy_datasets/' + history_id;
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            cache: false,
+            success: function(datasets) {
+                var dataset_list = [];
+                var dataset_list_length = datasets.length;
+                for (var i = 0; i < dataset_list_length; i++) {
+                    dataset_list.push({'name': datasets[i]['name'], id: datasets[i]['id']});
+                }
+                this.setState({datasets: dataset_list, dataset_id: dataset_list[0].id});
+                $('select').material_select();
+                $('#datasetselectdiv').on('change', 'select', null, this.handleDatasetChange);
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(status, err.toString());
+            }.bind(this)
+        });
+    },
+    loadGeneNames: function(dataset_id) {
+        var url = '/api/galaxy_dataset/' + dataset_id;
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+                var newtext = data.trim().split('\n').map(function(line) {
+                    return line.trim().split(/\s+/)[0].replace("rv_", "Rv");
+                }).join('\n');
+                this.setState({text: newtext});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(status, err.toString());
+            }.bind(this)
+        });
+    },
+    handleHistoryChange: function(e) {
+        this.setState({history_id: e.target.value});
+    },
+    handleDatasetChange: function(e) {
+        this.setState({dataset_id: e.target.value});
+    },
+    handleHistoryQueryClick: function() {
+        this.loadHistories();
+    },
+    handleDatasetQueryClick: function() {
+        this.loadDatasetList(this.state.history_id);
+    },
+    populateQueryForm: function() {
+        this.loadGeneNames(this.state.dataset_id);
     },
     handleTextChange: function(e) {
         this.setState({text: e.target.value});
@@ -101,13 +294,63 @@ var GseaForm = React.createClass({
     },
     componentDidMount: function() {
         $(document).ready(function() {
-        $('select').material_select();
+            $('select').material_select();
         });
+        $('#modeselectdiv').on('change', 'select', null, this.handleModeChange);
+        $('#multicompselectdiv').on('change', 'select', null, this.handleMultiCompChange);
+
     },
     render: function() {
+        var history_options = this.state.histories.map(function(history) {
+           return(
+               <option key={history.id} value={history.id}>{history.name}</option>
+           )
+        });
+        var dataset_options = this.state.datasets.map(function(dataset){
+           return(
+               <option key={dataset.id} value={dataset.id}>{dataset.name}</option>
+           )
+        });
+        var history_select;
+        var dataset_query;
+        if (this.state.histories.length > 0) {
+            history_select =
+                <div id="historyselectdiv" className="input-field col-3">
+                    <select id="historyselect" value={this.state.history_id}>
+                        { history_options }
+                    </select>
+                </div>;
+            dataset_query =
+                <div className="input-field col-3">
+                    <button className="btn waves-effect waves-light light-blue darken-4" onClick={this.handleDatasetQueryClick}>Query Galaxy Datasets</button>
+                </div>;
+        }
+        var dataset_select;
+        var dataset_populate;
+        if (this.state.datasets.length > 0) {
+            dataset_select =
+                <div id="datasetselectdiv" className="input-field col-3">
+                    <select id="datasetselect" value={this.state.dataset_id} onChange={this.handleDatasetChange}>
+                        { dataset_options }
+                    </select>
+                </div>;
+            dataset_populate =
+                <div className="input-field col-3">
+                    <button className="btn waves-effect waves-light light-blue darken-4" onClick={this.populateQueryForm}>Load Dataset to Query</button>
+                </div>
+        }
 
           return(
               <div className="row">
+                    <div classname="col s12">
+                        <div className="input-field col-6">
+                            <button className="btn waves-effect waves-light light-blue darken-4" onClick={this.handleHistoryQueryClick}>Query Galaxy Histories</button>
+                            { dataset_query }
+                        </div>
+                        { history_select }
+                        { dataset_select }
+                        { dataset_populate }
+                    </div>
                   <form className="col s12" onSubmit={this.handleSubmit}>
                       <div className="input-field col s12">
                         <textarea className="materialize-textarea"
@@ -116,14 +359,14 @@ var GseaForm = React.createClass({
                             onChange={this.handleTextChange}>
                         </textarea>
                       </div>
-                      <div className="input-field col s6">
+                      <div id="modeselectdiv" className="input-field col s6">
                           <select value={this.state.mode} onChange={this.handleModeChange}>
                               <option value="over">Test for overrepresentation</option>
                               <option value="under">Test for underrepresentation</option>
                           </select>
                           <label>Test type</label>
                       </div>
-                      <div className="input-field col s6">
+                      <div id="multicompselectdiv" className="input-field col s6">
                           <select value={this.state.multi_comp} onChange={this.handleMultiCompChange}>
                               <option value="fdr_bh">Benjamini-Hochberg</option>
                               <option value="bonferroni">Bonferroni</option>
