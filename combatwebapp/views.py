@@ -6,6 +6,9 @@ from combat_tb_model.model import *
 from neomodel import DoesNotExist, db
 from neomodel.cardinality import CardinalityViolation
 from flask import Flask, Response, render_template, request
+from neomodel import DoesNotExist, db
+
+from combat_tb_model.model import *
 from gsea import enrichment_analysis
 
 app = Flask(__name__)
@@ -13,12 +16,15 @@ app = Flask(__name__)
 CACHE_DIR = 'cache'
 TMP_DIR = 'tmp'
 
+
 def mkdir_if_needed(dir):
     if not os.path.isdir(dir):
         os.mkdir(dir)
 
+
 mkdir_if_needed(CACHE_DIR)
 mkdir_if_needed(TMP_DIR)
+
 
 def cypher_search(name):
     print('cypher_search...')
@@ -45,25 +51,25 @@ def search_nodes(name):
         if node:
             print(node)
         return node
-    except DoesNotExist, e:
+    except DoesNotExist as e:
         pass
     try:
         print('Searching Pseudogene Nodes with Gene_ID=', name)
         node = Pseudogene.nodes.get(pseudogene_id='gene:' + name)
         return node
-    except DoesNotExist, e:
+    except DoesNotExist as e:
         pass
     try:
         print('Searching Transcript Nodes with Gene=', name)
         node = Transcript.nodes.get(gene=name)
         return node
-    except DoesNotExist, e:
+    except DoesNotExist as e:
         pass
     try:
         print('Searching Protein Node with Parent=', name)
         node = Protein.nodes.get(parent=name)
         return node
-    except DoesNotExist, e:
+    except DoesNotExist as e:
         pass
     return None
 
@@ -77,7 +83,7 @@ def search_node(name):
             print(node)
             nodes.append(node)
         return nodes
-    except DoesNotExist, e:
+    except DoesNotExist as e:
         try:
             print('Searching Pseudogene Nodes with Name=', name)
             node = Pseudogene.nodes.get(name=name)
@@ -85,7 +91,7 @@ def search_node(name):
                 print(node)
                 nodes.append(node)
             return nodes
-        except DoesNotExist, e:
+        except DoesNotExist as e:
             raise e
 
 
@@ -206,6 +212,8 @@ def search():
     ints = []
     h_ints = []
     publications = []
+    aus = dict()
+    pdb_ids = []
     print('ITEMS:', request.args.items())
     if request.method == 'GET':
         term = request.args.get('gene')
@@ -238,12 +246,12 @@ def search():
             try:
                 for actor in protein.interacts.match():
                     ints.append(actor)
-            except Exception, e:
+            except Exception as e:
                 pass
             try:
                 for h_actor in protein.interacts_.match():
                     h_ints.append(h_actor)
-            except Exception, e:
+            except Exception as e:
                 pass
             interact = [a.uniprot_id for a in ints]
             h_interact = [a.protein_id for a in h_ints]
@@ -251,7 +259,6 @@ def search():
                 # Dealing with unicode
                 citation = gene[0].citation.encode('utf-8').replace('[', '').replace(']', '').split(', ')
                 cite = [ct[1:-1] for ct in citation]
-                aus = dict()
                 for entry in cite:
                     if len(entry) > 0:
                         pub = Publication.nodes.get(pubmed_id=entry)
@@ -280,6 +287,7 @@ def search():
 def about():
     return render_template('about.html')
 
+
 @app.route('/gsea')
 def gsea():
     return render_template('gsea.html')
@@ -288,10 +296,11 @@ def gsea():
 @app.route('/api/gsea/<hash>/download')
 def download_gsea(hash):
     cache_filename = os.path.join(CACHE_DIR, hash + '.json')
-    if (os.path.exists(cache_filename)):
+    data = None
+    if os.path.exists(cache_filename):
         data = json.load(open(cache_filename))
     data_str = 'GO Term ID\tGO Term Name\tRaw p-value\tCorrected p-value\r\n' + \
-               '\r\n'.join(['\t'.join([ str(cell) for cell in row ]) for row in data]) + '\r\n'
+               '\r\n'.join(['\t'.join([str(cell) for cell in row]) for row in data]) + '\r\n'
 
     return Response(data_str, mimetype='text/tab-separated-values',
                     headers={'Content-Disposition': 'attachment; filename=gsea.tsv'})

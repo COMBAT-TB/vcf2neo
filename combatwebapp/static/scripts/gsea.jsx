@@ -131,7 +131,7 @@ var GseaForm = React.createClass({
                           <label>Multiple testing correction type</label>
                       </div>
                       <div className="input-field col s6">
-                        <button className="btn waves-effect waves-light"
+                        <button className="btn waves-effect waves-light light-blue darken-4"
                           type="submit"
                         >Submit</button>
                        </div>
@@ -161,7 +161,7 @@ var GseaResultList = React.createClass({
             var downloadLink = '/api/gsea/' + this.props.hash + '/download';
             return (
                 <div className="col s12">
-                    <a className="waves-effect waves-light btn" href={downloadLink}>Download</a>
+                    <a className="waves-effect waves-light btn light-blue darken-4" href={downloadLink}>Download</a>
                     <table className="striped">
                         <thead>
                         <tr>

@@ -35,7 +35,7 @@
 //EXAMPLE
 var parent = document.getElementById('viewer');
 var viewer = pv.Viewer(parent,
-    {width: 1280, height: 600, antialias: true});
+    {width: 650, height: 350, antialias: true});
 
 
 function setColorForAtom(go, atom, color) {

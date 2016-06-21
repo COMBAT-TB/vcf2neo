@@ -232,31 +232,51 @@
                     <div id="ppibox">click the button to draw the graph</div>
                 </div>
                 <div id="str" class="col s12">
-                    <table class="bordered">
-                        <tbody>
-                        <th>Structural Information</th>
-                        <td>
-                            {#                            {% if protein %}#}
-                            {% for entry in pdb_ids %}
-                                {#                                    <a>{{ entry }}</a>#}
-                                <a target="_blank"
-                                   href="http://www.rcsb.org/pdb/explore/explore.do?pdbId={{ entry }}">{{ entry }}</a>
-                                <br>
-                            {% endfor %}
-                        <div class="hide" id="pdb_id">{{ pdb_ids[0] }}</div>
-                            {#                            {% else %}#}
-                            {#                                {{ '' }}#}
-                            {#                            {% endif %}#}
-                        </td>
-                        </tbody>
-                    </table>
+                    {#                    <table class="bordered">#}
+                    {#                        <tbody>#}
+                    {#                        <th>Structural Information</th>#}
+                    {#                        <td>#}
+                    {#                            {% if protein %}#}
+                    {#                            {% for entry in pdb_ids %}#}
+                    {#                                    <a>{{ entry }}</a>#}
+                    {#                                <a target="_blank"#}
+                    {#                                   href="http://www.rcsb.org/pdb/explore/explore.do?pdbId={{ entry }}">{{ entry }}</a>#}
+                    {#                                <br>#}
+                    {#                            {% endfor %}#}
+                    {#                        <div class="hide" id="pdb_id">{{ pdb_ids[0] }}</div>#}
+                    {#                            {% else %}#}
+                    {#                                {{ '' }}#}
+                    {#                            {% endif %}#}
+                    {#                        </td>#}
+                    {#                        </tbody>#}
+                    {#                    </table>#}
                     <br>
-                    <div class="divider"></div>
-                    <div class="section center-align">
-                        <div id='picked-atom-name' style='text-align:center;'>&nbsp;</div>
-                        <div class="center-align" id=viewer></div>
+                    <div class="row">
+                        <div class="col s6">
+                            <div id='picked-atom-name' style='text-align:center;'>&nbsp;</div>
+                            <div class="center-align" id=viewer></div>
+                        </div>
+                        <div class="col s6">
+                            <ul class="collection with-header">
+                                <li class="collection-header"><h6>PBD ID</h6></li>
+                                {% for entry in pdb_ids %}
+                                    <div class="hide" id="pdb_id">{{ pdb_ids[0] }}</div>
+                                    <li class="collection-item">
+                                        <a target="_blank"
+                                           href="http://www.rcsb.org/pdb/explore/explore.do?pdbId={{ entry }}">{{ entry }}</a>
+                                        <br>
+                                    </li>
+                                {% endfor %}
+
+                            </ul>
+                        </div>
                     </div>
-                    <br>
+                    <div class="divider"></div>
+                    {#                    <div class="section center-align">#}
+                    {#                        <div id='picked-atom-name' style='text-align:center;'>&nbsp;</div>#}
+                    {#                        <div class="center-align" id=viewer></div>#}
+                    {#                    </div>#}
+
                 </div>
             </div>
         </div>
