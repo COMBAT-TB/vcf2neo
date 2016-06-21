@@ -63,7 +63,7 @@ target/
 [Bb]in
 [Ii]nclude
 [Ll]ib
-[Ss]cripts
+#[Ss]cripts
 pyvenv.cfg
 pip-selfcheck.json
 ### IPythonNotebook template
@@ -73,3 +73,7 @@ pip-selfcheck.json
 .idea/
 # Created by .ignore support plugin (hsz.mobi)
 docker_neo4j/neo4j
+
+# Ignore the cache/ and tmp/ folders used by gsea
+cache/
+tmp/

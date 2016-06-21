@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="section no-pad-bot" id="index-banner">
+        <div class="container" id="gsea_container">
+            <script type="text/babel" src="{{ url_for('static', filename='scripts/gsea.jsx') }}"></script>
+        </div>
+    </div>
+{% endblock %}
