@@ -31,35 +31,35 @@ try:
 except ImportError:
     from urlparse import urlparse
 
-if 'NEO4J_REST_URL' not in os.environ:
-    NEO4J_CONFIG_FILE = os.environ.get('NEO4J_LOGIN_FILE', os.path.expanduser('~/.neo4j'))
-    if not os.path.isfile(NEO4J_CONFIG_FILE):
-        exit("Please put your Neo4J login details in {}".format(NEO4J_CONFIG_FILE))
-    neo4j_config = yaml.load(open(NEO4J_CONFIG_FILE))
-    os.environ['NEO4J_REST_URL'] = neo4j_config['combat_tb']
-url = urlparse(os.environ['NEO4J_REST_URL'])
-if '@' in url.netloc:
-    (host, port) = url.netloc.split('@')[1].split(':')
-else:
-    (host, port) = url.netloc.split(':')
-timeout = int(os.environ.get('NEO4J_WAIT_TIMEOUT', 30)) # time to wait till neo4j
-connected = False
-print('host, port', host, port, file=sys.stderr)
-while timeout > 0:
-    try:
-        socket.create_connection((host, port), 1)
-    except socket.error:
-        timeout -= 1
-        time.sleep(1)
-    else:
-        connected = True
-        break
-if connected:
-    print('connecting to {}'.format(os.environ['NEO4J_REST_URL']), file=sys.stderr)
-else:
-    sys.exit('timed out trying to connect to {}'.format(os.environ['NEO4J_REST_URL']))
+# if 'NEO4J_REST_URL' not in os.environ:
+#     NEO4J_CONFIG_FILE = os.environ.get('NEO4J_LOGIN_FILE', os.path.expanduser('~/.neo4j'))
+#     if not os.path.isfile(NEO4J_CONFIG_FILE):
+#         exit("Please put your Neo4J login details in {}".format(NEO4J_CONFIG_FILE))
+#     neo4j_config = yaml.load(open(NEO4J_CONFIG_FILE))
+#     os.environ['NEO4J_REST_URL'] = neo4j_config['combat_tb']
+# url = urlparse(os.environ['NEO4J_REST_URL'])
+# if '@' in url.netloc:
+#     (host, port) = url.netloc.split('@')[1].split(':')
+# else:
+#     (host, port) = url.netloc.split(':')
+# timeout = int(os.environ.get('NEO4J_WAIT_TIMEOUT', 30)) # time to wait till neo4j
+# connected = False
+# print('host, port', host, port, file=sys.stderr)
+# while timeout > 0:
+#     try:
+#         socket.create_connection((host, port), 1)
+#     except socket.error:
+#         timeout -= 1
+#         time.sleep(1)
+#     else:
+#         connected = True
+#         break
+# if connected:
+#     print('connecting to {}'.format(os.environ['NEO4J_REST_URL']), file=sys.stderr)
+# else:
+#     sys.exit('timed out trying to connect to {}'.format(os.environ['NEO4J_REST_URL']))
 
-from ..combat_tb_model import model
+from combat_tb_model import model
 from neomodel import db
 
 
