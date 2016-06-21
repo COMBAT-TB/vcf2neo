@@ -107,7 +107,7 @@ def search():
     h_ints = []
     publications = []
     aus = dict()
-    pdb_ids = None
+    pdb_ids = []
     print('ITEMS:', request.args.items())
     if request.method == 'GET':
         term = request.args.get('gene')
