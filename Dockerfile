@@ -13,6 +13,7 @@ RUN conda install -y gunicorn click numpy pandas patsy python-dateutil PyYAML sc
 
 ADD . /code
 WORKDIR /code
+ENV GALAXY_API_KEY none
 ##Not good practice
 #ENV NEO4J_USER neo4j
 #ENV NE04J_PASSWD Neo4j
