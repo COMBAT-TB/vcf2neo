@@ -1,3 +1,6 @@
+statsmodels
+scipy
+click
 Flask==0.10.1
 itsdangerous==0.24
 Jinja2==2.8
