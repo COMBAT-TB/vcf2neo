@@ -78,16 +78,4 @@ docker_neo4j/neo4j
 cache/
 tmp/
 . /
-combatwebapp/static/img/mtb.jpg
-combatwebapp/static/img/nature1.jpg
-combatwebapp/static/img/nature2.jpg
-combatwebapp/static/js/AC_OETags.js
-combatwebapp/static/js/AC_OETags.min.js
-combatwebapp/static/js/cytoscapeweb.js
-combatwebapp/static/js/cytoscapeweb.min.js
-combatwebapp/static/js/interactions.js
-combatwebapp/static/js/json2.js
-combatwebapp/static/js/json2.min.js
-combatwebapp/static/swf/
-
-docker-compose.yml
+.env
