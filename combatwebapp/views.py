@@ -1,12 +1,13 @@
 from __future__ import print_function
-import sys
-import os
+
 import json
-from combat_tb_model.model import *
-from neomodel import DoesNotExist, db
-from neomodel.cardinality import CardinalityViolation
+import os
+import sys
+
 from flask import Flask, Response, render_template, request
 from neomodel import DoesNotExist, db
+
+from neomodel.cardinality import CardinalityViolation
 from combat_tb_model.model import *
 from gsea import enrichment_analysis
 from bioblend import galaxy
@@ -121,8 +122,8 @@ def find_interacting_proteins(locus_tag):
                 terms_seen.add(term.go_id)
                 subgraph.append(term_dict)
             edges.append(dict(data=dict(id='{}_{}'.format(protein.protein_id, term.go_id),
-                            source=protein.protein_id,
-                            target=term.go_id)))
+                                        source=protein.protein_id,
+                                        target=term.go_id)))
         subgraph.extend(edges)
         return subgraph
 
@@ -142,8 +143,8 @@ def find_interacting_proteins(locus_tag):
                 terms_seen.add(term.interpro_id)
                 subgraph.append(term_dict)
             edges.append(dict(data=dict(id='{}_{}'.format(protein.protein_id, term.interpro_id),
-                            source=protein.protein_id,
-                            target=term.interpro_id)))
+                                        source=protein.protein_id,
+                                        target=term.interpro_id)))
         subgraph.extend(edges)
         return subgraph
 
@@ -152,16 +153,16 @@ def find_interacting_proteins(locus_tag):
             protein_label = '{} ({})'.format(gene_name, protein.uniprot_id)
         else:
             protein_label = protein.uniprot_id
-        return(dict(data=dict(id=protein.protein_id,
-                              label=protein_label,
-                              node_colour=PROTEIN_NODE_COLOUR)))
+        return (dict(data=dict(id=protein.protein_id,
+                               label=protein_label,
+                               node_colour=PROTEIN_NODE_COLOUR)))
 
     gene = Gene.nodes.get(locus_tag=locus_tag)
     gene_name = gene.name
     protein = gene.transcribed.all()[0].encodes.all()[0].translated_.all()[0]
     interactions_graph = []
-    styles = [ {'selector': 'node',
-              'style': {'label': 'data(label)', 'background-color': 'data(node_colour)' } } ]
+    styles = [{'selector': 'node',
+               'style': {'label': 'data(label)', 'background-color': 'data(node_colour)'}}]
     try:
         tb_interactions = protein.interacts.all()
         interactions_graph.append(protein_node(protein, gene_name=gene_name))
@@ -171,7 +172,8 @@ def find_interacting_proteins(locus_tag):
         interactions_graph.extend(interpro_term_subgraph(protein, interpro_terms_seen))
         edges = []
         for partner_protein in tb_interactions:
-            query = 'MATCH (g:Gene) -[:TRANSCRIBED]-> () -[:PROCESSED_INTO]-> () -[:TRANSLATED]-> (:Protein {{uniprot_id: "{}"}}) RETURN g.name'.format(partner_protein.uniprot_id)
+            query = 'MATCH (g:Gene) -[:TRANSCRIBED]-> () -[:PROCESSED_INTO]-> () -[:TRANSLATED]-> ' \
+                    '(:Protein {{uniprot_id: "{}"}}) RETURN g.name'.format(partner_protein.uniprot_id)
             (result, _) = db.cypher_query(query)
             gene_name = result[0][0]
             print("gene_name: ", gene_name, file=sys.stderr)
@@ -205,7 +207,7 @@ def find_interacting_proteins(locus_tag):
     #         target: 'b'
     #     }
     # } ]
-    return(dict(elements=interactions_graph, styles=styles))
+    return dict(elements=interactions_graph, styles=styles)
 
 
 @app.route('/')
@@ -432,3 +434,4 @@ def load_galaxy_dataset(dataset_id):
 # @app.route('/testjsx')
 # def testjsx():
 #     return render_template('test.html')
+

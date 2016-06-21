@@ -66,7 +66,7 @@ var GseaBox = React.createClass({
     render: function() {
         return(
           <div className="GseaBox">
-            <h2 className="center-align">geneset enrichment analysis</h2>
+            <h2 className="center-align light-blue-text text-darken-4">Gene Set Enrichment Analysis (GSEA)</h2>
               <GseaResultList results={this.state.results} hash={this.state.hash} />
               <GseaForm onGenesetSubmit={this.handleGenesetSubmit} gene_names={this.state.gene_names} />
           </div>
