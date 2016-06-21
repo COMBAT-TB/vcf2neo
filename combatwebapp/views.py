@@ -1,7 +1,10 @@
+from __future__ import print_function
+import sys
 import os
 import json
 from combat_tb_model.model import *
 from neomodel import DoesNotExist, db
+from neomodel.cardinality import CardinalityViolation
 from flask import Flask, Response, render_template, request
 from gsea import enrichment_analysis
 
@@ -18,7 +21,7 @@ mkdir_if_needed(CACHE_DIR)
 mkdir_if_needed(TMP_DIR)
 
 def cypher_search(name):
-    print 'cypher_search...'
+    print('cypher_search...')
     arr = []
     res = None
     query = "MATCH (n:Gene) where n.name=~'(?i){}.*' OR n.locus_tag=~'(?i){}.*' " \
@@ -28,36 +31,36 @@ def cypher_search(name):
     for row in result:
         res = Gene.inflate(row[0])
         arr.append(res)
-    print len(arr)
-    print [entry.name for entry in arr]
+    print(len(arr))
+    print([entry.name for entry in arr])
     return arr
 
 
 # Search nodes
 def search_nodes(name):
     try:
-        print 'Searching Gene Nodes with Name=', name
+        print('Searching Gene Nodes with Name=', name)
         # node = Gene.nodes.get(name=name)
         node = cypher_search(name)
         if node:
-            print node
+            print(node)
         return node
     except DoesNotExist, e:
         pass
     try:
-        print 'Searching Pseudogene Nodes with Gene_ID=', name
+        print('Searching Pseudogene Nodes with Gene_ID=', name)
         node = Pseudogene.nodes.get(pseudogene_id='gene:' + name)
         return node
     except DoesNotExist, e:
         pass
     try:
-        print 'Searching Transcript Nodes with Gene=', name
+        print('Searching Transcript Nodes with Gene=', name)
         node = Transcript.nodes.get(gene=name)
         return node
     except DoesNotExist, e:
         pass
     try:
-        print 'Searching Protein Node with Parent=', name
+        print('Searching Protein Node with Parent=', name)
         node = Protein.nodes.get(parent=name)
         return node
     except DoesNotExist, e:
@@ -68,22 +71,126 @@ def search_nodes(name):
 def search_node(name):
     nodes = []
     try:
-        print 'Searching Gene Nodes with Name=', name
+        print('Searching Gene Nodes with Name=', name)
         node = Gene.nodes.get(name=name)
         if node:
-            print node
+            print(node)
             nodes.append(node)
         return nodes
     except DoesNotExist, e:
         try:
-            print 'Searching Pseudogene Nodes with Name=', name
+            print('Searching Pseudogene Nodes with Name=', name)
             node = Pseudogene.nodes.get(name=name)
             if node:
-                print node
+                print(node)
                 nodes.append(node)
             return nodes
         except DoesNotExist, e:
             raise e
+
+
+def find_interacting_proteins(locus_tag):
+    GO_TERM_NODE_COLOUR = '#70ff66'
+    PROTEIN_NODE_COLOUR = '#7d82e8'
+    INTERPRO_NODE_COLOUR = '#ff6666'
+
+    def go_term_subgraph(protein, terms_seen):
+        subgraph = []
+        edges = []
+        go_terms = protein.associated_with.all()
+        for term in go_terms:
+            if term.go_id not in terms_seen:
+                term_dict = dict(data=dict(id=term.go_id,
+                                           label='{} ({})'.format(term.name, term.go_id),
+                                           node_colour=GO_TERM_NODE_COLOUR))
+                terms_seen.add(term.go_id)
+                subgraph.append(term_dict)
+            edges.append(dict(data=dict(id='{}_{}'.format(protein.protein_id, term.go_id),
+                            source=protein.protein_id,
+                            target=term.go_id)))
+        subgraph.extend(edges)
+        return subgraph
+
+    def interpro_term_subgraph(protein, terms_seen):
+        subgraph = []
+        edges = []
+        interpro_terms = protein.associated_.all()
+        for term in interpro_terms:
+            if term.interpro_id not in terms_seen:
+                if term.name is not None:
+                    interpro_label = '{} ({})'.format(term.name, term.interpro_id)
+                else:
+                    interpro_label = term.interpro_id
+                term_dict = dict(data=dict(id=term.interpro_id,
+                                           label=interpro_label,
+                                           node_colour=INTERPRO_NODE_COLOUR))
+                terms_seen.add(term.interpro_id)
+                subgraph.append(term_dict)
+            edges.append(dict(data=dict(id='{}_{}'.format(protein.protein_id, term.interpro_id),
+                            source=protein.protein_id,
+                            target=term.interpro_id)))
+        subgraph.extend(edges)
+        return subgraph
+
+    def protein_node(protein, gene_name=None):
+        if gene_name is not None:
+            protein_label = '{} ({})'.format(gene_name, protein.uniprot_id)
+        else:
+            protein_label = protein.uniprot_id
+        return(dict(data=dict(id=protein.protein_id,
+                              label=protein_label,
+                              node_colour=PROTEIN_NODE_COLOUR)))
+
+    gene = Gene.nodes.get(locus_tag=locus_tag)
+    gene_name = gene.name
+    protein = gene.transcribed.all()[0].encodes.all()[0].translated_.all()[0]
+    interactions_graph = []
+    styles = [ {'selector': 'node',
+              'style': {'label': 'data(label)', 'background-color': 'data(node_colour)' } } ]
+    try:
+        tb_interactions = protein.interacts.all()
+        interactions_graph.append(protein_node(protein, gene_name=gene_name))
+        go_terms_seen = set()
+        interpro_terms_seen = set()
+        interactions_graph.extend(go_term_subgraph(protein, go_terms_seen))
+        interactions_graph.extend(interpro_term_subgraph(protein, interpro_terms_seen))
+        edges = []
+        for partner_protein in tb_interactions:
+            query = 'MATCH (g:Gene) -[:TRANSCRIBED]-> () -[:PROCESSED_INTO]-> () -[:TRANSLATED]-> (:Protein {{uniprot_id: "{}"}}) RETURN g.name'.format(partner_protein.uniprot_id)
+            (result, _) = db.cypher_query(query)
+            gene_name = result[0][0]
+            print("gene_name: ", gene_name, file=sys.stderr)
+            edges.append(dict(data=dict(id='{}_{}'.format(protein.protein_id, partner_protein.protein_id),
+                                        source=protein.protein_id,
+                                        target=partner_protein.protein_id)))
+            interactions_graph.append(protein_node(partner_protein, gene_name=gene_name))
+            interactions_graph.extend(go_term_subgraph(partner_protein, go_terms_seen))
+            interactions_graph.extend(interpro_term_subgraph(partner_protein, interpro_terms_seen))
+        interactions_graph.extend(edges)
+    except CardinalityViolation:
+        tb_interactions = []
+    try:
+        human_interactions = protein.interacts_.all()
+    except CardinalityViolation:
+        human_interactions = []
+    # print('gene:', gene, protein, tb_interactions, human_interactions, file=sys.stderr)
+    interactions_graph_str = json.dumps(interactions_graph)
+    styles_str = json.dumps(styles)
+    # print("got here: {}".format(interactions_graph_str), file=sys.stderr)
+    # desired output as per http://blog.js.cytoscape.org/2016/05/24/getting-started/
+    # elements: [
+    # // nodes
+    # { data: { id: 'a' } },
+    # { data: { id: 'b' } },
+    # // edges
+    # {
+    #     data: {
+    #         id: 'ab',
+    #         source: 'a',
+    #         target: 'b'
+    #     }
+    # } ]
+    return(dict(elements=interactions_graph, styles=styles))
 
 
 @app.route('/')
@@ -99,26 +206,26 @@ def search():
     ints = []
     h_ints = []
     publications = []
-    print 'ITEMS:', request.args.items()
+    print('ITEMS:', request.args.items())
     if request.method == 'GET':
         term = request.args.get('gene')
         gene = search_node(term)
     if request.method == 'POST':
         term = request.form['gene']
         gene = search_nodes(term)
-    print term
+    print(term)
     class_name = gene.__class__.__name__
-    print class_name
+    print(class_name)
     if gene and len(gene) > 1:
-        print len(gene)
+        print(len(gene))
         length = len(gene)
-        print 'Gene is an array...', len(gene)
+        print('Gene is an array...', len(gene))
         return render_template('m_results.html', genes=gene, length=length)
     elif gene and len(gene) == 1:
         # Trying to zoom out
         location = str(int(gene[0].start)) + '..' + str(int(gene[0].end))
         if 'Ps' not in gene[0].__class__.__name__:
-            print gene[0].__class__.__name__
+            print(gene[0].__class__.__name__)
             for ortholog in gene[0].has_ortholog.match():
                 ortholog_name = ortholog.locus_name
             for go in gene[0].has_go_terms.match():
@@ -216,6 +323,20 @@ def process_gsea(hash):
 
     return Response(
         json_result_str,
+        mimetype='application/json',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        }
+    )
+
+
+@app.route('/api/ppi_data/<locus_tag>')
+def ppi_data(locus_tag):
+    data = find_interacting_proteins(locus_tag)
+    print(data, file=sys.stderr)
+    return Response(
+        json.dumps(data),
         mimetype='application/json',
         headers={
             'Cache-Control': 'no-cache',
