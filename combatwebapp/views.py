@@ -1,8 +1,12 @@
-import os
+from __future__ import print_function
+
 import json
-from combat_tb_model.model import *
-from neomodel import DoesNotExist, db
+import os
+
 from flask import Flask, Response, render_template, request
+from neomodel import DoesNotExist, db
+
+from combat_tb_model.model import *
 from gsea import enrichment_analysis
 
 app = Flask(__name__)
@@ -10,15 +14,18 @@ app = Flask(__name__)
 CACHE_DIR = 'cache'
 TMP_DIR = 'tmp'
 
+
 def mkdir_if_needed(dir):
     if not os.path.isdir(dir):
         os.mkdir(dir)
 
+
 mkdir_if_needed(CACHE_DIR)
 mkdir_if_needed(TMP_DIR)
 
+
 def cypher_search(name):
-    print 'cypher_search...'
+    print('cypher_search...')
     arr = []
     res = None
     query = "MATCH (n:Gene) where n.name=~'(?i){}.*' OR n.locus_tag=~'(?i){}.*' " \
@@ -28,39 +35,39 @@ def cypher_search(name):
     for row in result:
         res = Gene.inflate(row[0])
         arr.append(res)
-    print len(arr)
-    print [entry.name for entry in arr]
+    print(len(arr))
+    print([entry.name for entry in arr])
     return arr
 
 
 # Search nodes
 def search_nodes(name):
     try:
-        print 'Searching Gene Nodes with Name=', name
+        print('Searching Gene Nodes with Name=', name)
         # node = Gene.nodes.get(name=name)
         node = cypher_search(name)
         if node:
-            print node
+            print(node)
         return node
-    except DoesNotExist, e:
+    except DoesNotExist as e:
         pass
     try:
-        print 'Searching Pseudogene Nodes with Gene_ID=', name
+        print('Searching Pseudogene Nodes with Gene_ID=', name)
         node = Pseudogene.nodes.get(pseudogene_id='gene:' + name)
         return node
-    except DoesNotExist, e:
+    except DoesNotExist as e:
         pass
     try:
-        print 'Searching Transcript Nodes with Gene=', name
+        print('Searching Transcript Nodes with Gene=', name)
         node = Transcript.nodes.get(gene=name)
         return node
-    except DoesNotExist, e:
+    except DoesNotExist as e:
         pass
     try:
-        print 'Searching Protein Node with Parent=', name
+        print('Searching Protein Node with Parent=', name)
         node = Protein.nodes.get(parent=name)
         return node
-    except DoesNotExist, e:
+    except DoesNotExist as e:
         pass
     return None
 
@@ -68,21 +75,21 @@ def search_nodes(name):
 def search_node(name):
     nodes = []
     try:
-        print 'Searching Gene Nodes with Name=', name
+        print('Searching Gene Nodes with Name=', name)
         node = Gene.nodes.get(name=name)
         if node:
-            print node
+            print(node)
             nodes.append(node)
         return nodes
-    except DoesNotExist, e:
+    except DoesNotExist as e:
         try:
-            print 'Searching Pseudogene Nodes with Name=', name
+            print('Searching Pseudogene Nodes with Name=', name)
             node = Pseudogene.nodes.get(name=name)
             if node:
-                print node
+                print(node)
                 nodes.append(node)
             return nodes
-        except DoesNotExist, e:
+        except DoesNotExist as e:
             raise e
 
 
@@ -99,26 +106,28 @@ def search():
     ints = []
     h_ints = []
     publications = []
-    print 'ITEMS:', request.args.items()
+    aus = dict()
+    pdb_ids = None
+    print('ITEMS:', request.args.items())
     if request.method == 'GET':
         term = request.args.get('gene')
         gene = search_node(term)
     if request.method == 'POST':
         term = request.form['gene']
         gene = search_nodes(term)
-    print term
+    print(term)
     class_name = gene.__class__.__name__
-    print class_name
+    print(class_name)
     if gene and len(gene) > 1:
-        print len(gene)
+        print(len(gene))
         length = len(gene)
-        print 'Gene is an array...', len(gene)
+        print('Gene is an array...', len(gene))
         return render_template('m_results.html', genes=gene, length=length)
     elif gene and len(gene) == 1:
         # Trying to zoom out
         location = str(int(gene[0].start)) + '..' + str(int(gene[0].end))
         if 'Ps' not in gene[0].__class__.__name__:
-            print gene[0].__class__.__name__
+            print(gene[0].__class__.__name__)
             for ortholog in gene[0].has_ortholog.match():
                 ortholog_name = ortholog.locus_name
             for go in gene[0].has_go_terms.match():
@@ -131,12 +140,12 @@ def search():
             try:
                 for actor in protein.interacts.match():
                     ints.append(actor)
-            except Exception, e:
+            except Exception as e:
                 pass
             try:
                 for h_actor in protein.interacts_.match():
                     h_ints.append(h_actor)
-            except Exception, e:
+            except Exception as e:
                 pass
             interact = [a.uniprot_id for a in ints]
             h_interact = [a.protein_id for a in h_ints]
@@ -144,7 +153,6 @@ def search():
                 # Dealing with unicode
                 citation = gene[0].citation.encode('utf-8').replace('[', '').replace(']', '').split(', ')
                 cite = [ct[1:-1] for ct in citation]
-                aus = dict()
                 for entry in cite:
                     if len(entry) > 0:
                         pub = Publication.nodes.get(pubmed_id=entry)
@@ -173,6 +181,7 @@ def search():
 def about():
     return render_template('about.html')
 
+
 @app.route('/gsea')
 def gsea():
     return render_template('gsea.html')
@@ -181,10 +190,11 @@ def gsea():
 @app.route('/api/gsea/<hash>/download')
 def download_gsea(hash):
     cache_filename = os.path.join(CACHE_DIR, hash + '.json')
-    if (os.path.exists(cache_filename)):
+    data = None
+    if os.path.exists(cache_filename):
         data = json.load(open(cache_filename))
     data_str = 'GO Term ID\tGO Term Name\tRaw p-value\tCorrected p-value\r\n' + \
-               '\r\n'.join(['\t'.join([ str(cell) for cell in row ]) for row in data]) + '\r\n'
+               '\r\n'.join(['\t'.join([str(cell) for cell in row]) for row in data]) + '\r\n'
 
     return Response(data_str, mimetype='text/tab-separated-values',
                     headers={'Content-Disposition': 'attachment; filename=gsea.tsv'})
@@ -222,4 +232,3 @@ def process_gsea(hash):
             'Access-Control-Allow-Origin': '*'
         }
     )
-

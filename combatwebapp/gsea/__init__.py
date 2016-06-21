@@ -16,16 +16,18 @@
 #     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, division
-from operator import itemgetter
-import socket
-import time
-import sys
-import os
+
 import os.path
+import socket
+import sys
+import time
+from operator import itemgetter
+
 import click
+import yaml
 from scipy.stats import fisher_exact
 from statsmodels.sandbox.stats.multicomp import multipletests
-import yaml
+
 try:
     from urllib.parse import urlparse
 except ImportError:
@@ -42,7 +44,7 @@ if '@' in url.netloc:
     (host, port) = url.netloc.split('@')[1].split(':')
 else:
     (host, port) = url.netloc.split(':')
-timeout = int(os.environ.get('NEO4J_WAIT_TIMEOUT', 30)) # time to wait till neo4j
+timeout = int(os.environ.get('NEO4J_WAIT_TIMEOUT', 30))  # time to wait till neo4j
 connected = False
 print('host, port', host, port, file=sys.stderr)
 while timeout > 0:
@@ -77,7 +79,7 @@ def enrichment_analysis(geneset, mode='over', multipletest_method='fdr_bh'):
     goterm_prevalence_dict = dict()
     for goterm_id, _, count in goterm_prevalence:
         goterm_prevalence_dict[goterm_id] = count
-    geneset_strs = [ '"' + name + '"' for name in geneset]
+    geneset_strs = ['"' + name + '"' for name in geneset]
     tag_list = "[{}]".format(', '.join(geneset_strs))
     gs_goterm_prevalence_query = '''MATCH (t:GoTerm) <-[:ASSOCIATED_WITH]- (:Protein) <-[:TRANSLATED]-
     (:CDS) <-[:PROCESSED_INTO]- (:Transcript) <-[:TRANSCRIBED]- (g:Gene) WHERE g.locus_tag IN {tag_list}
@@ -96,8 +98,8 @@ def enrichment_analysis(geneset, mode='over', multipletest_method='fdr_bh'):
         # geneset     A                 B
         # background  C                 D
         background_goterm_count = goterm_prevalence_dict[goterm_id]
-        fe_matrix = ( ( gs_goterm_count, geneset_size - gs_goterm_count ),
-                      ( background_goterm_count, background_gene_count - background_goterm_count ) )
+        fe_matrix = ((gs_goterm_count, geneset_size - gs_goterm_count),
+                     (background_goterm_count, background_gene_count - background_goterm_count))
         _, p_val = fisher_exact(fe_matrix, alternative=fe_test_mode)
         p_vals.append((goterm_id, goterm_name, p_val))
     p_vals = sorted(p_vals, key=itemgetter(2))
@@ -106,7 +108,8 @@ def enrichment_analysis(geneset, mode='over', multipletest_method='fdr_bh'):
     p_vals = zip(goterm_ids, goterm_names, uncorr_p_vals, corrected_p_vals)
     # for goterm_it, goterm_name, p_val, corr_p_val in p_vals:
     #     print(goterm_it, goterm_name, p_val, corr_p_val)
-    return(p_vals)
+    return (p_vals)
+
 
 @click.command()
 @click.option('--mode', '-M', default='over', type=click.Choice(('over', 'under')))
@@ -126,6 +129,7 @@ def analyse_geneset(geneset_file, output_file, mode='over', multipletest_corr='B
     for goterm_id, goterm_name, uncorr_p_val, corr_p_val in results:
         print(goterm_id, goterm_name, corr_p_val, uncorr_p_val, file=output_file, sep='\t')
     output_file.close()
+
 
 if __name__ == '__main__':
     analyse_geneset()
