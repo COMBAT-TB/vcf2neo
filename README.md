@@ -1,2 +1,2 @@
 # COMBAT-TB 
-A COMBAT-TB Model based on py2neo
+A COMBAT-TB Graph Model based on py2neo v3 OGM.
