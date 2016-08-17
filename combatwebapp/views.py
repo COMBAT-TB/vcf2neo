@@ -42,7 +42,9 @@ def cypher_search(name):
     res = None
     query = "MATCH (n:Gene) where n.name=~'(?i){}.*' OR n.locus_tag=~'(?i){}.*' " \
             "OR n.preffered_name=~'(?i){}.*' OR n.uniprot_entry=~'(?i){}.*' RETURN n " \
-            "UNION MATCH (n:Pseudogene) where n.name=~'(?i){}.*' RETURN n ".format(name, name, name, name, name)
+            "UNION MATCH (n:Pseudogene) where n.name=~'(?i){}.*' RETURN n " \
+            "UNION MATCH (n:Gene)-[:ORTHOLOG]->(o:Ortholog) where o.locus_name=~'(?i){}.*' RETURN n " \
+            "".format(name, name, name, name, name, name)
     result, meta = db.cypher_query(query)
     for row in result:
         res = Gene.inflate(row[0])
@@ -364,6 +366,7 @@ def ppi_data(locus_tag):
         }
     )
 
+
 @app.route('/api/galaxy_histories')
 def galaxy_histories():
     try:
@@ -372,8 +375,8 @@ def galaxy_histories():
         print(e, file=sys.stderr)
         hist_list = []
     else:
-        hist_list = [ history for history in gi.histories.get_histories() if history.get('deleted') == False and
-                      history.get('purged') == False]
+        hist_list = [history for history in gi.histories.get_histories() if history.get('deleted') == False and
+                     history.get('purged') == False]
     return Response(
         json.dumps(hist_list),
         mimetype='application/json',
@@ -392,8 +395,9 @@ def galaxy_dataset(history_id):
         print(e, file=sys.stderr)
         dataset_list = []
     else:
-        dataset_list = [ dataset for dataset in gi.histories.show_history(history_id, contents=True) if
-                         dataset.get('extension') == 'txt' and dataset.get('deleted') == False and dataset.get('purged') == False ]
+        dataset_list = [dataset for dataset in gi.histories.show_history(history_id, contents=True) if
+                        dataset.get('extension') == 'txt' and dataset.get('deleted') == False and dataset.get(
+                            'purged') == False]
 
     return Response(
         json.dumps(dataset_list),
@@ -407,7 +411,7 @@ def galaxy_dataset(history_id):
 
 @app.route('/api/galaxy_dataset/<dataset_id>')
 def load_galaxy_dataset(dataset_id):
-    timeout = 10000 # 10 seconds
+    timeout = 10000  # 10 seconds
     try:
         gi = connect_to_galaxy()
     except ConnectionError as e:
@@ -430,8 +434,6 @@ def load_galaxy_dataset(dataset_id):
         }
     )
 
-
 # @app.route('/testjsx')
 # def testjsx():
 #     return render_template('test.html')
-
