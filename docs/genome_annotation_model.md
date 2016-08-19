@@ -14,7 +14,7 @@ At SANBI we considered the Chado schema when working on the Asian seabass (L.
 calcarifer) genome annotation project, but chose not to use it, in a large
 part due to the lack of code examples for using the schema and also in part
 due to the lack disconnect between the highly relational-centric model of
-Chado and the object-oriented design we had for the entitites in the seabass
+Chado and the object-oriented design we had for the entities in the seabass
 genome annotation. We crafted our own [schema](https://bitbucket.org/sanbidev/seabass_model)
 linked to a [PostgreSQL](https://www.postgresql.org/) database using
 [SQLAlchemy](http://www.sqlalchemy.org/)  but it was incomplete and
@@ -22,10 +22,10 @@ had poor performance for some use cases. Drawing on that experience and SANBI
 experience with the [Neo4j](https://neo4j.com/) graph database we set about
 creating a genome annotation schema for a Neo4j graph database.
 
-### Modelling objects in graph (and relational) databases
+### Modeling objects in graph (and relational) databases
 
-The modelling of a set of known entity classes in a relational database is a
-well understood problem: classes correspond to relations (tables), entitities
+The modeling of a set of known entity classes in a relational database is a
+well understood problem: classes correspond to relations (tables), entities
 (instances) correspond to rows in tables, and relationships between objects are
 either mapped as foreign key relationships or using join tables (for many to many
 relationships). In recent years object-relational mappers such as SQLAlchemy and
@@ -41,7 +41,7 @@ but not a prescription for, type. In a sense this corresponds more closely to
 a system of prototype objects than a class system. Object-graph mappers (such
 as [neomodel](neomodel.readthedocs.io/en/latest/), the [Neo4j-OGM](https://github.com/neo4j/neo4j-ogm)
 and that in version 3 of[py2neo](http://py2neo.org/v3/ogm.html)) allow a certain
-degree of schema modelling in the object model however largely without the
+degree of schema modeling in the object model however largely without the
 ability to impose constraints.
 
 #### Attributes vs entities
@@ -75,7 +75,7 @@ the query.
 
 This description takes the Chado sequence table as a starting point.
 
-At the core of the Chado-derive graph model is the Feature entity that corresponds
+At the core of the Chado-derived graph model is the Feature entity that corresponds
 on the one hand with a feature as described in [GFF3](http://gmod.org/wiki/GFF3)
 (although Chado features are a superset of GFF3 features, including both
 the GFF3 "reference sequence" as a feature and non-located features)
@@ -141,7 +141,7 @@ topic requires further discussion.
 <img style="width: 80%" src="chado_graph_model_draft.jpg" />
 
 The discussion above should illustrate that, given a sufficiently detailed
-modelling effort, it is practical to map the genome annotation currently
+modeling effort, it is practical to map the genome annotation currently
 stored in a Chado schema to a Neo4j database model. The Neo4j model would
 then have the same expressive power as Chado. Two further points require
 discussion
@@ -173,7 +173,7 @@ and arranged into a set of related update nodes.
 
 To allow re-use of code built to target the Chado database schema it
 will be useful to have some tool to translate a Chado database into
-its Neo4j equivalent. Since this discussion has focussed primarily
+its Neo4j equivalent. Since this discussion has focused primarily
 on the sequence module of Chado it has not considered the full scape
 of the Chado specification. However, for the part it has considered,
 the most practical way to migrate from Chado to Neo4j would be to extend
