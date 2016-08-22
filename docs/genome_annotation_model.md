@@ -34,26 +34,24 @@ representation automatic. These have been supplemented with schema migration
 systems that add a version number to the schema and records changes to the
 schema in a reproducible fashion.
 
-Neo4j database differ from relational databases in that they have no schema
-as such, but rather contain a collection of nodes and relationships where the
-labels applied to entities allow for search operations and act as a a guide to,
-but not a prescription for, type. In a sense this corresponds more closely to
-a system of prototype objects than a class system. Object-graph mappers (such
-as [neomodel](neomodel.readthedocs.io/en/latest/), the [Neo4j-OGM](https://github.com/neo4j/neo4j-ogm)
-and that in version 3 of[py2neo](http://py2neo.org/v3/ogm.html)) allow a certain
-degree of schema modeling in the object model however largely without the
-ability to impose constraints.
+The Neo4j graph database differs from relational databases in that it is schema-less,
+and applies the property graph model where entities (nodes) and relationships have properties, thus
+allowing for fast search operations and act as a guide to, but not a prescription for, type.
+In a sense this corresponds more closely to a system of prototype objects than a class system.
+Object-graph mappers (such as [neomodel](neomodel.readthedocs.io/en/latest/), the [Neo4j-OGM](https://github.com/neo4j/neo4j-ogm) and that in version 3 of [py2neo](http://py2neo.org/v3/ogm.html)) allow a certain
+degree of schema modeling in the object model *[however largely without the
+ability to impose constraints](http://py2neo.org/v3/database.html#py2neo.database.Schema.create_uniqueness_constraint)*.
 
 #### Attributes vs entities
 
 In both relational and graph databases a choice has to be made as to where
-to "split" and object. In general this is guided by cardinality: a subset of
-attributes which is in a one to one relationship with an object tends to be
+to "split" an object. In general this is guided by cardinality: a subset of
+attributes which is in a one-to-one relationship with an object tends to be
 merged with the object. A difficulty arises when the degree of specialisation
 determines the cardinality of a relation. For example, relationship between
 a protein entity and a Uniprot ID might be 1 to 1. However, the
 relationship between a protein entity and external database IDs is
-probably not one to one as the same protein entity is identified in
+probably not one to one *(most xrefs use the Uniprot_Id)* as the same protein entity is identified in
 multiple databases.
 
 In a relational database each entity (e.g. an external database ID)
@@ -69,7 +67,8 @@ we know), much discussion on procedures for query-optimising graph databases.
 Conceivably a query optimised graph database would also be constructed by
 merging entities to add attributes from multiple nodes to a single node that
 more closely resembles the final "document" being presented as a result of
-the query.
+the query [Qualifying relationships](http://graphaware.com/neo4j/2013/10/24/neo4j-qualifying-relationships.html)
+and [Bidirectional relationships](http://graphaware.com/neo4j/2013/10/11/neo4j-bidirectional-relationships.html) .
 
 ## Mapping the Chado model to Neo4j graph entities
 
@@ -89,12 +88,12 @@ between a primary identifier and secondary (e.g. synonym) identifiers, something
 that is probably not necessary in a graph database, where e.g. relationship
 attributes could be used to identify the *primary* DbXref.
 
-In addition, since there is no schema in a graph database, it is not necessary
+In addition, the schema-less nature of graph databases, alleviates the need
 to model each type of sequence as an abstract "feature" and instead nodes can
-be created of type Exon, mRNA, etc. Again, due to the lack of schema, the
+be created for type Exon, mRNA, etc. Again, due to the lack of schema, the
 correctness of the contents of a graph database cannot be assured and it might
 be useful to write a "test suite" that tests for the biological validity (as
-guided for example by the SO) of nodes and relationships in the database. In
+guided for example by the SO) of nodes and relationships in the database [See](http://neo4j.com/docs/developer-manual/current/cypher/#query-constraints). In
 addition or as a partial alternative, SO terms such as mRNA can themselves be
 inserted into the database to allow the statement "there shall be no mRNA node
 that is not related to the mRNA term" to be asserted. However, since retrieving
@@ -158,7 +157,7 @@ A similar module for a Neo4j object graph mapper would have to update
 all instances of a node type if a node changed attributes, a much
 more heavyweight operation than a relational table update. As OGMs mature
 there might be a community effort in this regard. Right now, to our
-knowledge, no such effort exists.
+knowledge, no such effort exists. [possible way?](https://clusterhq.com/dvol/)
 
 ### Database versioning and change logging
 
