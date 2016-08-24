@@ -21,7 +21,7 @@ class Feature(GraphObject):
     residues = Property()
     seqlen = Property()
     md5checksum = Property()
-    f_type = Property()
+    type = Property()
     is_analysis = Property()
     is_obsolete = Property()
     timeaccessioned = Property()
