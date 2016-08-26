@@ -10,9 +10,6 @@ from model.model import Feature
 graph = Graph(password=getenv("NEO4J_PASSWORD", ""), encrypted=False)
 
 
-# watch("neo4j.bolt")
-
-
 def delete_data():
     """
     Delete existing data
@@ -48,7 +45,6 @@ def create_feature_nodes(feature):
     unique_name = names.get("UniqueName", name)
     _feature = Node(Feature.__name__, name=name, type=feature.type, uniquename=unique_name)
     graph.create(_feature)
-    # print("CREATED:", _feature)
 
 
 def load_gff_data(gff_file, limit):
@@ -82,4 +78,3 @@ def parse_gff():
 if __name__ == '__main__':
     delete_data()
     parse_gff()
-    # print(graph)
