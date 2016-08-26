@@ -2,13 +2,13 @@
 
 #source ~/.virtualenvs/combat_tb_model/bin/activate
 
-docker stop pymodel; docker rm pymodel
+docker stop ctbmodel; docker rm ctbmodel
 
 docker run -d \
   -p 7687:7687 \
   -p 7474:7474 \
   -e NEO4J_AUTH=none \
-  --name pymodel \
+  --name ctbmodel \
   neo4j:3.0.4
 
 sleep 10 #wait for the container to boot

@@ -12,6 +12,13 @@ class Organism(GraphObject):
 
     dbxref = RelatedTo("DbXref", "XREF")
 
+    def __init__(self, abbreviation, genus, species, common_name, comment):
+        self.abbreviation = abbreviation
+        self.genus = genus
+        self.species = species
+        self.common_name = common_name
+        self.comment = comment
+
 
 class Feature(GraphObject):
     __primarykey__ = 'uniquename'
