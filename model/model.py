@@ -12,7 +12,7 @@ class Organism(GraphObject):
 
     dbxref = RelatedTo("DbXref", "XREF")
 
-    def __init__(self, abbreviation, genus, species, common_name, comment):
+    def __init__(self, abbreviation=None, genus=None, species=None, common_name=None, comment=None):
         self.abbreviation = abbreviation
         self.genus = genus
         self.species = species
@@ -29,12 +29,13 @@ class Feature(GraphObject):
     seqlen = Property()
     md5checksum = Property()
     type = Property()
+    parent = Property()  # To build belongs_to rel.
     is_analysis = Property()
     is_obsolete = Property()
     timeaccessioned = Property()
     timelastmodfied = Property()
 
-    organism = RelatedTo("Organism", "BELONGS_TO")
+    belongs_to = RelatedTo("Organism", "BELONGS_TO")
     location = RelatedTo("FeatureLoc", "LOCATED_AT")
     related = RelatedTo("Feature", "RELATED_TO")
     published_in = RelatedTo("Publication", "PUBLISHED_IN")
@@ -42,7 +43,7 @@ class Feature(GraphObject):
 
 
 class FeatureLoc(GraphObject):
-    __primarykey__ = 'srcfeature_id'
+    __primarykey__ = 'srcfeature_id'  # used feature.uniquename
 
     srcfeature_id = Property()
     fmin = Property()
@@ -57,6 +58,22 @@ class FeatureLoc(GraphObject):
 
     feature = RelatedFrom(Feature, "ON")
     published_in = RelatedTo("Publication", "PUBLISHED_IN")
+
+    def __init__(self, srcfeature_id, fmin=None, is_fmin_partial=None, fmax=None, is_fmax_partial=None, strand=None,
+                 phase=None, residue_info=None, locgroup=None,
+                 rank=None):
+        self.srcfeature_id = srcfeature_id
+        self.fmin = fmin
+        self.is_fmin_partial = is_fmin_partial
+        self.fmax = fmax
+        self.is_fmax_partial = is_fmax_partial
+        self.strand = strand
+        self.phase = phase
+        self.residue_info = residue_info
+        self.locgroup = locgroup
+        self.rank = rank
+        if self.fmin > self.fmax:
+            raise ValueError("fmin cannot be greater than fmax: {} > {}.".format(self.fmin, self.fmax))
 
 
 class Publication(GraphObject):
