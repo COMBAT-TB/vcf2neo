@@ -8,7 +8,9 @@ from model.model import Organism, Feature, FeatureLoc
 
 # https://neo4j.com/developer/kb/explanation-of-error-on-session-connection-using-uniform-drivers/
 graph = Graph(bolt=True, password=getenv("NEO4J_PASSWORD", ""), encrypted=False)
-watch("neo4j.bolt")
+
+
+# watch("neo4j.bolt")
 
 
 def delete_data():
@@ -25,9 +27,8 @@ def create_organism_nodes():
     genus = "Mycobacterium"
     species = "M. tuberculosis"
     common_name = "TB"
-    comment = ""
 
-    organism = Organism(abbreviation=abbrev, genus=genus, species=species, common_name=common_name, comment=comment)
+    organism = Organism(abbreviation=abbrev, genus=genus, species=species, common_name=common_name)
     graph.create(organism)
 
 
@@ -87,17 +88,24 @@ def build_relationships():
     Build relationships
     :return:
     """
+    watch("neo4j.bolt")
     print("Building Relationships...")
-    for feature in tqdm(Feature.select(graph)):
+    features = Feature.select(graph)
+    for feature in features:
+        # Find organism via __primarykey__ and link with feature via BELONGS_TO
         org = Organism.select(graph, 'Mycobacterium').first()
         feature.belongs_to.add(org)
-        graph.push(feature)
-
-        _feature = (Feature.select(graph).where("_.parent = '{}'".format(feature.uniquename)).first())
-        print _feature
+        # Find all features with a parent attr. matching this features uniquename and link them via RELATED_TO
+        _feature = Feature.select(graph).where("_.parent = '{}'".format(feature.uniquename)).first()
         if _feature and feature.type is not _feature.type:
             feature.related.add(_feature)
-            graph.push(feature)
+        # Find all feature locations with a srcfeature_id attr. matching this features uniquename and link them via
+        # LOCATED_AT
+        _feature = FeatureLoc.select(graph, feature.uniquename).first()
+        if _feature:
+            feature.location.add(_feature)
+
+        graph.push(feature)
 
 
 def load_gff_data(gff_file, limit):
