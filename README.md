@@ -17,7 +17,6 @@ The COMBAT-TB Graph model is based on three Chado Modules:
 **Assuming you have Docker installed, pull and run the [neo4j docker image](https://hub.docker.com/_/neo4j/):**
 
 ```
-$ docker pull neo4j:3.0.4
 $ docker run -d \
     -p 7687:7687 \
     -p 7474:7474 \
