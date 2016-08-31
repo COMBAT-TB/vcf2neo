@@ -103,6 +103,12 @@ class Author(GraphObject):
 
     wrote = RelatedTo("Publication", "WROTE")
 
+    def __init__(self, editor=None, surname=None, givennames=None, suffix=None):
+        self.editor = editor
+        self.surname = surname
+        self.givennames = givennames
+        self.suffix = suffix
+
 
 class CvTerm(GraphObject):
     __primarykey__ = 'name'
@@ -114,6 +120,11 @@ class CvTerm(GraphObject):
     dbxref = RelatedTo("DbXref", "XREF")
     related = RelatedTo("CvTerm", "RELATED_TO")
 
+    def __init__(self, name=None, definition=None, is_obsolete=None):
+        self.name = name
+        self.definition = definition
+        self.is_obsolete = is_obsolete
+
 
 class DbXref(GraphObject):
     __primarykey__ = 'accession'
@@ -122,3 +133,9 @@ class DbXref(GraphObject):
     version = Property()
     db = Property()
     description = Property()
+
+    def __init__(self, accession=None, version=None, db=None, description=None):
+        self.accession = accession
+        self.version = version
+        self.db = db
+        self.description = description

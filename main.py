@@ -10,9 +10,6 @@ from model.model import Organism, Feature, FeatureLoc
 graph = Graph(bolt=True, password=getenv("NEO4J_PASSWORD", ""), encrypted=False)
 
 
-# watch("neo4j.bolt")
-
-
 def delete_data():
     """
     Delete existing data
@@ -95,11 +92,11 @@ def build_relationships():
         # Find organism via __primarykey__ and link with feature via BELONGS_TO
         org = Organism.select(graph, 'Mycobacterium').first()
         feature.belongs_to.add(org)
-        # Find all features with a parent attr. matching this features uniquename and link them via RELATED_TO
+        # Find feature with a parent attr. matching this features uniquename and link them via RELATED_TO
         _feature = Feature.select(graph).where("_.parent = '{}'".format(feature.uniquename)).first()
         if _feature and feature.type is not _feature.type:
             feature.related.add(_feature)
-        # Find all feature locations with a srcfeature_id attr. matching this features uniquename and link them via
+        # Find feature location with a srcfeature_id attr. matching this features uniquename and link them via
         # LOCATED_AT
         _feature = FeatureLoc.select(graph, feature.uniquename).first()
         if _feature:
