@@ -102,7 +102,7 @@ correctness of the contents of a graph database cannot be assured and it might
 be useful to write a "test suite" that tests for the biological validity (as
 guided for example by the SO) of nodes and relationships in the database.
 
-* [query-constraints](http://neo4j.com/docs/developer-manual/current/cypher/#query-constraints). 
+* [Cypher query-constraints](http://neo4j.com/docs/developer-manual/current/cypher/#query-constraints). 
 
 In addition or as a partial alternative, SO terms such as `mRNA` can be
 inserted into the database to allow the statement "there shall be no mRNA node
@@ -118,7 +118,7 @@ not necessary. On the level of the model, however, some form of consistent
 specification is necessary, perhaps through subclassing a particular node class.
 **Note:** It is not yet clear how well OGM mappers support subclassing.
 
-   * [See](https://github.com/nigelsmall/py2neo/issues/541)
+   * [Subclassing in py2neo](https://github.com/nigelsmall/py2neo/issues/541).
 
 Locations in Chado are entities independent of but related to features. Again
 this can be adopted for a Neo4j model fairly directly. While there is no widely
@@ -145,20 +145,23 @@ In general, however, `CvTerms` for annotation sources such as the Gene Ontology
 (GO) can be imported as nodes in Neo4j, with the node label referring to their
 annotation source (e.g. `GO`, `Interpro`, etc). Where semantically richer
 ways of expressing relationships, such as the [LEGO](http://geneontology.org/page/connecting-annotations-lego-models)
-model, exist, these could be incorporated into the graph database. 
+model, exist, these could be incorporated into the graph database.
+ 
 **This topic requires further discussion.**
+
+The below image depicts a graph model based on the `CV`, `Sequence`, and `Publication` Chado modules.
 
 ![Model](chado_graph_model_draft.jpg "Graph Model")
 
 The discussion above should illustrate that, given a sufficiently detailed
 modeling effort, it is practical to map the genome annotation currently
-stored in a Chado schema to a Neo4j database model using the followint method:
+stored in a Chado schema to a Neo4j database model using the following method:
 
-* Each Entity *table* is represented by a *Label*
-    *  Taking note of *JOIN tables* and replacing them wih *relationships*
-    *  *Columns* on these *JOIN tables* become *relationship properties*
-* Each *row* in a Entity table is a *Node*
-* *Columns* on these tables become node *properties*
+* Each Entity **table** is represented by a **Label**
+    *  Taking note of **JOIN tables** and replacing them wih **relationships**
+    *  **Columns** in **JOIN tables** become **relationship properties**
+* Each **row** in a Entity table is a **Node**
+* **Columns** on these tables become **node properties**
 
 The Neo4j model would then have the same expressive power as Chado. Two further points require discussion
 
@@ -185,7 +188,7 @@ Chado does not support this, but it should be possible to support it
 in Neo4j if changes can be encoded in some change specification language
 and arranged into a set of related update nodes.
 
-* [possible way?](https://clusterhq.com/dvol/)
+* A possible way might be to use [dvol](https://clusterhq.com/dvol/)?
 
 ## Migrating from Chado to Neo4j
 
