@@ -202,3 +202,7 @@ a tool that already maps Chado to an object model and then map that
 object model to the proposed graph model. The Apollo annotation editor
 is one tool that might be adapted by adding a database interface
 based on Neo4j-OGM and the schema currently being developed at SANBI.
+
+## Model implementation
+
+For a draft implementation of this model using py2neo see [this](https://github.com/SANBI-SA/combat_tb_model/tree/master/model).
