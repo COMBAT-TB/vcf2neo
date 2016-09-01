@@ -1,3 +1,4 @@
+import time
 from os import getenv
 
 from BCBio import GFF
@@ -7,7 +8,8 @@ from tqdm import tqdm
 from model.model import Organism, Feature, FeatureLoc
 
 # https://neo4j.com/developer/kb/explanation-of-error-on-session-connection-using-uniform-drivers/
-graph = Graph(bolt=True, password=getenv("NEO4J_PASSWORD", ""), encrypted=False)
+graph = Graph(host=getenv("DB", "localhost"), bolt=True, password=getenv("NEO4J_PASSWORD", ""), encrypted=False)
+watch("neo4j.bolt")
 
 
 def delete_data():
@@ -15,7 +17,7 @@ def delete_data():
     Delete existing data
     :return:
     """
-    print("Deleting all nodes and relationships...")
+    print("Deleting all nodes and relationships in {}".format(graph))
     graph.delete_all()
 
 
@@ -136,6 +138,7 @@ def parse_gff():
 
 
 if __name__ == '__main__':
+    time.sleep(10)
     delete_data()
     parse_gff()
     build_relationships()
