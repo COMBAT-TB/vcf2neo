@@ -61,10 +61,10 @@ creating "denormalised" schemas that merge multiple potentially independent
 entities into a smaller number of tables. In a graph database each entity
 is a node and the relationships and properties represented by edges.
 
-**Conceivably a query optimised graph database would also be constructed by
+Conceivably a query optimised graph database would also be constructed by
 merging entities to add attributes from multiple nodes to a single node that
 more closely resembles the final "document" being presented as a result of
-the query.**
+the query.
 
 For commentary on performance and optimisation of Neo4j databases set:
 
@@ -187,8 +187,8 @@ Chado does not support this, but it should be possible to support it
 in Neo4j if changes can be encoded in some change specification language
 and arranged into a set of related update nodes.
 
-(As databases are, in our design, often stored using
-Docker containers, we might  be able to use [dvol](https://clusterhq.com/dvol/)?)
+*As databases are, in our design, often stored using
+Docker containers, we might  be able to use [dvol](https://clusterhq.com/dvol/)*.
 
 ## Migrating from Chado to Neo4j
 

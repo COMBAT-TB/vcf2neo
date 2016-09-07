@@ -7,9 +7,7 @@ from tqdm import tqdm
 
 from model.model import Organism, Feature, FeatureLoc
 
-# https://neo4j.com/developer/kb/explanation-of-error-on-session-connection-using-uniform-drivers/
-graph = Graph(host=getenv("DB", "localhost"), bolt=True, password=getenv("NEO4J_PASSWORD", ""), encrypted=False)
-watch("neo4j.bolt")
+graph = Graph(host=getenv("DB", "localhost"), bolt=True, password=getenv("NEO4J_PASSWORD", ""))
 
 
 def delete_data():

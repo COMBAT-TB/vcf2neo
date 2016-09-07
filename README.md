@@ -14,7 +14,7 @@ The COMBAT-TB Graph model is based on three Chado Modules:
 
 ## Usage
 
-**Assuming you have Docker installed, pull and run the [neo4j docker image](https://hub.docker.com/_/neo4j/):**
+**Assuming you have [Docker installed](https://docs.docker.com/engine/installation/), pull and run the [neo4j docker image](https://hub.docker.com/_/neo4j/):**
 
 ```
 $ docker run -d \
@@ -43,7 +43,7 @@ $ python main.py
 ```
 *Point your browser at [http://localhost:7474](http://localhost:7474) .*
 
-### With `docker-compose`, assuming you have `docker-compose` installed
+### With `docker-compose`, assuming you have `docker-compose` [installed](https://docs.docker.com/compose/install/):
 ```
 $ docker-compose up -d
 ```
