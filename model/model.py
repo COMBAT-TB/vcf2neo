@@ -28,18 +28,71 @@ class Feature(GraphObject):
     residues = Property()
     seqlen = Property()
     md5checksum = Property()
-    type = Property()
-    parent = Property()  # To build belongs_to rel.
+    parent = Property()  # To build related_to rel.
     is_analysis = Property()
     is_obsolete = Property()
     timeaccessioned = Property()
     timelastmodfied = Property()
+    ontology_id = Property()
 
     belongs_to = RelatedTo("Organism", "BELONGS_TO")
     location = RelatedTo("FeatureLoc", "LOCATED_AT")
-    related = RelatedTo("Feature", "RELATED_TO")
+    related_to = RelatedTo("Feature", "RELATED_TO")
     published_in = RelatedTo("Publication", "PUBLISHED_IN")
     dbxref = RelatedTo("DbXref", "XREF")
+    cvterm = RelatedTo("CvTerm", "ASSOC_WITH")
+
+
+class Gene(Feature):
+    so_id = "SO:0000704"
+
+    is_a = RelatedTo("Feature", "IS_A")
+
+
+class PseudoGene(Feature):
+    so_id = "SO:0000336"
+
+    is_a = RelatedTo("Feature", "IS_A")
+
+
+class Transcript(Feature):
+    so_id = "SO:0000673"
+
+    is_a = RelatedTo("Feature", "IS_A")
+    part_of = RelatedTo("Gene", "PART_OF")
+
+
+class TRna(Feature):
+    so_id = "SO:0000253"
+
+
+class NCRna(Feature):
+    so_id = "SO:0000655"
+
+
+class RRna(Feature):
+    so_id = "SO:0000252"
+
+
+class Exon(Feature):
+    so_id = "SO:0000147"
+
+    is_a = RelatedTo("Feature", "IS_A")
+    part_of = RelatedTo("Transcript", "PART_OF")
+
+
+class CDS(Feature):
+    so_id = "SO:0000316"
+
+    is_a = RelatedTo("Feature", "IS_A")
+    part_of = RelatedTo("Transcript", "PART_OF")
+    protein = RelatedFrom('Protein', "DERIVES_FROM")
+
+
+class Protein(Feature):
+    so_id = "SO:0000104"
+
+    derives_from = RelatedTo("CDS", "DERIVES_FROM")
 
 
 class FeatureLoc(GraphObject):
@@ -73,7 +126,8 @@ class FeatureLoc(GraphObject):
         self.locgroup = locgroup
         self.rank = rank
         if self.fmin > self.fmax:
-            raise ValueError("fmin cannot be greater than fmax: {} > {}.".format(self.fmin, self.fmax))
+            raise ValueError(
+                "fmin cannot be greater than fmax: {} > {}.".format(self.fmin, self.fmax))
 
 
 class Publication(GraphObject):
@@ -118,7 +172,9 @@ class CvTerm(GraphObject):
     is_obsolete = Property()
 
     dbxref = RelatedTo("DbXref", "XREF")
-    related = RelatedTo("CvTerm", "RELATED_TO")
+    is_a = RelatedTo("CvTerm", "IS_A")
+    part_of = RelatedTo("CvTerm", "PART_OF")
+    feature = RelatedFrom("Feature", "ASSOC_WITH")
 
     def __init__(self, name=None, definition=None, is_obsolete=None):
         self.name = name

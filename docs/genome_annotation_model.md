@@ -71,9 +71,9 @@ For commentary on performance and optimisation of Neo4j databases set:
 * [Tackling a 1 Billion Member Social Network – Fast Search on a Large Graph](https://tech.evojam.com/2016/04/20/tackling-a-1-billion-member-social-network-fast-search-on-a-large-graph/) 
     * [Slides](http://www.slideshare.net/bankowskiartur/tackling-a-1-billion-member-social-network)
 
- * [Qualifying relationships](http://graphaware.com/neo4j/2013/10/24/neo4j-qualifying-relationships.html)
+* [Qualifying relationships](http://graphaware.com/neo4j/2013/10/24/neo4j-qualifying-relationships.html)
  
- * [Bidirectional relationships](http://graphaware.com/neo4j/2013/10/11/neo4j-bidirectional-relationships.html) 
+* [Bidirectional relationships](http://graphaware.com/neo4j/2013/10/11/neo4j-bidirectional-relationships.html) 
 
 ## Mapping the Chado model to Neo4j graph entities
 
