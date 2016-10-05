@@ -316,9 +316,8 @@ def parse_gff():
     """
     gff_file = "data/MTB_H37rv.gff3"
     create_organism_nodes()
-    limits = [["transcript"], ["CDS"],
-              ["gene", "pseudogene", "exon", "tRNA_gene", "ncRNA_gene",
-               "rRNA_gene"]]
+    limits = [["transcript"], ["CDS"], ["gene"], ["pseudogene"], ["exon"],
+              ["tRNA_gene", "ncRNA_gene", "rRNA_gene"]]
     for limit in limits:
         print("Loading", limit, "...")
         load_gff_data(gff_file, limit)
