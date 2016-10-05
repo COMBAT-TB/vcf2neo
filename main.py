@@ -228,16 +228,19 @@ def build_relationships():
             if _feature:
                 # Find transcript: A gene is a parent to it.
                 transcript = Transcript.select(
-                    graph, _feature.uniquename).first()
+                    graph).where(
+                        "_.parent = '{}'".format(_feature.uniquename)).first()
                 if transcript:
                     transcript.part_of.add(gene)
                     graph.push(transcript)
 
-        p_gene = PseudoGene.select(graph, feature.uniquename).first()
+        p_gene = PseudoGene.select(graph).where(
+            "_.uniquename = '{}'".format(feature.uniquename)).first()
         if p_gene:
             p_gene.is_a.add(feature)
             graph.push(p_gene)
-        transcript = Transcript.select(graph, feature.uniquename).first()
+        transcript = Transcript.select(graph).where(
+            "_.uniquename = '{}'".format(feature.uniquename)).first()
         if transcript:
             transcript.is_a.add(feature)
             graph.push(transcript)
@@ -246,27 +249,32 @@ def build_relationships():
                 "_.parent = '{}'".format(transcript.uniquename)).first()
             if _feature:
                 # Find exon: A transcript is a parent to it
-                exon = Exon.select(graph, _feature.uniquename).first()
+                exon = Exon.select(graph).where(
+                    "_.uniquename = '{}'".format(_feature.uniquename)).first()
                 if exon:
                     exon.part_of.add(transcript)
                     graph.push(exon)
                 # Find cds: A transcript is a parent to it
-                cds = CDS.select(graph, _feature.uniquename).first()
+                cds = CDS.select(graph).where(
+                    "_.uniquename = '{}'".format(_feature.uniquename)).first()
                 if cds:
                     cds.part_of.add(transcript)
                     graph.push(cds)
 
-        exon = Exon.select(graph, feature.uniquename).first()
+        exon = Exon.select(graph).where(
+            "_.uniquename = '{}'".format(feature.uniquename)).first()
         if exon:
             exon.is_a.add(feature)
             graph.push(exon)
-        cds = CDS.select(graph, feature.uniquename).first()
+        cds = CDS.select(graph).where(
+            "_.uniquename = '{}'".format(feature.uniquename)).first()
         if cds:
             cds.is_a.add(feature)
             graph.push(cds)
         # Find feature location with a srcfeature_id attr. matching this features uniquename and link them via
         # LOCATED_AT
-        _feature = FeatureLoc.select(graph, feature.uniquename).first()
+        _feature = FeatureLoc.select(graph).where(
+            "_.srcfeature_id = '{}'".format(feature.uniquename)).first()
         if _feature:
             feature.location.add(_feature)
         graph.push(feature)
@@ -308,8 +316,9 @@ def parse_gff():
     """
     gff_file = "data/MTB_H37rv.gff3"
     create_organism_nodes()
-    limits = [["gene", "pseudogene", "exon", "tRNA_gene",
-               "ncRNA_gene", "rRNA_gene"], ["transcript"], ["CDS"]]
+    limits = [["transcript"], ["CDS"],
+              ["gene", "pseudogene", "exon", "tRNA_gene", "ncRNA_gene",
+               "rRNA_gene"]]
     for limit in limits:
         print("Loading", limit, "...")
         load_gff_data(gff_file, limit)
@@ -318,6 +327,6 @@ def parse_gff():
 
 if __name__ == '__main__':
     time.sleep(10)
-    # delete_data()
-    # parse_gff()
+    delete_data()
+    parse_gff()
     build_relationships()
