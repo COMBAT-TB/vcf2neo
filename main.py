@@ -1,16 +1,24 @@
+import StringIO
+import csv
 import time
 from os import getenv
 
 from BCBio import GFF
+from bioservices import UniProt
 from py2neo import Graph, watch
 from tqdm import tqdm
 
-from model.model import Organism, Feature, FeatureLoc, Gene, PseudoGene, CDS, Transcript, Exon, TRna, NCRna, RRna
+from model.model import Organism, Feature, FeatureLoc, Gene, PseudoGene, CDS, Transcript, Exon, TRna, NCRna, RRna, \
+    DbXref, Polypeptide, CvTerm, Publication
 
 graph = Graph(host=getenv("DB", "localhost"), bolt=True,
               password=getenv("NEO4J_PASSWORD", ""))
 
 watch("neo4j.bolt")
+
+gff_file = "data/MTB_H37rv.gff3"
+
+u = UniProt(verbose=False)
 
 
 def delete_data():
@@ -229,7 +237,7 @@ def build_relationships():
                 # Find transcript: A gene is a parent to it.
                 transcript = Transcript.select(
                     graph).where(
-                        "_.parent = '{}'".format(_feature.uniquename)).first()
+                    "_.parent = '{}'".format(_feature.uniquename)).first()
                 if transcript:
                     transcript.part_of.add(gene)
                     graph.push(transcript)
@@ -280,17 +288,244 @@ def build_relationships():
         graph.push(feature)
 
 
-def load_gff_data(gff_file, limit):
+def get_locus_tags(_gff_file, chunk):
+    """
+    Return a list of locus tags from gff_file
+    :param _gff_file:
+    :param chunk
+    :return:
+    """
+    print("Getting locus_tags...")
+    count = 0
+    locus_tags = []
+    for rec in GFF.parse(_gff_file, limit_info=dict(gff_type=['gene'])):
+        for gene in rec.features:
+            locus_tag = gene.qualifiers["gene_id"][0]
+            count += 1
+            locus_tags.append(locus_tag)
+            if count == chunk:
+                yield locus_tags
+                locus_tags = []
+                count = 0
+    yield locus_tags
+
+
+def search_uniprot(query, columns, proteome='UP000001584'):
+    """
+    Search UniProt and return results as list
+    :param query:
+    :param columns:
+    :param proteome:
+    :return:
+    """
+    query = "taxonomy:83332+AND+proteome:{}+AND+{}".format(proteome, query)
+
+    result = u.search(query=query, frmt="tab", columns=columns, sort=None)
+    reader = csv.reader(StringIO.StringIO(result), delimiter='\t')
+    try:
+        reader.next()
+    except StopIteration:
+        return []
+    else:
+        return list(reader)
+
+
+def create_cv_term_nodes(polypeptide, bp, cc, mf):
+    """
+    Create CvTerm Nodes.
+    :param polypeptide:
+    :param bp:
+    :param cc:
+    :param mf:
+    :return:
+    """
+    # go(biological process)
+    go_bp_ids = [t[t.find('G'):-1] for t in bp.split('; ') if t is not '']
+    go_bp_defs = [t[:t.find('[') - 1] for t in bp.split('; ') if t is not '']
+    # go(cellular component)
+    go_cc_ids = [t[t.find('G'):-1] for t in cc.split('; ') if t is not '']
+    go_cc_defs = [t[:t.find('[') - 1] for t in cc.split('; ') if t is not '']
+    # go(molecular function)
+    go_mf_ids = [t[t.find('G'):-1] for t in mf.split('; ') if t is not '']
+    go_mf_defs = [t[:t.find('[') - 1] for t in mf.split('; ') if t is not '']
+
+    # TODO: Find a way to refactor this.
+    for _id in go_bp_ids:
+        cv = CvTerm()
+        for _def in go_bp_defs:
+            cv.name = _id
+            cv.definition = _def
+            cv.namespace = "biological process"
+            graph.create(cv)
+            polypeptide.cvterm.add(cv)
+            graph.push(polypeptide)
+
+    for _id in go_mf_ids:
+        cv = CvTerm()
+        for _def in go_mf_defs:
+            cv.name = _id
+            cv.definition = _def
+            cv.namespace = "cellular component"
+            graph.create(cv)
+            polypeptide.cvterm.add(cv)
+            graph.push(polypeptide)
+    for _id in go_cc_ids:
+        cv = CvTerm()
+        for _def in go_cc_defs:
+            cv.name = _id
+            cv.definition = _def
+            cv.namespace = "molecular function"
+            graph.create(cv)
+            polypeptide.cvterm.add(cv)
+            graph.push(polypeptide)
+
+
+def create_interpro_term_nodes(polypeptide, entry):
+    """
+    Create InterPro Term Nodes.
+    :param polypeptide:
+    :param entry:
+    :return:
+    """
+    # http://generic-model-organism-system-database.450254.n5.nabble.com/Re-GMOD-devel-Storing-Interpro-domains-in-Chado-td459778.html
+    terms = [t for t in entry.split("; ") if t is not '']
+    for interpro in terms:
+        import time
+        dbxref = DbXref(db="InterPro", accession=interpro, version=time.time())
+        graph.create(dbxref)
+        polypeptide.dbxref.add(dbxref)
+        graph.push(polypeptide)
+
+
+def create_pub_nodes(polypeptide, pubs):
+    """
+    Create Publication Nodes
+    :param polypeptide:
+    :param pubs:
+    :return:
+    """
+    citations = [c for c in pubs.split("; ") if c is not '']
+
+    for citation in citations:
+        pub = Publication()
+        pub.pmid = citation
+
+        polypeptide.published_in.add(pub)
+        graph.push(polypeptide)
+
+
+def build_protein_interaction_rels(protein_interaction_dict):
+    """
+    Build protein-protein interactions
+    :param protein_interaction_dict:
+    :return:
+    """
+    for uni_id, interactors in protein_interaction_dict.items():
+        if len(interactors) > 0:
+            poly = Polypeptide.select(graph, uni_id).first()
+            interactors = interactors.split('; ')
+            for interactor in interactors:
+                if interactor == 'Itself':
+                    interactor = poly.uniquename
+                _poly = Polypeptide.select(graph, interactor).first()
+                if _poly is None:
+                    print("No Polypeptide with uniquename: {}".format(interactor))
+                    time.sleep(2)
+                else:
+                    poly.interacts_with.add(_poly)
+                    graph.push(poly)
+
+
+def create_uniprot_nodes(uniprot_data):
+    """
+    Build DbXref nodes from UniProt results.
+    :param uniprot_data:
+    :return:
+    """
+    print("=========================================")
+    print("About to create Nodes from UniProt data.")
+    print("=========================================")
+    time.sleep(2)
+    count = 0
+    protein_interaction_dict = dict()
+    for entry in uniprot_data:
+        protein_interaction_dict[entry[0]] = entry[6]
+        count += 1
+
+        dbxref = DbXref(db="UniProt", accession=entry[1], version=entry[0])
+        graph.create(dbxref)
+
+        polypeptide = Polypeptide()
+        polypeptide.name = entry[9]
+        polypeptide.uniquename = entry[0]
+        polypeptide.ontology_id = polypeptide.so_id
+        polypeptide.seqlen = entry[16]
+        polypeptide.residues = entry[14]
+        polypeptide.parent = entry[2]
+        polypeptide.family = entry[17]
+        polypeptide.function = entry[13]
+        graph.create(polypeptide)
+
+        gene = Gene.select(graph, "gene:" + entry[2]).first()
+        if gene:
+            _feature = Feature.select(graph).where("_.parent = '{}'".format(gene.uniquename)).first()
+            if _feature:
+                transcript = Transcript.select(graph, _feature.uniquename).first()
+                if transcript:
+                    cds = CDS.select(graph, "CDS" + transcript.uniquename[transcript.uniquename.find(":"):]).first()
+                    if cds:
+                        # Polypetide-derives_from->CDS
+                        polypeptide.derives_from.add(cds)
+                        cds.polypeptide.add(polypeptide)
+                        graph.push(polypeptide)
+                        graph.push(cds)
+
+        polypeptide.dbxref.add(dbxref)
+        graph.push(polypeptide)
+
+        create_cv_term_nodes(polypeptide, entry[18], entry[19], entry[20])
+        create_interpro_term_nodes(polypeptide, entry[5])
+        create_pub_nodes(polypeptide, entry[11])
+    build_protein_interaction_rels(protein_interaction_dict)
+    print ("TOTAL:", count)
+
+
+def query_uniprot(locus_tags):
+    """
+    Get data from UniProt
+    :param locus_tags:
+    :return:
+    """
+    print("Querying UniProt...")
+    columns = "id, entry name, genes(OLN), genes, go-id, interpro, interactor, genes(PREFERRED), " \
+              "feature(DOMAIN EXTENT), protein names, go, citation, 3d, comment(FUNCTION), sequence, mass, " \
+              "length, families, go(biological process),  go(molecular function), go(cellular component)," \
+              " genes(ALTERNATIVE), genes(ORF), version(sequence)"
+    uniprot_data = []
+    results = []
+    for tag_list in locus_tags:
+        query = '(' + '+OR+'.join(['gene:' + name for name in tag_list]) + ')'
+        result = search_uniprot(query, columns)
+        uniprot_data.append(result)
+
+    for data in uniprot_data:
+        for entry in data:
+            results.append(entry)
+    create_uniprot_nodes(results)
+    return results
+
+
+def load_gff_data(_gff_file, limit):
     """
     Extract and load features to Neo4j.
-    :param gff_file:
+    :param _gff_file:
     :param limit:
     :return:
     """
-    in_file = open(gff_file)
+    in_file = open(_gff_file)
     limit_info = dict(gff_type=limit)
     rna = ["tRNA_gene", "ncRNA_gene", "rRNA_gene"]
-    for rec in GFF.parse(gff_file, limit_info=limit_info):
+    for rec in GFF.parse(_gff_file, limit_info=limit_info):
         for feature in tqdm(rec.features):
             create_feature_nodes(feature)
             if feature.type == 'gene':
@@ -306,26 +541,26 @@ def load_gff_data(gff_file, limit):
             elif feature.type == 'CDS':
                 create_cds_nodes(feature)
             create_featureloc_nodes(feature)
+    query_uniprot(get_locus_tags(gff_file, 400))
     in_file.close()
 
 
-def parse_gff():
+def parse_gff(_gff_file):
     """
     Parse GFF file.
     :return:
     """
-    gff_file = "data/MTB_H37rv.gff3"
     create_organism_nodes()
     limits = [["transcript"], ["CDS"], ["gene"], ["pseudogene"], ["exon"],
               ["tRNA_gene", "ncRNA_gene", "rRNA_gene"]]
     for limit in limits:
         print("Loading", limit, "...")
-        load_gff_data(gff_file, limit)
+        load_gff_data(_gff_file, limit)
     print("Done.")
 
 
 if __name__ == '__main__':
     time.sleep(10)
     delete_data()
-    parse_gff()
+    parse_gff(gff_file)
     build_relationships()
