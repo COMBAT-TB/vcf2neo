@@ -422,12 +422,12 @@ def build_protein_interaction_rels(protein_interaction_dict):
     """
     for uni_id, interactors in protein_interaction_dict.items():
         if len(interactors) > 0:
-            poly = Polypeptide.select(graph, uni_id).first()
+            poly = Polypeptide.select(graph).where("_.uniquename = '{}'".format(uni_id)).first()
             interactors = interactors.split('; ')
             for interactor in interactors:
                 if interactor == 'Itself':
                     interactor = poly.uniquename
-                _poly = Polypeptide.select(graph, interactor).first()
+                _poly = Polypeptide.select(graph).where("_.uniquename = '{}'".format(interactor)).first()
                 if _poly is None:
                     print("No Polypeptide with uniquename: {}".format(interactor))
                     time.sleep(2)
@@ -541,7 +541,6 @@ def load_gff_data(_gff_file, limit):
             elif feature.type == 'CDS':
                 create_cds_nodes(feature)
             create_featureloc_nodes(feature)
-    query_uniprot(get_locus_tags(gff_file, 400))
     in_file.close()
 
 
@@ -564,3 +563,4 @@ if __name__ == '__main__':
     delete_data()
     parse_gff(gff_file)
     build_relationships()
+    query_uniprot(get_locus_tags(gff_file, 400))
