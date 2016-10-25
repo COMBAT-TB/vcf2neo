@@ -466,13 +466,14 @@ def create_uniprot_nodes(uniprot_data):
         polypeptide.function = entry[13]
         graph.create(polypeptide)
 
-        gene = Gene.select(graph, "gene:" + entry[2]).first()
+        gene = Gene.select(graph).where("_.uniquename = 'gene:{}'".format(entry[2])).first()
         if gene:
             _feature = Feature.select(graph).where("_.parent = '{}'".format(gene.uniquename)).first()
             if _feature:
-                transcript = Transcript.select(graph, _feature.uniquename).first()
+                transcript = Transcript.select(graph).where("_.uniquename = '{}'".format(_feature.uniquename)).first()
                 if transcript:
-                    cds = CDS.select(graph, "CDS" + transcript.uniquename[transcript.uniquename.find(":"):]).first()
+                    cds = CDS.select(graph).where("_.uniquename = '{}'".format(
+                        "CDS" + transcript.uniquename[transcript.uniquename.find(":"):])).first()
                     if cds:
                         # Polypetide-derives_from->CDS
                         polypeptide.derives_from.add(cds)
