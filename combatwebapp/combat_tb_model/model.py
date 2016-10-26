@@ -1,299 +1,205 @@
-from neomodel import (StructuredNode, StringProperty, BooleanProperty, IntegerProperty, RelationshipTo,
-                      RelationshipFrom, Relationship, One, OneOrMore)
+from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 
 
-class Gene(StructuredNode):
-    """
-    Genes
-    """
-    # print 'Gene Nodes'
-    gene_id = StringProperty(unique_index=True)
-    uniprot_entry = StringProperty(index=True)
-    dbxref = StringProperty(index=True)
-    ncbi_id = StringProperty(index=True)
-    ncbi_acc = StringProperty(index=True)
-    ensembl_id = StringProperty(index=True)
-    name = StringProperty(index=True)
-    preffered_name = StringProperty()
-    locus_tag = StringProperty(index=True)
-    gene_synonym = StringProperty(index=True)
-    coding = StringProperty()
-    protein_id = StringProperty(index=True)
-    pseudo = StringProperty()
-    cdc_ortholog = StringProperty(index=True)
-    sub_feature = StringProperty()
-    start = IntegerProperty()
-    end = IntegerProperty()
-    strand = StringProperty()
-    description = StringProperty()
-    citation = StringProperty()
-    location = StringProperty()
-    length = IntegerProperty()
-    fasta = StringProperty()
+class Organism(GraphObject):
+    __primarykey__ = 'genus'
 
-    # @property
-    # def getLocation(self):
-    #   location = '{}...{} ({})'.format(self.start, self.end, self.strand)
-    #   return location
-    transcribed = RelationshipTo('Transcript', 'TRANSCRIBED', One)
-    translated = RelationshipTo('CDS', 'TRANSLATED', One)
-    has_ortholog = RelationshipTo('Ortholog', 'ORTHOLOG', OneOrMore)
-    has_go_terms = RelationshipTo('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
-    has_interpro_terms = RelationshipTo('InterPro', 'ASSOCIATED_WITH', OneOrMore)
-    mentioned_in = RelationshipTo('Publication', 'MENTIONED_IN', OneOrMore)
+    abbreviation = Property()
+    genus = Property()
+    species = Property()
+    common_name = Property()
+    comment = Property()
+
+    dbxref = RelatedTo("DbXref", "XREF")
+
+    def __init__(self, abbreviation=None, genus=None, species=None, common_name=None, comment=None):
+        self.abbreviation = abbreviation
+        self.genus = genus
+        self.species = species
+        self.common_name = common_name
+        self.comment = comment
 
 
-class Pseudogene(StructuredNode):
-    """
-    Transcripts
-    """
-    # print 'Pseudogene Nodes'
-    pseudogene_id = StringProperty(unique_index=True)
-    name = StringProperty()
-    gene_id = StringProperty(index=True)
-    description = StringProperty(index=True)
-    biotype = StringProperty()
-    start = IntegerProperty()
-    end = IntegerProperty()
-    strand = IntegerProperty()
-    location = StringProperty()
-    sequence = StringProperty()
+class Feature(GraphObject):
+    __primarykey__ = 'uniquename'
 
-    has_ortholog = RelationshipTo('Ortholog', 'ORTHOLOG', OneOrMore)
+    name = Property()
+    uniquename = Property()
+    residues = Property()
+    seqlen = Property()
+    md5checksum = Property()
+    parent = Property()  # To build related_to rel.
+    is_analysis = Property()
+    is_obsolete = Property()
+    timeaccessioned = Property()
+    timelastmodfied = Property()
+    ontology_id = Property()
 
-
-class Transcript(StructuredNode):
-    """
-    Transcripts
-    """
-    # print 'Transcript Nodes'
-    transcript_id = StringProperty(unique_index=True)
-    name = StringProperty()
-    gene = StringProperty(index=True)
-    note = StringProperty(index=True)
-    coding = StringProperty()
-    start = IntegerProperty()
-    end = IntegerProperty()
-    strand = IntegerProperty()
-    location = StringProperty()
-    sequence = StringProperty()
-
-    translated = RelationshipTo('Protein', 'TRANSLATED', One)
-    encodes = RelationshipTo('CDS', 'PROCESSED_INTO', One)
-    # yields = Relationship('Trna', 'YIELDS', OneOrMore)
-    # yields = RelationshipFrom('NCrna', 'HAS', OneOrMore)
-    # yields = RelationshipFrom('Rrna', 'HAS', OneOrMore)
-    yields = Relationship('Trna', 'HAS', OneOrMore)
-    __yields = Relationship('NCrna', 'HAS', OneOrMore)
-    __yields_ = Relationship('Rrna', 'HAS', OneOrMore)
+    belongs_to = RelatedTo("Organism", "BELONGS_TO")
+    location = RelatedTo("FeatureLoc", "LOCATED_AT")
+    related_to = RelatedTo("Feature", "RELATED_TO")
+    published_in = RelatedTo("Publication", "PUBLISHED_IN")
+    dbxref = RelatedTo("DbXref", "XREF")
+    cvterm = RelatedTo("CvTerm", "ASSOC_WITH")
 
 
-class Trna(StructuredNode):
-    """
-    tRNA
-    """
-    # print 'Trna Nodes'
-    trna_id = StringProperty(unique_index=True)
-    name = StringProperty()
-    gene_id = StringProperty(index=True)
-    note = StringProperty(index=True)
-    biotype = StringProperty()
-    start = IntegerProperty()
-    end = IntegerProperty()
-    strand = IntegerProperty()
-    location = StringProperty()
-    sequence = StringProperty()
+class Gene(Feature):
+    so_id = "SO:0000704"
 
-    holds = RelationshipFrom('Transcript', OneOrMore)
+    is_a = RelatedTo("Feature", "IS_A")
 
 
-class NCrna(StructuredNode):
-    """
-    ncRNA
-    """
-    # print 'NCrna Nodes'
-    ncrna_id = StringProperty(unique_index=True)
-    name = StringProperty()
-    gene_id = StringProperty(index=True)
-    note = StringProperty(index=True)
-    biotype = StringProperty()
-    start = IntegerProperty()
-    end = IntegerProperty()
-    strand = IntegerProperty()
-    location = StringProperty()
-    sequence = StringProperty()
+class PseudoGene(Feature):
+    so_id = "SO:0000336"
 
-    holds = RelationshipFrom('Transcript', OneOrMore)
+    is_a = RelatedTo("Feature", "IS_A")
 
 
-class Rrna(StructuredNode):
-    """
-    rRNA
-    """
-    # print 'Rrna Nodes'
-    rrna_id = StringProperty(unique_index=True)
-    name = StringProperty()
-    gene_id = StringProperty(index=True)
-    note = StringProperty(index=True)
-    biotype = StringProperty()
-    start = IntegerProperty()
-    end = IntegerProperty()
-    strand = IntegerProperty()
-    location = StringProperty()
-    sequence = StringProperty()
+class Transcript(Feature):
+    so_id = "SO:0000673"
 
-    holds = RelationshipFrom('Transcript', OneOrMore)
+    is_a = RelatedTo("Feature", "IS_A")
+    part_of = RelatedTo("Gene", "PART_OF")
 
 
-class Exon(StructuredNode):
-    """
-    Exon
-    """
-    # print 'Exon Nodes'
-    exon_id = StringProperty()
-    name = StringProperty()
-    location = StringProperty()
-    transcript = StringProperty(index=True)
-
-    part_of = RelationshipFrom('Transcript', OneOrMore)
+class TRna(Feature):
+    so_id = "SO:0000253"
 
 
-class CDS(StructuredNode):
-    """
-    CDS
-    """
-    # print 'CDS Nodes'
-    cds_id = StringProperty(unique_index=True)
-    name = StringProperty(index=True)
-    transcript = StringProperty()
-    product = StringProperty(index=True)
-    protein_id = StringProperty(index=True)
-
-    composed_of = RelationshipTo('Exon', 'COMPOSED_OF', OneOrMore)
-    translated_ = RelationshipTo('Protein', 'TRANSLATED', OneOrMore)
+class NCRna(Feature):
+    so_id = "SO:0000655"
 
 
-class Protein(StructuredNode):
-    """
-    Proteins
-    """
-    # print 'Protein Nodes'
-    protein_id = StringProperty(unique_index=True)
-    dbxref = StringProperty(index=True)
-    ncbi_id = StringProperty(index=True)
-    ncbi_acc = StringProperty(index=True)
-    uniprot_id = StringProperty(index=True)
-    swissprot_id = StringProperty(index=True)
-    pdb = StringProperty()
-    ensembl_id = StringProperty(index=True)
-    parent = StringProperty(index=True)
-    name = StringProperty(index=True)
-    recommended_name = StringProperty()
-    sequence = StringProperty()
-    domain = StringProperty()
-    family = StringProperty()
-    function = StringProperty()
-    three_d = StringProperty()
-    length = IntegerProperty()
-    mass = StringProperty()
-    pdb_id = StringProperty()
-    transcript = StringProperty(index=True)
-    start = IntegerProperty()
-    end = IntegerProperty()
-    strand = IntegerProperty()
-    interactor = StringProperty(index=True)
-
-    interacts = RelationshipTo('Protein', 'INTERACTS_WITH', OneOrMore)
-    interacts_ = RelationshipTo('HumanProtein', 'INTERACTS_WITH', OneOrMore)
-    associated_with = RelationshipTo('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
-    associated_ = RelationshipTo('InterPro', 'ASSOCIATED_WITH', OneOrMore)
+class RRna(Feature):
+    so_id = "SO:0000252"
 
 
-class HumanProtein(StructuredNode):
-    """
-    HumanProteins
-    """
-    # print 'Protein Nodes'
-    protein_id = StringProperty(unique_index=True)
-    tb_protein = StringProperty(index=True)
-    dbxref = StringProperty(index=True)
-    ncbi_id = StringProperty(index=True)
-    ncbi_acc = StringProperty(index=True)
-    uniprot_id = StringProperty(index=True)
-    swissprot_id = StringProperty(index=True)
-    pdb = StringProperty()
-    ensembl_id = StringProperty(index=True)
-    parent = StringProperty(index=True)
-    name = StringProperty(index=True)
-    sequence = StringProperty()
-    length = IntegerProperty()
-    transcript = StringProperty(index=True)
-    start = IntegerProperty()
-    end = IntegerProperty()
-    strand = IntegerProperty()
-    interactor = StringProperty(index=True)
+class Exon(Feature):
+    so_id = "SO:0000147"
 
-    interacts_ = RelationshipFrom('Protein', OneOrMore)
-    # associated_with = RelationshipTo('GoTerm', 'ASSOCIATED_WITH', OneOrMore)
-    # associated_ = RelationshipTo('InterPro', 'ASSOCIATED_WITH', OneOrMore)
+    is_a = RelatedTo("Feature", "IS_A")
+    part_of = RelatedTo("Transcript", "PART_OF")
 
 
-class Ortholog(StructuredNode):
-    """
-    Ortholog
-    """
-    # print 'Ortholog Nodes'
-    locus_name = StringProperty(unique_index=True)
-    uniprot_id = StringProperty(index=True)
-    organism = StringProperty()
+class CDS(Feature):
+    so_id = "SO:0000316"
 
-    has_ortholog = RelationshipFrom('Gene', OneOrMore)
+    is_a = RelatedTo("Feature", "IS_A")
+    part_of = RelatedTo("Transcript", "PART_OF")
+    polypeptide = RelatedFrom('Polypeptide', "DERIVES_FROM")
 
 
-class GoTerm(StructuredNode):
-    """
-    GO Terms
-    """
-    # print 'GO Nodes'
-    go_id = StringProperty(unique_index=True)
-    name = StringProperty(index=True)
-    namespace = StringProperty(index=True)
-    is_a = StringProperty()
+class Polypeptide(Feature):
+    so_id = "SO:0000104"
 
-    is_a_ = Relationship('GoTerm', 'IS_A', OneOrMore)
-    _genes = RelationshipFrom('Gene', OneOrMore)
+    family = Property()
+    function = Property()
+
+    derives_from = RelatedTo("CDS", "DERIVES_FROM")
+    interacts_with = RelatedTo("Polypeptide", "INTERACTS_WITH")
 
 
-class InterPro(StructuredNode):
-    """
-    InterPro
-    """
-    # print 'InterPro Nodes'
-    interpro_id = StringProperty(unique_index=True)
-    name = StringProperty()
-    _genes = RelationshipFrom('Gene', OneOrMore)
+class FeatureLoc(GraphObject):
+    __primarykey__ = 'srcfeature_id'  # used feature.uniquename
+
+    srcfeature_id = Property()
+    fmin = Property()
+    is_fmin_partial = Property()
+    fmax = Property()
+    is_fmax_partial = Property()
+    strand = Property()
+    phase = Property()
+    residue_info = Property()
+    locgroup = Property()
+    rank = Property()
+
+    feature = RelatedFrom("Feature", "ON")
+    published_in = RelatedTo("Publication", "PUBLISHED_IN")
+
+    def __init__(self, srcfeature_id, fmin=None, is_fmin_partial=None, fmax=None, is_fmax_partial=None, strand=None,
+                 phase=None, residue_info=None, locgroup=None,
+                 rank=None):
+        self.srcfeature_id = srcfeature_id
+        self.fmin = fmin
+        self.is_fmin_partial = is_fmin_partial
+        self.fmax = fmax
+        self.is_fmax_partial = is_fmax_partial
+        self.strand = strand
+        self.phase = phase
+        self.residue_info = residue_info
+        self.locgroup = locgroup
+        self.rank = rank
+        if self.fmin > self.fmax:
+            raise ValueError("fmin cannot be greater than fmax: {} > {}.".format(self.fmin, self.fmax))
 
 
-class Pfam(StructuredNode):
-    """
-    Pfam
-    """
-    # print 'Pfam Nodes'
-    pfam_id = StringProperty(index=True)
-    name = StringProperty()
+class Publication(GraphObject):
+    __primarykey__ = 'pmid'
+
+    pmid = Property()
+    title = Property()
+    volumetitle = Property()
+    volume = Property()
+    series_name = Property()
+    issue = Property()
+    year = Property()
+    pages = Property()
+    miniref = Property()
+    uniquename = Property()
+    is_obsolete = Property()
+    publisher = Property()
+    pubplace = Property()
+
+    author = RelatedFrom("Author", "WROTE")
 
 
-class Domain(StructuredNode):
-    # print 'Domain Nodes'
-    name = StringProperty(index=True)
+class Author(GraphObject):
+    __primarykey__ = 'givennames'
+
+    editor = Property()
+    surname = Property()
+    givennames = Property()
+    suffix = Property()
+    rank = Property()
+
+    wrote = RelatedTo("Publication", "WROTE")
+
+    def __init__(self, editor=None, surname=None, givennames=None, suffix=None):
+        self.editor = editor
+        self.surname = surname
+        self.givennames = givennames
+        self.suffix = suffix
 
 
-class Publication(StructuredNode):
-    pubmed_id = StringProperty(unique_index=True)
-    pubmed_ci = StringProperty()
-    title = StringProperty(index=True)
-    authors = StringProperty(index=True)
-    source = StringProperty()
-    journal = StringProperty(index=True)
+class CvTerm(GraphObject):
+    __primarykey__ = 'name'
 
-    mentioned_in = RelationshipFrom('Gene', OneOrMore)
+    name = Property()
+    definition = Property()
+    is_obsolete = Property()
+    namespace = Property()
+
+    dbxref = RelatedTo("DbXref", "XREF")
+    is_a = RelatedTo("CvTerm", "IS_A")
+    part_of = RelatedTo("CvTerm", "PART_OF")
+    feature = RelatedFrom("Feature", "ASSOC_WITH")
+
+    def __init__(self, name=None, definition=None, is_obsolete=None):
+        self.name = name
+        self.definition = definition
+        self.is_obsolete = is_obsolete
+
+
+class DbXref(GraphObject):
+    __primarykey__ = 'accession'
+
+    accession = Property()
+    version = Property()
+    db = Property()
+    description = Property()
+
+    def __init__(self, db, accession, version, description=None):
+        self.accession = accession
+        self.version = version
+        self.db = db
+        self.description = description
