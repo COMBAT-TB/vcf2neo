@@ -59,7 +59,9 @@ except ImportError:
 
 
 from ..combat_tb_model import model
-from neomodel import db
+from py2neo import Graph, getenv
+
+graph = Graph(host=getenv("DB", "localhost"), bolt=True, password=getenv("NEO4J_PASSWORD", ""))
 
 
 def enrichment_analysis(geneset, mode='over', multipletest_method='fdr_bh'):
@@ -72,7 +74,7 @@ def enrichment_analysis(geneset, mode='over', multipletest_method='fdr_bh'):
     (:CDS) <-[:PROCESSED_INTO]- (:Transcript) <-[:TRANSCRIBED]- (g:Gene) RETURN
     t.go_id, t.name, count(g) AS t_count ORDER BY t_count DESC
     '''
-    goterm_prevalence, _ = db.cypher_query(goterm_prevalence_query)
+    goterm_prevalence, _ = graph.data(goterm_prevalence_query)
     goterm_prevalence_dict = dict()
     for goterm_id, _, count in goterm_prevalence:
         goterm_prevalence_dict[goterm_id] = count
@@ -82,7 +84,7 @@ def enrichment_analysis(geneset, mode='over', multipletest_method='fdr_bh'):
     (:CDS) <-[:PROCESSED_INTO]- (:Transcript) <-[:TRANSCRIBED]- (g:Gene) WHERE g.locus_tag IN {tag_list}
     RETURN t.go_id, t.name, count(g) AS t_count ORDER BY t_count DESC
     '''.format(tag_list=tag_list)
-    gs_goterm_prevalence, _ = db.cypher_query(gs_goterm_prevalence_query)
+    gs_goterm_prevalence, _ = graph.data(gs_goterm_prevalence_query)
     geneset_size = len(geneset)
     p_vals = []
     if mode == 'over':
