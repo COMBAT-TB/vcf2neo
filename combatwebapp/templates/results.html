@@ -54,7 +54,7 @@
                         </tr>
                         <tr>
                             <th>Rv number</th>
-                            <td>{{ gene.locus_tag or gene.name }}</td>
+                            <td>{{ gene.uniquename[5:] or gene.name }}</td>
                         </tr>
                         <tr></tr>
                         <tr>
@@ -83,7 +83,7 @@
                         </tr>
                         <tr>
                             <td><b>Protein length</b></td>
-                            <td>{{ protein.length }}</td>
+                            <td>{{ protein.seqlen }}</td>
                         </tr>
                         </tbody>
                     </table>
@@ -129,9 +129,9 @@
                         <tbody>
                         <tr>
                             <td>{{ gene.coding or pseudogene }}</td>
-                            <td>{{ gene.start }}</td>
-                            <td>{{ gene.end }}</td>
-                            <td>{{ gene.strand }}</td>
+                            <td>{{ loc.fmin }}</td>
+                            <td>{{ loc.fmax }}</td>
+                            <td>{{ loc.strand }}</td>
                         </tr>
                         </tbody>
                     </table>
@@ -154,21 +154,21 @@
                             <th>GenBank</th>
                             <td>
                                 <a target="_blank"
-                                   href="http://www.ncbi.nlm.nih.gov/protein/{{ protein.ensembl_id or gene.locus_tag }}">{{ protein.ensembl_id or gene.locus_tag }}</a>
+                                   href="http://www.ncbi.nlm.nih.gov/protein/{{ protein.ensembl_id or gene.uniquename[5:] }}">{{ protein.ensembl_id or gene.uniquename[5:] }}</a>
                             </td>
                         </tr>
                         <tr>
                             <th>EnsemblBacteria</th>
                             <td>
                                 <a target="_blank"
-                                   href="http://bacteria.ensembl.org/Mycobacterium_tuberculosis_h37rv/Gene/Summary?t={{ protein.ensembl_id or gene.locus_tag }}">{{ protein.ensembl_id or gene.locus_tag }}</a>
+                                   href="http://bacteria.ensembl.org/Mycobacterium_tuberculosis_h37rv/Gene/Summary?t={{ protein.ensembl_id or gene.uniquename[5:] }}">{{ protein.ensembl_id or gene.uniquename[5:] }}</a>
                             </td>
                         </tr>
                         <tr>
                             <th>TubercuList</th>
                             <td>
                                 <a target="_blank"
-                                   href="http://tuberculist.epfl.ch/quicksearch.php?gene+name={{ gene.locus_tag or gene.gene_id }}">{{ gene.locus_tag or gene.gene_id }}</a>
+                                   href="http://tuberculist.epfl.ch/quicksearch.php?gene+name={{ gene.uniquename[5:] or gene.name }}">{{ gene.uniquename[5:] or gene.name }}</a>
                             </td>
                         </tr>
                         <tr>
@@ -176,7 +176,7 @@
                             <td>
                                 {% for entry in go_terms %}
                                     <a target="_blank"
-                                       href="http://amigo.geneontology.org/amigo/term/{{ entry.go_id }}">{{ entry.name }}</a>
+                                       href="http://amigo.geneontology.org/amigo/term/{{ entry.name }}">{{ entry.definition }}</a>
                                     <br>
                                 {% endfor %}
                             </td>

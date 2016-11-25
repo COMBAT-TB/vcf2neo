@@ -13,7 +13,7 @@ from py2neo import Graph, getenv
 from combat_tb_model.model import *
 from gsea import enrichment_analysis
 
-graph = Graph(host=getenv("DB", "localhost"), bolt=True, password=getenv("NEO4J_PASSWORD", ""))
+graph = Graph(host=getenv("DB", "thoba.sanbi.ac.za"), http_port=7477, bolt=True, password=getenv("NEO4J_PASSWORD", ""))
 
 app = Flask(__name__)
 
@@ -172,7 +172,7 @@ def search_gene(uniquename):
     try:
         print('Searching Gene Nodes with Name=', uniquename)
         gene = Gene.select(graph).where(
-            "_.name =~'(?i){}.*' OR _.uniquename=~'(?i){}.*'".format(uniquename, uniquename))
+            "_.name =~'(?i){}.*' OR _.uniquename=~'(?i){}.*'".format(uniquename, uniquename)).first()
     except Exception as e:
         raise e
     finally:
@@ -189,7 +189,6 @@ def search():
     publications = []
     aus = dict()
     pdb_ids = []
-    print('ITEMS:', request.args.items())
     if request.method == 'GET':
         term = request.args.get('gene')
         gene = search_gene(term)
@@ -199,21 +198,34 @@ def search():
         for feature in features:
             if 'gene:' in feature.uniquename:
                 gene = search_gene(feature.uniquename)
-                location = feature.location
-                # goterms = feature.cvterms
-                # for go in goterms:
-                #     print(go.name)
-                for loc in location:
+                gene_uname = gene.uniquename
+                try:
+                    protein = Polypeptide.select(graph).where(
+                        "_.parent = '{}'".format(gene_uname[gene_uname.find(':') + 1:])).first()
+                except Exception as e:
+                    raise e
+                finally:
+                    go_term_s = protein.cvterm
+                    for go in go_term_s:
+                        print(go)
+                        go_terms.append(go)
+                    interpro_terms = protein.dbxref
+                    for inter in interpro_terms:
+                        print(inter)
+                        if 'nterPro' in inter.db:
+                            inter_pro.append(inter.accession)
+                locs = feature.location
+                for loc in locs:
                     print(loc.fmin, loc.fmax)
-                    location = str(str(loc.fmin) + '..' + str(loc.fmax))
+                    location = str(loc.fmin) + '..' + str(loc.fmax)
+                    loc = loc
+
     # if gene and len(gene) > 1:
     #     print(len(gene))
     #     length = len(gene)
     #     print('Gene is an array...', len(gene))
     #     return render_template('m_results.html', genes=gene, length=length)
     if gene:
-        # Trying to zoom out
-        # location = str(int(gene[0].location[0].fmin)) + '..' + str(int(gene[0].location[0].fmax))
         # for ortholog in gene[0].has_ortholog.match():
         #     ortholog_name = ortholog.locus_name
         # for go in feature.cvterm:
@@ -253,7 +265,7 @@ def search():
 
         return render_template('results.html', term=term, gene=gene, PseudoGene=PseudoGene,
                                ortholog_name=ortholog_name, citation=publications, authors=aus, pdb_ids=pdb_ids,
-                               location=location, go_terms=go_terms, inter_pro=inter_pro, protein=protein,
+                               loc=loc, location=location, go_terms=go_terms, inter_pro=inter_pro, protein=protein,
                                interactor=interact, h_interact=h_interact)
     else:
         gene = None
