@@ -13,7 +13,7 @@ from py2neo import Graph, getenv
 from combat_tb_model.model import *
 from gsea import enrichment_analysis
 
-graph = Graph(host=getenv("DB", "thoba.sanbi.ac.za"), http_port=7477, bolt=True, password=getenv("NEO4J_PASSWORD", ""))
+graph = Graph(host=getenv("DB", "localhost"), http_port=7474, bolt=True, password=getenv("NEO4J_PASSWORD", ""))
 
 app = Flask(__name__)
 
@@ -214,55 +214,13 @@ def search():
                         print(inter)
                         if 'nterPro' in inter.db:
                             inter_pro.append(inter.accession)
+                    pdb_ids = protein.pdb_id
                 locs = feature.location
                 for loc in locs:
                     print(loc.fmin, loc.fmax)
                     location = str(loc.fmin) + '..' + str(loc.fmax)
                     loc = loc
-
-    # if gene and len(gene) > 1:
-    #     print(len(gene))
-    #     length = len(gene)
-    #     print('Gene is an array...', len(gene))
-    #     return render_template('m_results.html', genes=gene, length=length)
     if gene:
-        # for ortholog in gene[0].has_ortholog.match():
-        #     ortholog_name = ortholog.locus_name
-        # for go in feature.cvterm:
-        #     go_terms.append(go)
-        # for inter in gene[0].has_interpro_terms.match():
-        #     inter_pro.append(str(inter.interpro_id))
-        # for cdc in gene[0].translated.match():
-        #     for prot in cdc.translated_.match():
-        #         protein = prot
-        # try:
-        #     for actor in protein.interacts.match():
-        #         ints.append(actor)
-        # except Exception as e:
-        #     pass
-        # try:
-        #     for h_actor in protein.interacts_.match():
-        #         h_ints.append(h_actor)
-        # except Exception as e:
-        #     pass
-        # interact = [a.uniprot_id for a in ints]
-        # h_interact = [a.protein_id for a in h_ints]
-        # if gene[0].citation:
-        #     # Dealing with unicode
-        #     citation = gene[0].citation.encode('utf-8').replace('[', '').replace(']', '').split(', ')
-        #     cite = [ct[1:-1] for ct in citation]
-        #     for entry in cite:
-        #         if len(entry) > 0:
-        #             pub = Publication.nodes.get(pubmed_id=entry)
-        #             publications.append(pub)
-        #     # Dealing with Unicode
-        #     for p in publications:
-        #         au = p.authors.encode('utf-8').replace('[', '').replace(']', '').split(', ')
-        #         aus[p.pubmed_id] = [a[1:-1] for a in au]
-        #     # Dealing with Unicode
-        #     structure_ids = protein.pdb_id.encode('utf-8').replace('[', '').replace(']', '').split(', ')
-        #     pdb_ids = [struc[2:-1] for struc in structure_ids]
-
         return render_template('results.html', term=term, gene=gene, PseudoGene=PseudoGene,
                                ortholog_name=ortholog_name, citation=publications, authors=aus, pdb_ids=pdb_ids,
                                loc=loc, location=location, go_terms=go_terms, inter_pro=inter_pro, protein=protein,
