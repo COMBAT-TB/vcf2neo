@@ -50,7 +50,7 @@
                         </tr>
                         <tr>
                             <th>Preferred name</th>
-                            <td>{{ gene.preffered_name or '' }}</td>
+                            <td>{{ gene.preffered_name or gene.name }}</td>
                         </tr>
                         <tr>
                             <th>Rv number</th>
@@ -128,7 +128,7 @@
 
                         <tbody>
                         <tr>
-                            <td>{{ gene.coding or pseudogene }}</td>
+                            <td>{{ gene.coding or gene.biotype }}</td>
                             <td>{{ loc.fmin }}</td>
                             <td>{{ loc.fmax }}</td>
                             <td>{{ loc.strand }}</td>
@@ -147,7 +147,7 @@
                             <th>UniProt</th>
                             <td>
                                 <a target="_blank"
-                                   href="http://www.uniprot.org/uniprot/{{ gene.uniprot_entry or gene.gene_id }}">{{ gene.uniprot_entry or gene.gene_id }}</a>
+                                   href="http://www.uniprot.org/uniprot/{{ protein.uniquename or protein.parent }}">{{ protein.uniquename or protein.parent }}</a>
                             </td>
                         </tr>
                         <tr>
@@ -295,7 +295,7 @@
     <script type="text/javascript">
         window.drawgraph = function () {
             $.ajax({
-                url: '{{ url_for('.ppi_data', locus_tag=gene.locus_tag or '') }}',
+                url: '{{ url_for('.ppi_data', locus_tag=protein.parent or '') }}',
                 dataType: 'json',
                 cache: false,
                 success: function (results) {
