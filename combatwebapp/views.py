@@ -13,7 +13,8 @@ from py2neo import Graph, getenv
 from combat_tb_model.model import *
 from gsea import enrichment_analysis
 
-graph = Graph(host=getenv("DB", "localhost"), http_port=7474, bolt=True, password=getenv("NEO4J_PASSWORD", ""))
+graph = Graph(host=getenv("DB", "combattb.sanbi.ac.za"), http_port=7474, bolt=True,
+              password=getenv("NEO4J_PASSWORD", ""))
 
 app = Flask(__name__)
 
@@ -45,58 +46,62 @@ def find_interacting_proteins(locus_tag):
     def go_term_subgraph(protein, terms_seen):
         subgraph = []
         edges = []
-        go_terms = protein.associated_with.all()
+        go_terms = protein.cvterm
         for term in go_terms:
-            if term.go_id not in terms_seen:
-                term_dict = dict(data=dict(id=term.go_id,
-                                           label='{} ({})'.format(term.name, term.go_id),
+            if term.name not in terms_seen:
+                term_dict = dict(data=dict(id=term.name,
+                                           label='{} ({})'.format(term.definition, term.name),
                                            node_colour=GO_TERM_NODE_COLOUR))
-                terms_seen.add(term.go_id)
+                terms_seen.add(term.name)
                 subgraph.append(term_dict)
-            edges.append(dict(data=dict(id='{}_{}'.format(protein.protein_id, term.go_id),
-                                        source=protein.protein_id,
-                                        target=term.go_id)))
+            edges.append(dict(data=dict(id='{}_{}'.format(protein.uniquename, term.name),
+                                        source=protein.uniquename,
+                                        target=term.name)))
         subgraph.extend(edges)
         return subgraph
 
     def interpro_term_subgraph(protein, terms_seen):
         subgraph = []
         edges = []
-        interpro_terms = protein.associated_.all()
+        interpro_terms = protein.dbxref
         for term in interpro_terms:
-            if term.interpro_id not in terms_seen:
+            if term.accession not in terms_seen:
                 if term.name is not None:
-                    interpro_label = '{} ({})'.format(term.name, term.interpro_id)
+                    interpro_label = '{} ({})'.format(term.name, term.accession)
                 else:
-                    interpro_label = term.interpro_id
-                term_dict = dict(data=dict(id=term.interpro_id,
+                    interpro_label = term.accession
+                term_dict = dict(data=dict(id=term.accession,
                                            label=interpro_label,
                                            node_colour=INTERPRO_NODE_COLOUR))
-                terms_seen.add(term.interpro_id)
+                terms_seen.add(term.accession)
                 subgraph.append(term_dict)
-            edges.append(dict(data=dict(id='{}_{}'.format(protein.protein_id, term.interpro_id),
-                                        source=protein.protein_id,
-                                        target=term.interpro_id)))
+            edges.append(dict(data=dict(id='{}_{}'.format(protein.uniquename, term.accession),
+                                        source=protein.uniquename,
+                                        target=term.accession)))
         subgraph.extend(edges)
         return subgraph
 
     def protein_node(protein, gene_name=None):
         if gene_name is not None:
-            protein_label = '{} ({})'.format(gene_name, protein.uniprot_id)
+            protein_label = '{} ({})'.format(gene_name, protein.uniquename)
         else:
-            protein_label = protein.uniprot_id
-        return (dict(data=dict(id=protein.protein_id,
+            protein_label = protein.uniquename
+        return (dict(data=dict(id=protein.parent,
                                label=protein_label,
                                node_colour=PROTEIN_NODE_COLOUR)))
 
-    gene = Gene.nodes.get(locus_tag=locus_tag)
+    gene = Gene.select(graph, "gene:" + str(locus_tag)).first()
+    gene_uname = gene.uniquename
+    protein = Polypeptide.select(graph).where(
+        "_.parent = '{}'".format(gene_uname[gene_uname.find(':') + 1:])).first()
     gene_name = gene.name
-    protein = gene.transcribed.all()[0].encodes.all()[0].translated_.all()[0]
     interactions_graph = []
     styles = [{'selector': 'node',
                'style': {'label': 'data(label)', 'background-color': 'data(node_colour)'}}]
     try:
-        tb_interactions = protein.interacts.all()
+        tb_interactions = []
+        for tb_protein in protein.interacts_with:
+            tb_interactions.append(tb_protein)
         interactions_graph.append(protein_node(protein, gene_name=gene_name))
         go_terms_seen = set()
         interpro_terms_seen = set()
@@ -104,14 +109,14 @@ def find_interacting_proteins(locus_tag):
         interactions_graph.extend(interpro_term_subgraph(protein, interpro_terms_seen))
         edges = []
         for partner_protein in tb_interactions:
-            query = 'MATCH (g:Gene) -[:TRANSCRIBED]-> () -[:PROCESSED_INTO]-> () -[:TRANSLATED]-> ' \
-                    '(:Protein {{uniprot_id: "{}"}}) RETURN g.name'.format(partner_protein.uniprot_id)
-            (result, _) = graph.data(query)
+            query = 'MATCH(g:Gene)<-[:PART_OF]-()<-[:PART_OF]-(c:CDS)<-[:DERIVES_FROM]-(p:Polypeptide)' \
+                    ' WHERE p.uniquename = "{}" RETURN g.name'.format(partner_protein.uniquename)
+            result = graph.data(query)
             gene_name = result[0][0]
             print("gene_name: ", gene_name, file=sys.stderr)
-            edges.append(dict(data=dict(id='{}_{}'.format(protein.protein_id, partner_protein.protein_id),
-                                        source=protein.protein_id,
-                                        target=partner_protein.protein_id)))
+            edges.append(dict(data=dict(id='{}_{}'.format(protein.parent, partner_protein.parent),
+                                        source=protein.parent,
+                                        target=partner_protein.parent)))
             interactions_graph.append(protein_node(partner_protein, gene_name=gene_name))
             interactions_graph.extend(go_term_subgraph(partner_protein, go_terms_seen))
             interactions_graph.extend(interpro_term_subgraph(partner_protein, interpro_terms_seen))
@@ -172,7 +177,7 @@ def search_gene(uniquename):
     try:
         print('Searching Gene Nodes with Name=', uniquename)
         gene = Gene.select(graph).where(
-            "_.name =~'(?i){}.*' OR _.uniquename=~'(?i){}.*'".format(uniquename, uniquename)).first()
+            "_.name =~'(?i){}.*' OR _.uniquename=~'(?i){}.*'".format(str(uniquename), str(uniquename))).first()
     except Exception as e:
         raise e
     finally:
