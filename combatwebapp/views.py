@@ -13,7 +13,7 @@ from py2neo import Graph, getenv
 from combat_tb_model.model import *
 from gsea import enrichment_analysis
 
-graph = Graph(host=getenv("DB", "combattb.sanbi.ac.za"), http_port=7474, bolt=True,
+graph = Graph(host=getenv("DB", "192.168.2.217"), http_port=7474, bolt=True,
               password=getenv("NEO4J_PASSWORD", ""))
 
 app = Flask(__name__)
@@ -155,12 +155,10 @@ def search_feature(name):
     :param name:
     :return:
     """
-    try:
-        print('Searching Feature Nodes with Name=', name)
-        feature = list(
-            Feature.select(graph).where("_.name =~'(?i){}.*' OR _.uniquename=~'gene:(?i){}.*'".format(name, name)))
-    except Exception as e:
-        raise e
+    print('Searching Feature Nodes with Name=', name)
+    feature = list(
+        Feature.select(graph).where("_.name =~'(?i){}.*' OR _.uniquename=~'gene:(?i){}.*'".format(name, name)))
+
     return feature
 
 
@@ -175,12 +173,10 @@ def search_gene(uniquename):
     :param uniquename:
     :return:
     """
-    try:
-        print('Searching Gene Nodes with Name=', uniquename)
-        gene = Gene.select(graph).where(
-            "_.name =~'(?i){}.*' OR _.uniquename=~'(?i){}.*'".format(str(uniquename), str(uniquename))).first()
-    except Exception as e:
-        raise e
+    print('Searching Gene Nodes with Name=', uniquename)
+    gene = Gene.select(graph).where(
+        "_.name =~'(?i){}.*' OR _.uniquename=~'(?i){}.*'".format(str(uniquename), str(uniquename))).first()
+
     return gene
 
 
