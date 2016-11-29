@@ -10,7 +10,9 @@ RUN rm Miniconda-latest-Linux-x86_64.sh
 ENV PATH=/miniconda/bin:${PATH}
 RUN conda update -y conda
 RUN conda install -y gunicorn click numpy pandas patsy python-dateutil PyYAML scipy six statsmodels
-
+RUN mkdir /code
+ADD requirements.txt /code
+RUN pip install -r /code/requirements.txt
 ADD . /code
 WORKDIR /code
 ENV GALAXY_API_KEY none
@@ -18,6 +20,5 @@ ENV GALAXY_API_KEY none
 #ENV NEO4J_USER neo4j
 #ENV NE04J_PASSWD Neo4j
 #ENV NEO4J_REST_URL http://$NEO4J_USER:$NE04J_PASSWD@thoba.sanbi.ac.za:7476/db/data/
-RUN pip install -r requirements.txt
 #EXPOSE 5000
 CMD ["python" ,"run.py"]
