@@ -161,8 +161,7 @@ def search_feature(name):
             Feature.select(graph).where("_.name =~'(?i){}.*' OR _.uniquename=~'gene:(?i){}.*'".format(name, name)))
     except Exception as e:
         raise e
-    finally:
-        return feature
+    return feature
 
 
 @app.route('/')
@@ -182,8 +181,7 @@ def search_gene(uniquename):
             "_.name =~'(?i){}.*' OR _.uniquename=~'(?i){}.*'".format(str(uniquename), str(uniquename))).first()
     except Exception as e:
         raise e
-    finally:
-        return gene
+    return gene
 
 
 @app.route('/search', methods=['GET', 'POST'])
