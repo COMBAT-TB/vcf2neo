@@ -86,7 +86,7 @@ def find_interacting_proteins(locus_tag):
             protein_label = '{} ({})'.format(gene_name, protein.uniquename)
         else:
             protein_label = protein.uniquename
-        return (dict(data=dict(id=protein.parent,
+        return (dict(data=dict(id=protein.uniquename,
                                label=protein_label,
                                node_colour=PROTEIN_NODE_COLOUR)))
 
@@ -102,6 +102,8 @@ def find_interacting_proteins(locus_tag):
         tb_interactions = []
         for tb_protein in protein.interacts_with:
             tb_interactions.append(tb_protein)
+        # for partner_protein in tb_interactions:
+        #     print(partner_protein.uniquename)
         interactions_graph.append(protein_node(protein, gene_name=gene_name))
         go_terms_seen = set()
         interpro_terms_seen = set()
@@ -112,11 +114,11 @@ def find_interacting_proteins(locus_tag):
             query = 'MATCH(g:Gene)<-[:PART_OF]-()<-[:PART_OF]-(c:CDS)<-[:DERIVES_FROM]-(p:Polypeptide)' \
                     ' WHERE p.uniquename = "{}" RETURN g.name'.format(partner_protein.uniquename)
             result = graph.data(query)
-            gene_name = result[0][0]
+            gene_name = result[0].get('g.name')
             print("gene_name: ", gene_name, file=sys.stderr)
-            edges.append(dict(data=dict(id='{}_{}'.format(protein.parent, partner_protein.parent),
-                                        source=protein.parent,
-                                        target=partner_protein.parent)))
+            edges.append(dict(data=dict(id='{}_{}'.format(protein.uniquename, partner_protein.uniquename),
+                                        source=protein.uniquename,
+                                        target=partner_protein.uniquename)))
             interactions_graph.append(protein_node(partner_protein, gene_name=gene_name))
             interactions_graph.extend(go_term_subgraph(partner_protein, go_terms_seen))
             interactions_graph.extend(interpro_term_subgraph(partner_protein, interpro_terms_seen))
