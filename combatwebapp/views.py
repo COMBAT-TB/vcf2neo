@@ -66,8 +66,8 @@ def find_interacting_proteins(locus_tag):
         interpro_terms = protein.dbxref
         for term in interpro_terms:
             if term.accession not in terms_seen:
-                if term.name is not None:
-                    interpro_label = '{} ({})'.format(term.name, term.accession)
+                if term.version is not None:
+                    interpro_label = '{} ({})'.format(term.version, term.accession)
                 else:
                     interpro_label = term.accession
                 term_dict = dict(data=dict(id=term.accession,
@@ -102,8 +102,6 @@ def find_interacting_proteins(locus_tag):
         tb_interactions = []
         for tb_protein in protein.interacts_with:
             tb_interactions.append(tb_protein)
-        # for partner_protein in tb_interactions:
-        #     print(partner_protein.uniquename)
         interactions_graph.append(protein_node(protein, gene_name=gene_name))
         go_terms_seen = set()
         interpro_terms_seen = set()
@@ -123,29 +121,10 @@ def find_interacting_proteins(locus_tag):
             interactions_graph.extend(go_term_subgraph(partner_protein, go_terms_seen))
             interactions_graph.extend(interpro_term_subgraph(partner_protein, interpro_terms_seen))
         interactions_graph.extend(edges)
-    except Exception:
-        tb_interactions = []
-    try:
-        human_interactions = protein.interacts_.all()
-    except Exception:
-        human_interactions = []
-    # print('gene:', gene, protein, tb_interactions, human_interactions, file=sys.stderr)
-    interactions_graph_str = json.dumps(interactions_graph)
-    styles_str = json.dumps(styles)
-    # print("got here: {}".format(interactions_graph_str), file=sys.stderr)
-    # desired output as per http://blog.js.cytoscape.org/2016/05/24/getting-started/
-    # elements: [
-    # // nodes
-    # { data: { id: 'a' } },
-    # { data: { id: 'b' } },
-    # // edges
-    # {
-    #     data: {
-    #         id: 'ab',
-    #         source: 'a',
-    #         target: 'b'
-    #     }
-    # } ]
+    # TODO: Exception Handling
+    except Exception as e:
+        raise e
+
     return dict(elements=interactions_graph, styles=styles)
 
 
