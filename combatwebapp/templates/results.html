@@ -259,18 +259,21 @@
                             <div class="center-align" id=viewer></div>
                         </div>
                         <div class="col s6">
-                            <ul class="collection with-header">
-                                <li class="collection-header"><h6>PBD ID</h6></li>
-                                {% for entry in pdb_ids %}
-                                    <div class="hide" id="pdb_id">{{ pdb_ids[0] }}</div>
-                                    <li class="collection-item">
-                                        <a target="_blank"
-                                           href="http://www.rcsb.org/pdb/explore/explore.do?pdbId={{ entry }}">{{ entry }}</a>
-                                        <br>
-                                    </li>
-                                {% endfor %}
-
-                            </ul>
+                            {% if pdb_ids %}
+                                <ul class="collection with-header">
+                                    <li class="collection-header"><h6>PBD ID</h6></li>
+                                    {% for entry in pdb_ids %}
+                                        <div class="hide" id="pdb_id">{{ pdb_ids[0] }}</div>
+                                        <li class="collection-item">
+                                            <a target="_blank"
+                                               href="http://www.rcsb.org/pdb/explore/explore.do?pdbId={{ entry }}">{{ entry }}</a>
+                                            <br>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p></p>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="divider"></div>

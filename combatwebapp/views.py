@@ -65,19 +65,20 @@ def find_interacting_proteins(locus_tag):
         edges = []
         interpro_terms = protein.dbxref
         for term in interpro_terms:
-            if term.accession not in terms_seen:
-                if term.version is not None:
-                    interpro_label = '{} ({})'.format(term.version, term.accession)
-                else:
-                    interpro_label = term.accession
-                term_dict = dict(data=dict(id=term.accession,
-                                           label=interpro_label,
-                                           node_colour=INTERPRO_NODE_COLOUR))
-                terms_seen.add(term.accession)
-                subgraph.append(term_dict)
-            edges.append(dict(data=dict(id='{}_{}'.format(protein.uniquename, term.accession),
-                                        source=protein.uniquename,
-                                        target=term.accession)))
+            if 'InterPro' in term.db:
+                if term.accession not in terms_seen:
+                    if term.version is not None:
+                        interpro_label = '{} ({})'.format(term.version, term.accession)
+                    else:
+                        interpro_label = term.accession
+                    term_dict = dict(data=dict(id=term.accession,
+                                               label=interpro_label,
+                                               node_colour=INTERPRO_NODE_COLOUR))
+                    terms_seen.add(term.accession)
+                    subgraph.append(term_dict)
+                edges.append(dict(data=dict(id='{}_{}'.format(protein.uniquename, term.accession),
+                                            source=protein.uniquename,
+                                            target=term.accession)))
         subgraph.extend(edges)
         return subgraph
 
