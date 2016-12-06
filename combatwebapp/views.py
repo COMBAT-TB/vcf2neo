@@ -196,6 +196,12 @@ def search():
                         if 'nterPro' in inter.db:
                             inter_pro.append(inter.accession)
                     pdb_ids = protein.pdb_id
+                    for pub in protein.published_in:
+                        for a in pub.author:
+                            print(a)
+                            print(a.givennames)
+                        publications.append(pub)
+
                 locs = feature.location
                 for loc in locs:
                     print(loc.fmin, loc.fmax)
