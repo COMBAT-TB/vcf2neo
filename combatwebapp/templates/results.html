@@ -13,7 +13,7 @@
     {% if gene %}
         <div class="section">
             <h5>Showing results for {{ gene.name }}</h5><br>
-            <iframe src="http://thoba.sanbi.ac.za:8080/?loc=NC_000962.3%3A{{ location }}&tracks=DNA%2CGenes&highlight="
+            <iframe src="http://combattb.sanbi.ac.za:8080/?loc=NC_000962.3%3A{{ location }}&tracks=DNA%2CGenes&highlight="
                     frameborder="0"
                     scrolling="no" width="100%" height="450">
             </iframe>
@@ -96,14 +96,14 @@
                                 {#                                               href="http://www.ncbi.nlm.nih.gov/pubmed/?term={{ entry.pubmed_id }}">{{ entry.title }}</a>#}
                                 {#                                            <br>#}
                                 <li class="collection-item">
-                                    <span class="title">{{ entry.title }}</span><br>
-                                    {{ authors.get(entry.pubmed_id, '') }}
-                                    {#                                    {% for author in authors.get(entry.pubmed_id, '') %}#}
-                                    {#                                        {{ author }}#}
-                                    {#                                    {% endfor %}#}
-                                    <p>{{ entry.source }}<br>{{ entry.journal }}<br>
+                                    <b><span class="title">{{ entry.title }}</span></b><br>
+                                    {#                                    {{ authors.get(entry.pmid, '') }}#}
+                                    {% for author in entry.author %}
+                                        {{ author.givennames + "; " }}
+                                    {% endfor %}
+                                    <p>{{ entry.pages }}<br>{{ entry.publisher }}<br>
                                         [<a target="_blank"
-                                            href="http://www.ncbi.nlm.nih.gov/pubmed/?term={{ entry.pubmed_id }}">PubMed</a>]
+                                            href="http://www.ncbi.nlm.nih.gov/pubmed/?term={{ entry.pmid }}">PubMed</a>]
                                     </p>
                                     {#                                                <a href="#!" class="secondary-content"><i#}
                                     {#                                                        class="material-icons">grade</i></a>#}
@@ -234,24 +234,6 @@
                     <div id="ppibox">click the button to draw the graph</div>
                 </div>
                 <div id="str" class="col s12">
-                    {#                    <table class="bordered">#}
-                    {#                        <tbody>#}
-                    {#                        <th>Structural Information</th>#}
-                    {#                        <td>#}
-                    {#                            {% if protein %}#}
-                    {#                            {% for entry in pdb_ids %}#}
-                    {#                                    <a>{{ entry }}</a>#}
-                    {#                                <a target="_blank"#}
-                    {#                                   href="http://www.rcsb.org/pdb/explore/explore.do?pdbId={{ entry }}">{{ entry }}</a>#}
-                    {#                                <br>#}
-                    {#                            {% endfor %}#}
-                    {#                        <div class="hide" id="pdb_id">{{ pdb_ids[0] }}</div>#}
-                    {#                            {% else %}#}
-                    {#                                {{ '' }}#}
-                    {#                            {% endif %}#}
-                    {#                        </td>#}
-                    {#                        </tbody>#}
-                    {#                    </table>#}
                     <br>
                     <div class="row">
                         <div class="col s6">
@@ -277,11 +259,6 @@
                         </div>
                     </div>
                     <div class="divider"></div>
-                    {#                    <div class="section center-align">#}
-                    {#                        <div id='picked-atom-name' style='text-align:center;'>&nbsp;</div>#}
-                    {#                        <div class="center-align" id=viewer></div>#}
-                    {#                    </div>#}
-
                 </div>
             </div>
         </div>
