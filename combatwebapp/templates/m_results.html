@@ -14,8 +14,8 @@
         {% for gene in genes %}
             <li>
                 <div class="collapsible-header"><i class="material-icons">label</i><a
-                        href="/search?gene={{ gene.name }}" class="collection-item">{{ gene.name }}</a></div>
-                <div class="collapsible-body"><p>{{ gene.description }}</p></div>
+                        href="/search?gene={{ gene.uniquename }}" class="collection-item">{{ gene.uniquename }}</a></div>
+                <div class="collapsible-body"><p>{{ gene.parent }}</p></div>
             </li>
         {% endfor %}
     </ul>
