@@ -136,10 +136,12 @@ def search_feature(name):
     :return:
     """
     print('Searching Feature Nodes with Name=', name)
-    feature = list(
+    features = list(
         Feature.select(graph).where("_.name =~'(?i){}.*' OR _.uniquename=~'gene:(?i){}.*'".format(name, name)))
-
-    return feature
+    for feature in features:
+        if 'gene:' not in feature.uniquename:
+            features.pop()
+    return features
 
 
 @app.route('/')
@@ -170,51 +172,53 @@ def search():
     publications = []
     aus = dict()
     pdb_ids = []
+    features = None
     if request.method == 'GET':
-        term = request.args.get('gene')
-        gene = search_gene(term)
+        term = request.args.get('gene')[5:]
+        # gene = search_gene(term)
+        features = search_feature(term)
     if request.method == 'POST':
         term = request.form['gene']
         features = search_feature(term)
+    if len(features) > 1:
+        print(len(features))
+        length = len(features)
+        print('Feature is an array...', len(features))
+        return render_template('m_results.html', genes=features, length=length)
+    elif len(features) == 1:
         for feature in features:
-            if 'gene:' in feature.uniquename:
-                gene = search_gene(feature.uniquename)
-                gene_uname = gene.uniquename
-                try:
-                    protein = Polypeptide.select(graph).where(
-                        "_.parent = '{}'".format(gene_uname[gene_uname.find(':') + 1:])).first()
-                except Exception as e:
-                    raise e
-                finally:
-                    go_term_s = protein.cvterm
-                    for go in go_term_s:
-                        print(go)
-                        go_terms.append(go)
-                    interpro_terms = protein.dbxref
-                    for inter in interpro_terms:
-                        print(inter)
-                        if 'nterPro' in inter.db:
-                            inter_pro.append(inter.accession)
-                    pdb_ids = protein.pdb_id
-                    for pub in protein.published_in:
-                        for a in pub.author:
-                            print(a)
-                            print(a.givennames)
-                        publications.append(pub)
+            gene = search_gene(feature.uniquename)
+            gene_uname = gene.uniquename
+            try:
+                protein = Polypeptide.select(graph).where(
+                    "_.parent = '{}'".format(gene_uname[gene_uname.find(':') + 1:])).first()
+            except Exception as e:
+                raise e
+            finally:
+                go_term_s = protein.cvterm
+                for go in go_term_s:
+                    go_terms.append(go)
+                interpro_terms = protein.dbxref
+                for inter in interpro_terms:
+                    if 'nterPro' in inter.db:
+                        inter_pro.append(inter.accession)
+                pdb_ids = protein.pdb_id
+                for pub in protein.published_in:
+                    publications.append(pub)
 
-                locs = feature.location
-                for loc in locs:
-                    print(loc.fmin, loc.fmax)
-                    location = str(loc.fmin) + '..' + str(loc.fmax)
-                    loc = loc
-    if gene:
+            locs = feature.location
+            for loc in locs:
+                print(loc.fmin, loc.fmax)
+                location = str(loc.fmin) + '..' + str(loc.fmax)
+                loc = loc
         return render_template('results.html', term=term, gene=gene, PseudoGene=PseudoGene,
                                ortholog_name=ortholog_name, citation=publications, authors=aus, pdb_ids=pdb_ids,
                                loc=loc, location=location, go_terms=go_terms, inter_pro=inter_pro, protein=protein,
                                interactor=interact, h_interact=h_interact)
     else:
         gene = None
-        return render_template('results.html', term=term, gene=gene)
+        protein = []
+        return render_template('results.html', term=term, gene=gene, protein=protein)
 
 
 @app.route('/about')
