@@ -9,11 +9,12 @@ greenlet==0.4.11
 grequests==0.3.0
 pexpect==4.2.1
 ptyprocess==0.5.1
+py2neo==3.1.2
 PyVCF==0.6.8
 requests==2.12.4
 requests-cache==0.4.13
 suds-jurko==0.6
 tqdm==4.10.0
--e git+git@github.com:SANBI-SA/vcf2neo.git@9d72976012099573696c3561fffab49c837e8610#egg=vcf2neo
+-e git+git@github.com:SANBI-SA/vcf2neo.git@1795ae44304384ca01cdb3a50003bad97c0054bd#egg=vcf2neo
 wrapt==1.10.8
 xmltodict==0.10.2

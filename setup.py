@@ -8,7 +8,8 @@ setup(
     py_modules=['vcf2neo'],
     install_requires=[
         'click',
-        'bioservices'
+        'bioservices',
+        'py2neo'
     ],
     entry_points={
         'console_scripts': ['vcf2neo=vcf2neo.cli:cli']
