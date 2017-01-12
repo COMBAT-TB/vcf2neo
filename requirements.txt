@@ -1,0 +1,19 @@
+appdirs==1.4.0
+beautifulsoup4==4.5.3
+bioservices==1.4.14
+click==6.7
+colorama==0.3.7
+easydev==0.9.30
+gevent==1.2.0
+greenlet==0.4.11
+grequests==0.3.0
+pexpect==4.2.1
+ptyprocess==0.5.1
+PyVCF==0.6.8
+requests==2.12.4
+requests-cache==0.4.13
+suds-jurko==0.6
+tqdm==4.10.0
+-e git+git@github.com:SANBI-SA/vcf2neo.git@9d72976012099573696c3561fffab49c837e8610#egg=vcf2neo
+wrapt==1.10.8
+xmltodict==0.10.2
