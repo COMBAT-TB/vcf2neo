@@ -17,3 +17,5 @@ $ source envname/bin/activate
 $ pip install -r requirements.txt
 $ pip install --editable .
 $ vcf2neo --help
+$ vcf2neo init data/vcf data/db/data
+```
