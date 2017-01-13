@@ -2,7 +2,7 @@ import glob
 
 import click
 from docker import Docker
-from vcf import Vcf
+from vcfproc import Vcf
 import os
 
 
@@ -21,11 +21,7 @@ def init(vcf_dir, refdb_dir):
     """
     Copy reference database and load VCF to Neo4j Graph database.
     """
-
-    click.echo(os.getcwd())
-    click.echo(vcf_dir)
-    click.echo(refdb_dir)
     docker = Docker(refdb_dir=refdb_dir)
     docker.run()
     vcf = Vcf(vcf_dir=vcf_dir)
-    vcf.ls()
+    vcf.inspect()
