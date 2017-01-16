@@ -272,10 +272,20 @@ class CallSet(GraphObject):
     has_call = RelatedTo("Call", "HAS_CALL")
     has_calls_in = RelatedTo("VariantSet", "HAS_CALLS_IN")
 
+    def __init__(self, name):
+        self.name = name
+
 
 class Call(GraphObject):
-    __primarykey__ = 'genotype'
+    # __primarykey__ = 'genotype'
     genotype = Property()
+    ref_allele = Property()
+    alt_allele = Property()
 
     associated_with = RelatedTo("VariantSite", "ASSOC_WITH_VARIANT")
     belongs_to_cset = RelatedTo("CallSet", "BELONGS_TO_SET")
+
+    def __init__(self, pos, ref_allele, alt_allele):
+        self.pos = pos
+        self.ref_allele = ref_allele
+        self.alt_allele = alt_allele

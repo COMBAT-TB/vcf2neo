@@ -24,4 +24,5 @@ def init(vcf_dir, refdb_dir):
     docker = Docker(refdb_dir=refdb_dir)
     docker.run()
     vcf = Vcf(vcf_dir=vcf_dir)
-    vcf.inspect()
+    vcf.process()
+
