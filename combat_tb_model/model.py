@@ -251,7 +251,7 @@ class VariantSite(GraphObject):
     known = Property()
     novel = Property()
 
-    # occurs_in = RelatedTo("Phenotype", "OCCURS_IN")
+    occurs_in = RelatedTo("Gene", "OCCURS_IN")
     location = RelatedTo("FeatureLoc", "LOCATED_AT")
 
     has_call = RelatedTo("Call", "HAS_CALL")
@@ -278,11 +278,12 @@ class CallSet(GraphObject):
 
 
 class Call(GraphObject):
-    # __primarykey__ = 'genotype'
+    # __primarykey__ = 'pos'
     genotype = Property()
     ref_allele = Property()
     alt_allele = Property()
     gene = Property()
+    pos = Property()
 
     associated_with = RelatedTo("VariantSite", "ASSOC_WITH_VARIANT")
     belongs_to_cset = RelatedTo("CallSet", "BELONGS_TO_SET")

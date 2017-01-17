@@ -48,7 +48,7 @@ class Docker(object):
             # TODO: Find a way to handle communicate
             # if self.container.communicate():
             #     print(self.container.communicate()[0])
-            for i in tqdm(xrange(10), ascii=True, desc="Waiting for Neo4j"):
+            for i in tqdm(xrange(15), ascii=True, desc="Waiting for Neo4j"):
                 time.sleep(1)
             print("Neo4j running!")
         except (OSError, ValueError) as e:

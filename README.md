@@ -1,5 +1,5 @@
 # **vcf2neo**
-A tool to import variant calling format files to a Neo4j Graph database.
+A tool to import SnpEff produces variant calling format files to a Neo4j Graph database.
 
 This tool does the following:
     
