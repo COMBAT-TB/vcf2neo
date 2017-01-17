@@ -36,6 +36,10 @@ class Vcf(object):
                 self.get_variant_sites(vcf_reader)
                 create_variant_set_nodes(set_name='Susceptable')
                 create_call_set_nodes(set_name=vcf_file_name)
+            elif 'MDR' in str(vcf_file):
+                self.get_variant_sites(vcf_reader)
+                create_variant_set_nodes(set_name='MDR')
+                create_call_set_nodes(set_name=vcf_file_name)
 
     def get_variant_sites(self, vcf_reader=None):
         for record in vcf_reader:
@@ -43,7 +47,6 @@ class Vcf(object):
             print(record)
             annotation = self.get_variant_ann(record)
             create_variant_site_nodes(record, annotation)
-            create_call_nodes(record, annotation[4])
 
     @staticmethod
     def get_variant_ann(record=None):

@@ -278,11 +278,12 @@ class CallSet(GraphObject):
 
 
 class Call(GraphObject):
-    # __primarykey__ = 'genotype'
+    # __primarykey__ = 'pos'
     genotype = Property()
     ref_allele = Property()
     alt_allele = Property()
     gene = Property()
+    pos = Property()
 
     associated_with = RelatedTo("VariantSite", "ASSOC_WITH_VARIANT")
     belongs_to_cset = RelatedTo("CallSet", "BELONGS_TO_SET")
