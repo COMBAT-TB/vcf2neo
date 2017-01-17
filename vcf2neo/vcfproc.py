@@ -28,11 +28,11 @@ class Vcf(object):
                 self.get_variant_sites(vcf_reader)
                 create_variant_set_nodes(set_name='XDR')
                 create_call_set_nodes(set_name=vcf_file_name)
-            if 'DR' in str(vcf_file):
+            elif 'DR' in str(vcf_file):
                 self.get_variant_sites(vcf_reader)
                 create_variant_set_nodes(set_name='DR')
                 create_call_set_nodes(set_name=vcf_file_name)
-            if 'susceptable' in str(vcf_file):
+            elif 'susceptable' in str(vcf_file):
                 self.get_variant_sites(vcf_reader)
                 create_variant_set_nodes(set_name='Susceptable')
                 create_call_set_nodes(set_name=vcf_file_name)
@@ -41,10 +41,12 @@ class Vcf(object):
         for record in vcf_reader:
             print("\n")
             print(record)
-            self.get_variant_calls(record)
-            create_variant_site_nodes(record)
-            create_call_nodes(record)
+            annotation = self.get_variant_ann(record)
+            create_variant_site_nodes(record, annotation)
+            create_call_nodes(record, annotation[4])
 
     @staticmethod
-    def get_variant_calls(record=None):
-        print(record.INFO['ANN'][0].split('|'))
+    def get_variant_ann(record=None):
+        ann = record.INFO['ANN'][0].split('|')
+        print(ann)
+        return ann

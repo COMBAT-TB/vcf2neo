@@ -3,6 +3,7 @@ import glob
 import click
 from docker import Docker
 from vcfproc import Vcf
+from db import build_relationships
 import os
 
 
@@ -25,4 +26,8 @@ def init(vcf_dir, refdb_dir):
     docker.run()
     vcf = Vcf(vcf_dir=vcf_dir)
     vcf.process()
+    build_relationships()
 
+
+if __name__ == '__main__':
+    cli()

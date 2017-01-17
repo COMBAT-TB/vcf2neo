@@ -236,7 +236,7 @@ class VariantSet(GraphObject):
 
 # VariantSite = Variant
 class VariantSite(GraphObject):
-    __primarykey__ = 'pos'
+    # __primarykey__ = 'pos'
 
     pos = Property()
     feature_id = Property()
@@ -257,11 +257,12 @@ class VariantSite(GraphObject):
     has_call = RelatedTo("Call", "HAS_CALL")
     belongs_to_vset = RelatedTo("VariantSet", "BELONGS_TO_VSET")
 
-    def __init__(self, chrom, pos, ref_allele, alt_allele):
+    def __init__(self, chrom, pos, ref_allele, alt_allele, gene=None):
         self.chrom = chrom
         self.pos = pos
         self.ref_allele = ref_allele
         self.alt_allele = alt_allele
+        self.gene = gene
 
 
 # CallSet = VCF file
@@ -281,11 +282,13 @@ class Call(GraphObject):
     genotype = Property()
     ref_allele = Property()
     alt_allele = Property()
+    gene = Property()
 
     associated_with = RelatedTo("VariantSite", "ASSOC_WITH_VARIANT")
     belongs_to_cset = RelatedTo("CallSet", "BELONGS_TO_SET")
 
-    def __init__(self, pos, ref_allele, alt_allele):
+    def __init__(self, pos, ref_allele, alt_allele, gene=None):
         self.pos = pos
         self.ref_allele = ref_allele
         self.alt_allele = alt_allele
+        self.gene = gene
