@@ -17,13 +17,19 @@ This tool does the following:
 $ git clone https://github.com/SANBI-SA/vcf2neo.git
 $ cd vcf2neo
 ```
-**Create a virtual environment:**
 
-```
-$ virtualenv envname
-$ source envname/bin/activate
-$ pip install -r requirements.txt
-$ pip install --editable .
-$ vcf2neo --help
-$ vcf2neo init data/vcf data/db/data
-```
+   * **Standalone :computer: :**
+   
+        ```
+        $ virtualenv envname
+        $ source envname/bin/activate
+        $ pip install -r requirements.txt
+        $ pip install --editable .
+        $ vcf2neo --help
+        $ vcf2neo init -d data/vcf data/db/data
+        ```
+   * **Using docker/docker-compose :whale: :**
+      
+      ```
+      $ docker-compose up --build
+      ```
