@@ -1,7 +1,7 @@
 """
 Interface to the Neo4j Database
 """
-from combat_tb_model.model import VariantSet, CallSet, VariantSite, Call, Gene
+from combat_tb_model.model import VariantSet, CallSet, VariantSite, Call, Gene, Feature, FeatureLoc
 
 from py2neo import Graph, getenv, watch
 
@@ -36,6 +36,7 @@ def create_variant_site_nodes(record, annotation=None, set_name=None):
     if v_set:
         v_site.belongs_to_vset.add(v_set)
         graph.push(v_site)
+    loc = FeatureLoc.select(graph).where("_.fmin = {}".format(pos)).first()
     return v_site
 
 
@@ -83,3 +84,8 @@ def build_relationships():
         if gene:
             v_site.occurs_in.add(gene)
             graph.push(v_site)
+            feature = Feature.select(graph).where("_.uniquename = '{}'".format(gene.uniquename)).first()
+            if feature:
+                for location in feature.location:
+                    v_site.location.add(location)
+                    graph.push(v_site)

@@ -4,7 +4,7 @@ A tool to import SnpEff produced vcf files to a Neo4j Graph database.
 This tool does the following:
     
    * Starts up a Neo4j docker container
-   * Downloads the reference data and in the `/data` directory of the container
+   * Downloads the reference [database](https://zenodo.org/record/252101#.WIHfgvF95hH) and in the `/data` directory of the container
    * Gets VCF files from a provided directory 
    * Maps and loads the VCF data in Graph database
     

@@ -33,6 +33,7 @@ class Vcf(object):
                 self.get_variant_sites(vcf_reader, vcf_file_name)
                 end = time.time()
                 print("Processed {} in {}!".format(vcf_file_name.upper(), end - start))
+                time.sleep(2)
 
     def get_variant_sites(self, vcf_reader=None, vcf_file_name=None):
         for record in vcf_reader:
