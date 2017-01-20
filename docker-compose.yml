@@ -1,7 +1,6 @@
 version: '2'
 services:
   vcf2neo:
-    restart: always
     build: .
     image: vcf2neo
     container_name: vcf2neo
