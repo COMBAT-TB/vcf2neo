@@ -12,8 +12,15 @@ services:
   db:
     image: neo4j:3.0.4
     container_name: vcf2neo-db
+    volumes_from:
+      - dc:rw
     environment:
       NEO4J_AUTH: none
     ports:
       - "7687:7687"
       - "7474:7474"
+    depends_on:
+      - dc
+  dc:
+      build: dc/
+      container_name: vcf2neo-dc

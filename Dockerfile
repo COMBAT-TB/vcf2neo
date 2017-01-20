@@ -10,9 +10,9 @@ RUN wget "https://drive.google.com/uc?export=download&id=0B5cdXx4b_kIyaDZGWEtBZF
     -O vcf.tar.bz2
 RUN tar xvfj vcf.tar.bz2
 
-RUN wget "https://zenodo.org/record/252101/files/data.tar.bz2" \
-    -O db.tar.bz2
-RUN tar xvfj db.tar.bz2
+#RUN wget "https://zenodo.org/record/252101/files/data.tar.bz2" \
+#    -O data.tar.bz2
+#RUN tar xvfj data.tar.bz2
 
 COPY requirements.txt /code
 RUN pip install -r /code/requirements.txt
@@ -20,5 +20,4 @@ RUN pip install -r /code/requirements.txt
 COPY . /code
 WORKDIR /code
 RUN pip install --editable .
-
-CMD ["vcf2neo" ,"init", "-D", "/vcf", "/data"]
+CMD ["vcf2neo" ,"init", "-D", "/vcf"]

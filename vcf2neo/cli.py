@@ -14,10 +14,10 @@ def cli():
 
 @cli.command()
 @click.argument('vcf_dir', type=click.Path(exists=True, dir_okay=True), required=True)
-@click.argument('refdb_dir', type=click.Path(exists=True, dir_okay=True), required=True)
+@click.argument('refdb_dir', type=click.Path(exists=True, dir_okay=True), required=False)
 # When running vcf2neo with Dockerfile/docker-compose, we don't want docker inside docker.
 @click.option('-d/-D', default=True, help='Run Neo4j docker container.')
-def init(vcf_dir, refdb_dir, d):
+def init(vcf_dir, d, refdb_dir=None):
     """
     Copy reference database and load VCF to Neo4j Graph database.
     :param vcf_dir:

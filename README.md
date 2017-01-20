@@ -1,10 +1,10 @@
 # **vcf2neo**
-A tool to import SnpEff produces variant calling format files to a Neo4j Graph database.
+A tool to import SnpEff produced vcf files to a Neo4j Graph database.
 
 This tool does the following:
     
    * Starts up a Neo4j docker container
-   * Mounts/Copies the reference data in the `/data` directory of the container
+   * Downloads the reference data and in the `/data` directory of the container
    * Gets VCF files from a provided directory 
    * Maps and loads the VCF data in Graph database
     
@@ -31,5 +31,5 @@ $ cd vcf2neo
    * **Using docker/docker-compose :whale: :**
       
       ```
-      $ docker-compose up --build
+      $ docker-compose up --build -d
       ```
