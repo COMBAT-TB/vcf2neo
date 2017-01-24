@@ -264,8 +264,13 @@
         </div>
     {% else %}
         <div class="section">
-            <h5>No Results</h5>
-            <p>Could not find <b>{{ term }}</b></p>
+            <div class="row">
+                <div class="col s12">
+                    <h5 class="header center-on-small-only">No Results</h5>
+                    <div class="divider"></div>
+                    <h4 class="flow-text">Couldn't find results for: <b>{{ term }}</b></h4>
+                </div>
+            </div>
         </div>
     {% endif %}
 {% endblock %}
