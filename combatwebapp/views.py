@@ -183,8 +183,10 @@ def search():
     if len(features) > 1:
         print(len(features))
         length = len(features)
+        for feature in features:
+            gene = search_gene(feature.uniquename)
         print('Feature is an array...', len(features))
-        return render_template('m_results.html', genes=features, length=length)
+        return render_template('m_results.html', features=features, length=length)
     elif len(features) == 1:
         for feature in features:
             gene = search_gene(feature.uniquename)

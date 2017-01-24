@@ -11,11 +11,13 @@
         <h5>Showing results for {{ length }} genes</h5><br>
     </div>
     <ul class="collapsible" data-collapsible="accordion">
-        {% for gene in genes %}
+        {% for feature in features %}
             <li>
                 <div class="collapsible-header"><i class="material-icons">label</i><a
-                        href="/search?gene={{ gene.uniquename }}" class="collection-item">{{ gene.uniquename }}</a></div>
-                <div class="collapsible-body"><p>{{ gene.parent }}</p></div>
+                        href="/search?gene={{ feature.uniquename }}"
+                        class="collection-item">{{ feature.uniquename[5:] }}</a>
+                </div>
+                <div class="collapsible-body"><p>{{ feature.parent }}</p></div>
             </li>
         {% endfor %}
     </ul>
