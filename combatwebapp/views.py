@@ -4,19 +4,28 @@ import json
 import os
 import sys
 
+import flask_login
 from bioblend import galaxy
-from bioblend.galaxy.client import ConnectionError
 from bioblend.galaxy.datasets import DatasetClient, DatasetTimeoutException
-from flask import Flask, Response, render_template, request
+from flask import Flask, Response, render_template, request, redirect, url_for, flash
+from flask.ext.login import UserMixin, login_user, login_required
+from flask_wtf.csrf import CSRFProtect
 from py2neo import Graph, getenv
 
 from combat_tb_model.model import *
+from forms import LoginForm
 from gsea import enrichment_analysis
 
 graph = Graph(host=getenv("DB", "192.168.2.217"), http_port=7474, bolt=True,
               password=getenv("NEO4J_PASSWORD", ""))
 
 app = Flask(__name__)
+
+login_manager = flask_login.LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+
+csrf = CSRFProtect(app)
 
 CACHE_DIR = 'cache'
 TMP_DIR = 'tmp'
@@ -29,12 +38,16 @@ def mkdir_if_needed(dir):
 
 mkdir_if_needed(CACHE_DIR)
 mkdir_if_needed(TMP_DIR)
+gi = None
 
 
-def connect_to_galaxy(galaxy_url='http://demo.sanbi.ac.za/', api_key=None):
-    if api_key is None:
+def connect_to_galaxy(galaxy_url='http://localhost:8080/', api_key=None, email=None, password=None):
+    global gi
+    if api_key is None and 'GALAXY_API_KEY' in os.environ:
         api_key = os.environ.get('GALAXY_API_KEY')
-    gi = galaxy.GalaxyInstance(url=galaxy_url, key=api_key)
+        gi = galaxy.GalaxyInstance(url=galaxy_url, key=api_key, email=email, password=password)
+    else:
+        gi = galaxy.GalaxyInstance(url=galaxy_url, email=email, password=password)
     return gi
 
 
@@ -228,7 +241,89 @@ def about():
     return render_template('about.html')
 
 
+#################################################
+# Testing flask-login
+#################################################
+
+# Our mock database.
+users = {'thoba@sanbi.ac.za': {'password': 'galaxy'}}
+
+
+class User(UserMixin):
+    pass
+
+
+@login_manager.user_loader
+def user_loader(email):
+    if email not in users:
+        return
+    user = User()
+    user.id = email
+    return user
+
+
+# @login_manager.request_loader
+# def request_loader(request):
+#     email = request.form.get('email')
+#     if email not in users:
+#         return
+#
+#     user = User()
+#     user.id = email
+#
+#     # DO NOT ever store passwords in plaintext and always compare password
+#     # hashes using constant-time comparison!
+#     user.is_authenticated = request.form['pw'] == users[email]['pw']
+#
+#     return user
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if request.method == 'GET':
+        return render_template("login.html", form=form)
+    else:
+        if form.validate_on_submit():
+            email = request.form['email']
+            form_pass = request.form['password']
+            user_pass = users[email]['password']
+            if form_pass == user_pass:
+                user = User()
+                user.id = email
+                login_user(user)
+                g = connect_to_galaxy(email=email, password=form_pass)
+                hist_list = [history for history in gi.histories.get_histories() if history.get('deleted') is False and
+                             history.get('purged') is False]
+                print(hist_list)
+                print(gi.users.get_users())
+                return redirect(url_for('protected'))
+        else:
+            return redirect(url_for('login'))
+
+
+@app.route('/protected')
+@login_required
+def protected():
+    print('Logged in as: ' + flask_login.current_user.id)
+    # return 'Logged in as: ' + flask_login.current_user.id
+    return redirect(url_for('gsea'))
+
+
+@app.route('/logout')
+def logout():
+    flask_login.logout_user()
+    return redirect(url_for('login'))
+
+
+@login_manager.unauthorized_handler
+def unauthorized_handler():
+    flash('Unauthorized')
+    return redirect(url_for('login'))
+
+
 @app.route('/gsea')
+@login_required
 def gsea():
     return render_template('gsea.html')
 
@@ -296,14 +391,14 @@ def ppi_data(locus_tag):
 
 @app.route('/api/galaxy_histories')
 def galaxy_histories():
-    try:
-        gi = connect_to_galaxy()
-    except ConnectionError as e:
-        print(e, file=sys.stderr)
-        hist_list = []
-    else:
-        hist_list = [history for history in gi.histories.get_histories() if history.get('deleted') is False and
-                     history.get('purged') is False]
+    # try:
+    #     gi = connect_to_galaxy(email='thoba@sanbi.ac.za', password='galaxy')
+    # except ConnectionError as e:
+    #     print(e, file=sys.stderr)
+    #     hist_list = []
+    # else:
+    hist_list = [history for history in gi.histories.get_histories() if history.get('deleted') is False and
+                 history.get('purged') is False]
     return Response(
         json.dumps(hist_list),
         mimetype='application/json',
@@ -316,15 +411,15 @@ def galaxy_histories():
 
 @app.route('/api/galaxy_datasets/<history_id>')
 def galaxy_dataset(history_id):
-    try:
-        gi = connect_to_galaxy()
-    except ConnectionError as e:
-        print(e, file=sys.stderr)
-        dataset_list = []
-    else:
-        dataset_list = [dataset for dataset in gi.histories.show_history(history_id, contents=True) if
-                        dataset.get('extension') == 'txt' and dataset.get('deleted') is False and dataset.get(
-                            'purged') is False]
+    # try:
+    #     gi = connect_to_galaxy()
+    # except ConnectionError as e:
+    #     print(e, file=sys.stderr)
+    #     dataset_list = []
+    # else:
+    dataset_list = [dataset for dataset in gi.histories.show_history(history_id, contents=True) if
+                    dataset.get('extension') == 'txt' and dataset.get('deleted') is False and dataset.get(
+                        'purged') is False]
 
     return Response(
         json.dumps(dataset_list),
@@ -339,18 +434,18 @@ def galaxy_dataset(history_id):
 @app.route('/api/galaxy_dataset/<dataset_id>')
 def load_galaxy_dataset(dataset_id):
     timeout = 10000  # 10 seconds
+    # try:
+    #     gi = connect_to_galaxy()
+    # except ConnectionError as e:
+    #     print(e, file=sys.stderr)
+    #     data = ''
+    # else:
     try:
-        gi = connect_to_galaxy()
-    except ConnectionError as e:
+        dc = DatasetClient(gi)
+        data = dc.download_dataset(dataset_id, wait_for_completion=True, maxwait=timeout)
+    except (AssertionError, DatasetTimeoutException) as e:
         print(e, file=sys.stderr)
         data = ''
-    else:
-        try:
-            dc = DatasetClient(gi)
-            data = dc.download_dataset(dataset_id, wait_for_completion=True, maxwait=timeout)
-        except (AssertionError, DatasetTimeoutException) as e:
-            print(e, file=sys.stderr)
-            data = ''
 
     return Response(
         json.dumps(data),
