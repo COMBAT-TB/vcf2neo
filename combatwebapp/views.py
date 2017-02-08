@@ -37,7 +37,7 @@ def mkdir_if_needed(directory):
 mkdir_if_needed(CACHE_DIR)
 mkdir_if_needed(TMP_DIR)
 
-GALAXY_URL = 'http://localhost:8080/'
+GALAXY_URL = 'http://ctbgx.sanbi.ac.za/'  # 'http://localhost:8080/'
 gi = None
 
 
@@ -85,7 +85,7 @@ def search():
     pdb_ids = []
     features = None
     if request.method == 'GET':
-        term = request.args.get('gene')[5:]
+        term = str(request.args.get('featurename')).strip('gene:')
         # gene = search_gene(term)
         features = search_feature(term)
     if request.method == 'POST':
@@ -97,7 +97,7 @@ def search():
         for feature in features:
             gene = search_gene(feature.uniquename)
         print('Feature is an array...', len(features))
-        return render_template('m_results.html', features=features, length=length)
+        return render_template('m_results.html', features=features, length=length, user=user)
     elif len(features) == 1:
         for feature in features:
             gene = search_gene(feature.uniquename)
@@ -127,7 +127,7 @@ def search():
         return render_template('results.html', term=term, gene=gene, PseudoGene=PseudoGene,
                                ortholog_name=ortholog_name, citation=publications, authors=aus, pdb_ids=pdb_ids,
                                loc=loc, location=location, go_terms=go_terms, inter_pro=inter_pro, protein=protein,
-                               interactor=interact, h_interact=h_interact)
+                               interactor=interact, h_interact=h_interact, user=user)
     else:
         gene = None
         protein = []
@@ -143,28 +143,23 @@ def about():
 def login():
     form = LoginForm()
     if request.method == 'GET':
-        print(request.path)
         return render_template("login.html", form=form, user=None)
     else:
         if form.validate_on_submit():
-            print(request.args)
-            print(request.path)
             email = request.form['email']
             form_pass = request.form['password']
-            # user_pass = users[email]['password']
             url = GALAXY_URL + "api/authenticate/baseauth"
             response = requests.get(url, auth=(email, form_pass))
             if response.status_code == 200:
                 api_key = response.json()['api_key']
                 _g = connect_to_galaxy(api_key=api_key)
                 print("Galaxy user email: " + _g.users.get_current_user()['email'])
-                # TODO: This should not be here
+                # TODO: This should not be here: We already have a 200.
                 if email == _g.users.get_current_user()['email']:
-                    # user = User()
                     user.id = email
                     login_user(user)
-                url = 'index'
                 # Let's redirect to previous page, when you went to a service without being logged in.
+                url = 'index'
                 if request.args.get('next'):
                     url = str(request.args.get('next')).strip('/')
                 return redirect(url_for(url) or url_for('index'))
@@ -265,12 +260,6 @@ def ppi_data(locus_tag):
 @app.route('/api/galaxy_histories')
 @login_required
 def galaxy_histories():
-    # try:
-    #     gi = connect_to_galaxy(email='thoba@sanbi.ac.za', password='galaxy')
-    # except ConnectionError as e:
-    #     print(e, file=sys.stderr)
-    #     hist_list = []
-    # else:
     hist_list = [history for history in gi.histories.get_histories() if history.get('deleted') is False and
                  history.get('purged') is False]
     return Response(
@@ -286,12 +275,6 @@ def galaxy_histories():
 @app.route('/api/galaxy_datasets/<history_id>')
 @login_required
 def galaxy_dataset(history_id):
-    # try:
-    #     gi = connect_to_galaxy()
-    # except ConnectionError as e:
-    #     print(e, file=sys.stderr)
-    #     dataset_list = []
-    # else:
     dataset_list = [dataset for dataset in gi.histories.show_history(history_id, contents=True) if
                     dataset.get('extension') == 'txt' and dataset.get('deleted') is False and dataset.get(
                         'purged') is False]
@@ -306,16 +289,59 @@ def galaxy_dataset(history_id):
     )
 
 
+def get_dc_list(history_id):
+    """
+    Get dataset collections
+    :param history_id:
+    :return:
+    """
+    history_contents = gi.histories.show_history(history_id, contents=True, deleted=False, visible=True, details=False)
+    collection_ids = [d.get('id') for d in history_contents if d.get('history_content_type') == 'dataset_collection']
+    dc_list = [gi.histories.show_dataset_collection(history_id, _id) for _id in collection_ids]
+    return dc_list
+
+
+@app.route('/api/galaxy_col_datasets/<history_id>')
+@login_required
+def galaxy_col_dataset(history_id):
+    dc_list = get_dc_list(history_id)
+    dc_elements = [col['elements'] for col in dc_list if 'SnpEff' in col['name'] and 'stats' not in col['name']]
+    vcf_list = []
+    for el in dc_elements:
+        for l in el:
+            if l['object']['file_ext']:
+                if l['object']['file_ext'] == 'vcf':
+                    vcf_list.append(l['object'])
+
+    return Response(
+        json.dumps(vcf_list),
+        mimetype='application/json',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        }
+    )
+
+
+@app.route('/api/galaxy_dataset_col/<history_id>')
+@login_required
+def galaxy_dataset_col(history_id):
+    dc_list = get_dc_list(history_id)
+    return Response(
+        json.dumps(dc_list),
+        mimetype='application/json',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        }
+    )
+
+
 @app.route('/api/galaxy_dataset/<dataset_id>')
 @login_required
 def load_galaxy_dataset(dataset_id):
     timeout = 10000  # 10 seconds
-    # try:
-    #     gi = connect_to_galaxy()
-    # except ConnectionError as e:
-    #     print(e, file=sys.stderr)
-    #     data = ''
-    # else:
+
     try:
         dc = DatasetClient(gi)
         data = dc.download_dataset(dataset_id, wait_for_completion=True, maxwait=timeout)
@@ -332,6 +358,12 @@ def load_galaxy_dataset(dataset_id):
         }
     )
 
+
 # @app.route('/testjsx')
 # def testjsx():
 #     return render_template('test.html')
+
+@app.route('/vcf')
+@login_required
+def vcf():
+    return render_template('vcf.html', user=user)
