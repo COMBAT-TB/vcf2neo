@@ -298,7 +298,10 @@ def get_dc_list(history_id):
     history_contents = gi.histories.show_history(history_id, contents=True, deleted=False, visible=True, details=False)
     collection_ids = [d.get('id') for d in history_contents if d.get('history_content_type') == 'dataset_collection']
     dc_list = [gi.histories.show_dataset_collection(history_id, _id) for _id in collection_ids]
-    return dc_list
+    vcf_dc_list = [col for col in dc_list if
+                   'SnpEff' in col['name'] or 'FreeB' in col['name'] and 'stats' not in col['name']]
+
+    return vcf_dc_list
 
 
 @app.route('/api/galaxy_col_datasets/<history_id>')
