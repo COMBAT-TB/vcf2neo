@@ -4,162 +4,73 @@ import json
 import os
 import sys
 
+import flask_login
+import requests as requests
 from bioblend import galaxy
-from bioblend.galaxy.client import ConnectionError
 from bioblend.galaxy.datasets import DatasetClient, DatasetTimeoutException
-from flask import Flask, Response, render_template, request
-from py2neo import Graph, getenv
+from flask import Flask, Response, render_template, request, redirect, url_for, flash
+from flask.ext.login import UserMixin, login_user, login_required
+from flask.ext.login import logout_user
+from flask_wtf.csrf import CSRFProtect
 
 from combat_tb_model.model import *
+from dbconn import graph, find_interacting_proteins, search_gene, search_feature
+from forms import LoginForm, SearchForm
 from gsea import enrichment_analysis
 
-graph = Graph(host=getenv("DB", "192.168.2.217"), http_port=7474, bolt=True,
-              password=getenv("NEO4J_PASSWORD", ""))
-
 app = Flask(__name__)
+
+login_manager = flask_login.LoginManager()
+login_manager.init_app(app)
+
+csrf = CSRFProtect(app)
 
 CACHE_DIR = 'cache'
 TMP_DIR = 'tmp'
 
 
-def mkdir_if_needed(dir):
-    if not os.path.isdir(dir):
-        os.mkdir(dir)
+def mkdir_if_needed(directory):
+    if not os.path.isdir(directory):
+        os.mkdir(directory)
 
 
 mkdir_if_needed(CACHE_DIR)
 mkdir_if_needed(TMP_DIR)
 
+GALAXY_URL = 'http://ctbgx.sanbi.ac.za/'  # 'http://localhost:8080/'
+gi = None
 
-def connect_to_galaxy(galaxy_url='http://demo.sanbi.ac.za/', api_key=None):
-    if api_key is None:
-        api_key = os.environ.get('GALAXY_API_KEY')
-    gi = galaxy.GalaxyInstance(url=galaxy_url, key=api_key)
+
+def connect_to_galaxy(api_key=None, email=None, password=None):
+    print("Connecting to Galaxy Instance...")
+    global gi
+    gi = galaxy.GalaxyInstance(url=GALAXY_URL, key=api_key, email=email, password=password)
     return gi
 
 
-def find_interacting_proteins(locus_tag):
-    GO_TERM_NODE_COLOUR = '#70ff66'
-    PROTEIN_NODE_COLOUR = '#7d82e8'
-    INTERPRO_NODE_COLOUR = '#ff6666'
+#################################################
+# Testing flask-login
+#################################################
 
-    def go_term_subgraph(protein, terms_seen):
-        subgraph = []
-        edges = []
-        go_terms = protein.cvterm
-        for term in go_terms:
-            if term.name not in terms_seen:
-                term_dict = dict(data=dict(id=term.name,
-                                           label='{} ({})'.format(term.definition, term.name),
-                                           node_colour=GO_TERM_NODE_COLOUR))
-                terms_seen.add(term.name)
-                subgraph.append(term_dict)
-            edges.append(dict(data=dict(id='{}_{}'.format(protein.uniquename, term.name),
-                                        source=protein.uniquename,
-                                        target=term.name)))
-        subgraph.extend(edges)
-        return subgraph
-
-    def interpro_term_subgraph(protein, terms_seen):
-        subgraph = []
-        edges = []
-        interpro_terms = protein.dbxref
-        for term in interpro_terms:
-            if 'InterPro' in term.db:
-                if term.accession not in terms_seen:
-                    if term.version is not None:
-                        interpro_label = '{} ({})'.format(term.version, term.accession)
-                    else:
-                        interpro_label = term.accession
-                    term_dict = dict(data=dict(id=term.accession,
-                                               label=interpro_label,
-                                               node_colour=INTERPRO_NODE_COLOUR))
-                    terms_seen.add(term.accession)
-                    subgraph.append(term_dict)
-                edges.append(dict(data=dict(id='{}_{}'.format(protein.uniquename, term.accession),
-                                            source=protein.uniquename,
-                                            target=term.accession)))
-        subgraph.extend(edges)
-        return subgraph
-
-    def protein_node(protein, gene_name=None):
-        if gene_name is not None:
-            protein_label = '{} ({})'.format(gene_name, protein.uniquename)
-        else:
-            protein_label = protein.uniquename
-        return (dict(data=dict(id=protein.uniquename,
-                               label=protein_label,
-                               node_colour=PROTEIN_NODE_COLOUR)))
-
-    gene = Gene.select(graph, "gene:" + str(locus_tag)).first()
-    gene_uname = gene.uniquename
-    protein = Polypeptide.select(graph).where(
-        "_.parent = '{}'".format(gene_uname[gene_uname.find(':') + 1:])).first()
-    gene_name = gene.name
-    interactions_graph = []
-    styles = [{'selector': 'node',
-               'style': {'label': 'data(label)', 'background-color': 'data(node_colour)'}}]
-    try:
-        tb_interactions = []
-        for tb_protein in protein.interacts_with:
-            tb_interactions.append(tb_protein)
-        interactions_graph.append(protein_node(protein, gene_name=gene_name))
-        go_terms_seen = set()
-        interpro_terms_seen = set()
-        interactions_graph.extend(go_term_subgraph(protein, go_terms_seen))
-        interactions_graph.extend(interpro_term_subgraph(protein, interpro_terms_seen))
-        edges = []
-        for partner_protein in tb_interactions:
-            query = 'MATCH(g:Gene)<-[:PART_OF]-()<-[:PART_OF]-(c:CDS)<-[:DERIVES_FROM]-(p:Polypeptide)' \
-                    ' WHERE p.uniquename = "{}" RETURN g.name'.format(partner_protein.uniquename)
-            result = graph.data(query)
-            gene_name = result[0].get('g.name')
-            print("gene_name: ", gene_name, file=sys.stderr)
-            edges.append(dict(data=dict(id='{}_{}'.format(protein.uniquename, partner_protein.uniquename),
-                                        source=protein.uniquename,
-                                        target=partner_protein.uniquename)))
-            interactions_graph.append(protein_node(partner_protein, gene_name=gene_name))
-            interactions_graph.extend(go_term_subgraph(partner_protein, go_terms_seen))
-            interactions_graph.extend(interpro_term_subgraph(partner_protein, interpro_terms_seen))
-        interactions_graph.extend(edges)
-    # TODO: Exception Handling
-    except Exception as e:
-        raise e
-
-    return dict(elements=interactions_graph, styles=styles)
+class User(UserMixin):
+    pass
 
 
-def search_feature(name):
-    """
-    Search Feature Nodes
-    :param name:
-    :return:
-    """
-    print('Searching Feature Nodes with Name=', name)
-    features = list(
-        Feature.select(graph).where("_.name =~'(?i){}.*' OR _.uniquename=~'gene:(?i){}.*'".format(name, name)))
-    for feature in features:
-        if 'gene:' not in feature.uniquename:
-            features.pop()
-    return features
+user = User()
+
+
+@login_manager.user_loader
+def user_loader(email):
+    if email is None:
+        return
+    user.id = email
+    return user
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
-
-
-def search_gene(uniquename):
-    """
-    Search Gene Nodes
-    :param uniquename:
-    :return:
-    """
-    print('Searching Gene Nodes with Name=', uniquename)
-    gene = Gene.select(graph).where(
-        "_.name =~'(?i){}.*' OR _.uniquename=~'(?i){}.*'".format(str(uniquename), str(uniquename))).first()
-
-    return gene
+    form = SearchForm()
+    return render_template('index.html', form=form, user=user)
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -174,7 +85,7 @@ def search():
     pdb_ids = []
     features = None
     if request.method == 'GET':
-        term = request.args.get('gene')[5:]
+        term = str(request.args.get('featurename')).strip('gene:')
         # gene = search_gene(term)
         features = search_feature(term)
     if request.method == 'POST':
@@ -186,7 +97,7 @@ def search():
         for feature in features:
             gene = search_gene(feature.uniquename)
         print('Feature is an array...', len(features))
-        return render_template('m_results.html', features=features, length=length)
+        return render_template('m_results.html', features=features, length=length, user=user)
     elif len(features) == 1:
         for feature in features:
             gene = search_gene(feature.uniquename)
@@ -216,7 +127,7 @@ def search():
         return render_template('results.html', term=term, gene=gene, PseudoGene=PseudoGene,
                                ortholog_name=ortholog_name, citation=publications, authors=aus, pdb_ids=pdb_ids,
                                loc=loc, location=location, go_terms=go_terms, inter_pro=inter_pro, protein=protein,
-                               interactor=interact, h_interact=h_interact)
+                               interactor=interact, h_interact=h_interact, user=user)
     else:
         gene = None
         protein = []
@@ -225,15 +136,65 @@ def search():
 
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    return render_template('about.html', user=user)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if request.method == 'GET':
+        return render_template("login.html", form=form, user=None)
+    else:
+        if form.validate_on_submit():
+            email = request.form['email']
+            form_pass = request.form['password']
+            url = GALAXY_URL + "api/authenticate/baseauth"
+            response = requests.get(url, auth=(email, form_pass))
+            if response.status_code == 200:
+                api_key = response.json()['api_key']
+                _g = connect_to_galaxy(api_key=api_key)
+                print("Galaxy user email: " + _g.users.get_current_user()['email'])
+                # TODO: This should not be here: We already have a 200.
+                if email == _g.users.get_current_user()['email']:
+                    user.id = email
+                    login_user(user)
+                # Let's redirect to previous page, when you went to a service without being logged in.
+                url = 'index'
+                if request.args.get('next'):
+                    url = str(request.args.get('next')).strip('/')
+                return redirect(url_for(url) or url_for('index'))
+            else:
+                flash('Invalid details, please try again.', 'error')
+                return redirect(url_for('login'))
+        else:
+            return redirect(url_for('login'))
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    user.id = None
+    return redirect(url_for('index'))
+
+
+@login_manager.unauthorized_handler
+def unauthorized_handler():
+    return redirect(url_for('login', next=request.path))
+
+
+@app.route('/jbrowse')
+def jbrowse():
+    return render_template('jbrowse.html', user=None)
 
 
 @app.route('/gsea')
+@login_required
 def gsea():
-    return render_template('gsea.html')
+    return render_template('gsea.html', user=user)
 
 
 @app.route('/api/gsea/<hash>/download')
+@login_required
 def download_gsea(hash):
     cache_filename = os.path.join(CACHE_DIR, hash + '.json')
     data = None
@@ -247,6 +208,7 @@ def download_gsea(hash):
 
 
 @app.route('/api/gsea/<hash>', methods=['GET', 'POST'])
+@login_required
 def process_gsea(hash):
     cache_filename = os.path.join(CACHE_DIR, hash + '.json')
     if request.method == 'POST' and not os.path.isfile(cache_filename):
@@ -281,6 +243,7 @@ def process_gsea(hash):
 
 
 @app.route('/api/ppi_data/<locus_tag>')
+@login_required
 def ppi_data(locus_tag):
     data = find_interacting_proteins(locus_tag)
     print(data, file=sys.stderr)
@@ -295,15 +258,10 @@ def ppi_data(locus_tag):
 
 
 @app.route('/api/galaxy_histories')
+@login_required
 def galaxy_histories():
-    try:
-        gi = connect_to_galaxy()
-    except ConnectionError as e:
-        print(e, file=sys.stderr)
-        hist_list = []
-    else:
-        hist_list = [history for history in gi.histories.get_histories() if history.get('deleted') is False and
-                     history.get('purged') is False]
+    hist_list = [history for history in gi.histories.get_histories() if history.get('deleted') is False and
+                 history.get('purged') is False]
     return Response(
         json.dumps(hist_list),
         mimetype='application/json',
@@ -315,16 +273,11 @@ def galaxy_histories():
 
 
 @app.route('/api/galaxy_datasets/<history_id>')
+@login_required
 def galaxy_dataset(history_id):
-    try:
-        gi = connect_to_galaxy()
-    except ConnectionError as e:
-        print(e, file=sys.stderr)
-        dataset_list = []
-    else:
-        dataset_list = [dataset for dataset in gi.histories.show_history(history_id, contents=True) if
-                        dataset.get('extension') == 'txt' and dataset.get('deleted') is False and dataset.get(
-                            'purged') is False]
+    dataset_list = [dataset for dataset in gi.histories.show_history(history_id, contents=True) if
+                    dataset.get('extension') == 'txt' and dataset.get('deleted') is False and dataset.get(
+                        'purged') is False]
 
     return Response(
         json.dumps(dataset_list),
@@ -336,21 +289,68 @@ def galaxy_dataset(history_id):
     )
 
 
+def get_dc_list(history_id):
+    """
+    Get dataset collections
+    :param history_id:
+    :return:
+    """
+    history_contents = gi.histories.show_history(history_id, contents=True, deleted=False, visible=True, details=False)
+    collection_ids = [d.get('id') for d in history_contents if d.get('history_content_type') == 'dataset_collection']
+    dc_list = [gi.histories.show_dataset_collection(history_id, _id) for _id in collection_ids]
+    vcf_dc_list = [col for col in dc_list if
+                   'SnpEff' in col['name'] or 'FreeB' in col['name'] and 'stats' not in col['name']]
+
+    return vcf_dc_list
+
+
+@app.route('/api/galaxy_col_datasets/<history_id>')
+@login_required
+def galaxy_col_dataset(history_id):
+    dc_list = get_dc_list(history_id)
+    dc_elements = [col['elements'] for col in dc_list if 'SnpEff' in col['name'] and 'stats' not in col['name']]
+    vcf_list = []
+    for el in dc_elements:
+        for l in el:
+            if l['object']['file_ext']:
+                if l['object']['file_ext'] == 'vcf':
+                    vcf_list.append(l['object'])
+
+    return Response(
+        json.dumps(vcf_list),
+        mimetype='application/json',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        }
+    )
+
+
+@app.route('/api/galaxy_dataset_col/<history_id>')
+@login_required
+def galaxy_dataset_col(history_id):
+    dc_list = get_dc_list(history_id)
+    return Response(
+        json.dumps(dc_list),
+        mimetype='application/json',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        }
+    )
+
+
 @app.route('/api/galaxy_dataset/<dataset_id>')
+@login_required
 def load_galaxy_dataset(dataset_id):
     timeout = 10000  # 10 seconds
+
     try:
-        gi = connect_to_galaxy()
-    except ConnectionError as e:
+        dc = DatasetClient(gi)
+        data = dc.download_dataset(dataset_id, wait_for_completion=True, maxwait=timeout)
+    except (AssertionError, DatasetTimeoutException) as e:
         print(e, file=sys.stderr)
         data = ''
-    else:
-        try:
-            dc = DatasetClient(gi)
-            data = dc.download_dataset(dataset_id, wait_for_completion=True, maxwait=timeout)
-        except (AssertionError, DatasetTimeoutException) as e:
-            print(e, file=sys.stderr)
-            data = ''
 
     return Response(
         json.dumps(data),
@@ -361,6 +361,12 @@ def load_galaxy_dataset(dataset_id):
         }
     )
 
+
 # @app.route('/testjsx')
 # def testjsx():
 #     return render_template('test.html')
+
+@app.route('/vcf')
+@login_required
+def vcf():
+    return render_template('vcf.html', user=user)
