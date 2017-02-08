@@ -8,6 +8,16 @@
             {#            <img class="responsive-img" style="width: 250px;" src="http://i.imgur.com/ax0NCsK.gif"/>#}
             <div class="section"></div>
 
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="red-text">
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
             <h5 class="light-blue-text text-darken-4">Sign in with your account</h5>
             <div class="section"></div>
 
