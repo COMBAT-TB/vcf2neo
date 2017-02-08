@@ -17,8 +17,10 @@ A Web interface to the COMBAT-TB Neo4j Graph Database
 **After that, install all necessary dependencies by running:**
 
     $ pip install -r requirements.txt
+    $ npm install
+    $ bower install
     
-**Then, run the aplication:**
+**Then, run the application:**
 
 	$ python run.py
     

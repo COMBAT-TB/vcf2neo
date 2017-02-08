@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div id="vcf"></div>
+{% endblock %}
+{% block js %}
+    <script type="application/javascript">
+        $(document).ready(function () {
+            $('select').material_select();
+        });
+    </script>
+    <script type="text/babel" src="{{ url_for('static', filename='scripts/js/vcf.jsx') }}"></script>
+{% endblock %}

@@ -8,8 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
     <!-- styles -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.js"></script>
+    <script src="{{ url_for('static', filename='bower_components/react/react.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bower_components/react/react-dom.min.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.16/browser.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="{{ url_for('static', filename='js/forge-sha256.min.js') }}"></script>
@@ -24,7 +24,7 @@
 <ul id="dropdown1" class="dropdown-content">
     <li><a class="light-blue-text text-darken-4" href="{{ url_for('gsea') }}">GSEA</a></li>
     <li class="divider"></li>
-    <li><a class="light-blue-text text-darken-4" href="{{ url_for('login') }}">VCF</a></li>
+    <li><a class="light-blue-text text-darken-4" href="{{ url_for('vcf') }}">VCF</a></li>
     <li class="divider"></li>
     <li><a class="light-blue-text text-darken-4" href="{{ url_for('jbrowse') }}" target="_blank">JBrowse</a></li>
 </ul>
@@ -55,6 +55,7 @@
         <ul id="nav-mobile" class="side-nav">
             <li><a href="{{ url_for('about') }}">About</a></li>
             <li><a href="{{ url_for('gsea') }}">GSEA</a></li>
+            <li><a href="{{ url_for('vcf') }}">VCF</a></li>
             <li><a href="{{ url_for('jbrowse') }}">JBrowse</a></li>
         </ul>
         <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
@@ -68,16 +69,17 @@
     {% block content %}{% endblock %}
 </div>
 
-<!-- scripts -->
-<script type="text/javascript">
-    $(".dropdown-button").dropdown();
-</script>
+
 {#<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>#}
-<script src="{{ url_for('static', filename='js/jquery-1.12.2.min.js') }}" type="text/javascript"></script>
+{#<script src="{{ url_for('static', filename='js/jquery-1.12.2.min.js') }}" type="text/javascript"></script>#}
 <script src="{{ url_for('static', filename='js/materialize.js') }}" type="text/javascript"></script>
 <script src="{{ url_for('static', filename='js/init.js') }}" type="text/javascript"></script>
 <script src="{{ url_for('static', filename='js/ctb_preloader.js') }}" type="text/javascript"></script>
 <script src="{{ url_for('static', filename='js/bio-pv.min.js') }}" type="text/javascript"></script>
+<!-- scripts -->
+<script type="text/javascript">
+    $(".dropdown-button").dropdown();
+</script>
 {% block js %}{% endblock %}
 
 </body>
