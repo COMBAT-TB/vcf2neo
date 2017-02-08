@@ -14,7 +14,7 @@
         {% for feature in features %}
             <li>
                 <div class="collapsible-header"><i class="material-icons">label</i><a
-                        href="/search?gene={{ feature.uniquename }}"
+                        href="/search?featurename={{ feature.uniquename }}"
                         class="collection-item">{{ feature.uniquename[5:] }}</a>
                 </div>
                 <div class="collapsible-body"><p>{{ feature.parent }}</p></div>

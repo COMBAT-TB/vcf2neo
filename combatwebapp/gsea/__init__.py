@@ -59,9 +59,10 @@ except ImportError:
 
 
 from ..combat_tb_model import model
-from py2neo import Graph, getenv
+from ..dbconn import *
 
-graph = Graph(host=getenv("DB", "localhost"), bolt=True, password=getenv("NEO4J_PASSWORD", ""))
+
+# graph = Graph(host=getenv("DB", "localhost"), bolt=True, password=getenv("NEO4J_PASSWORD", ""))
 
 
 def enrichment_analysis(geneset, mode='over', multipletest_method='fdr_bh'):
