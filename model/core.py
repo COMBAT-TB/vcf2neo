@@ -28,18 +28,84 @@ class Feature(GraphObject):
     residues = Property()
     seqlen = Property()
     md5checksum = Property()
-    type = Property()
-    parent = Property()  # To build belongs_to rel.
+    parent = Property()  # To build related_to rel.
     is_analysis = Property()
     is_obsolete = Property()
     timeaccessioned = Property()
     timelastmodfied = Property()
+    ontology_id = Property()
 
     belongs_to = RelatedTo("Organism", "BELONGS_TO")
     location = RelatedTo("FeatureLoc", "LOCATED_AT")
-    related = RelatedTo("Feature", "RELATED_TO")
+    related_to = RelatedTo("Feature", "RELATED_TO")
     published_in = RelatedTo("Publication", "PUBLISHED_IN")
     dbxref = RelatedTo("DbXref", "XREF")
+    cvterm = RelatedTo("CvTerm", "ASSOC_WITH")
+
+
+class Gene(Feature):
+    so_id = "SO:0000704"
+
+    biotype = Property()
+    description = Property()
+    is_a = RelatedTo("Feature", "IS_A")
+
+
+class PseudoGene(Feature):
+    so_id = "SO:0000336"
+
+    biotype = Property()
+    description = Property()
+    is_a = RelatedTo("Feature", "IS_A")
+
+
+class Transcript(Feature):
+    so_id = "SO:0000673"
+
+    biotype = Property()
+    is_a = RelatedTo("Feature", "IS_A")
+    part_of = RelatedTo("Gene", "PART_OF")
+
+
+class TRna(Feature):
+    so_id = "SO:0000253"
+
+
+class NCRna(Feature):
+    so_id = "SO:0000655"
+
+
+class RRna(Feature):
+    so_id = "SO:0000252"
+
+
+class Exon(Feature):
+    so_id = "SO:0000147"
+
+    is_a = RelatedTo("Feature", "IS_A")
+    part_of = RelatedTo("Transcript", "PART_OF")
+
+
+class CDS(Feature):
+    so_id = "SO:0000316"
+
+    is_a = RelatedTo("Feature", "IS_A")
+    part_of = RelatedTo("Transcript", "PART_OF")
+    polypeptide = RelatedFrom('Polypeptide', "DERIVES_FROM")
+
+
+class Polypeptide(Feature):
+    so_id = "SO:0000104"
+
+    family = Property()
+    function = Property()
+    pdb_id = Property()
+    domain = Property()
+    three_d = Property()
+    mass = Property()
+
+    derives_from = RelatedTo("CDS", "DERIVES_FROM")
+    interacts_with = RelatedTo("Polypeptide", "INTERACTS_WITH")
 
 
 class FeatureLoc(GraphObject):
@@ -56,7 +122,7 @@ class FeatureLoc(GraphObject):
     locgroup = Property()
     rank = Property()
 
-    feature = RelatedFrom(Feature, "ON")
+    feature = RelatedFrom("Feature", "ON")
     published_in = RelatedTo("Publication", "PUBLISHED_IN")
 
     def __init__(self, srcfeature_id, fmin=None, is_fmin_partial=None, fmax=None, is_fmax_partial=None, strand=None,
@@ -77,8 +143,9 @@ class FeatureLoc(GraphObject):
 
 
 class Publication(GraphObject):
-    __primarykey__ = 'uniquename'
+    __primarykey__ = 'pmid'
 
+    pmid = Property()
     title = Property()
     volumetitle = Property()
     volume = Property()
@@ -92,14 +159,17 @@ class Publication(GraphObject):
     publisher = Property()
     pubplace = Property()
 
+    author = RelatedFrom("Author", "WROTE")
+
 
 class Author(GraphObject):
-    __primarykey__ = 'rank'
+    __primarykey__ = 'givennames'
 
     editor = Property()
     surname = Property()
     givennames = Property()
     suffix = Property()
+    rank = Property()
 
     wrote = RelatedTo("Publication", "WROTE")
 
@@ -116,9 +186,12 @@ class CvTerm(GraphObject):
     name = Property()
     definition = Property()
     is_obsolete = Property()
+    namespace = Property()
 
     dbxref = RelatedTo("DbXref", "XREF")
-    related = RelatedTo("CvTerm", "RELATED_TO")
+    is_a = RelatedTo("CvTerm", "IS_A")
+    part_of = RelatedTo("CvTerm", "PART_OF")
+    feature = RelatedFrom("Feature", "ASSOC_WITH")
 
     def __init__(self, name=None, definition=None, is_obsolete=None):
         self.name = name
@@ -134,7 +207,7 @@ class DbXref(GraphObject):
     db = Property()
     description = Property()
 
-    def __init__(self, accession=None, version=None, db=None, description=None):
+    def __init__(self, db, accession, version, description=None):
         self.accession = accession
         self.version = version
         self.db = db
