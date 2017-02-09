@@ -47,7 +47,7 @@ var GseaBox = React.createClass({
         // compute hash of the results of this analysis, for caching
         var hash = forge_sha256(data_string);
         this.setState({hash: hash});
-        var url_with_hash = this.props.url + '/' + hash
+        var url_with_hash = this.props.url + '/' + hash;
         $.ajax({
             url: url_with_hash,
             dataType: 'json',
@@ -353,7 +353,7 @@ var GseaForm = React.createClass({
 
         return (
             <div className="row">
-                <div classname="col s12">
+                <div className="col s12">
                     <div className="input-field col-6">
                         <button className="btn waves-effect waves-light light-blue darken-4"
                                 onClick={this.handleHistoryQueryClick}>Query Galaxy Histories

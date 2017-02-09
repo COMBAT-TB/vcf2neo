@@ -298,8 +298,7 @@ def get_dc_list(history_id):
     history_contents = gi.histories.show_history(history_id, contents=True, deleted=False, visible=True, details=False)
     collection_ids = [d.get('id') for d in history_contents if d.get('history_content_type') == 'dataset_collection']
     dc_list = [gi.histories.show_dataset_collection(history_id, _id) for _id in collection_ids]
-    vcf_dc_list = [col for col in dc_list if
-                   'SnpEff' in col['name'] or 'FreeB' in col['name'] and 'stats' not in col['name']]
+    vcf_dc_list = [col for col in dc_list if 'SnpEff' in col['name'] and 'stats' not in col['name']]
 
     return vcf_dc_list
 
@@ -307,17 +306,15 @@ def get_dc_list(history_id):
 @app.route('/api/galaxy_col_datasets/<history_id>')
 @login_required
 def galaxy_col_dataset(history_id):
-    dc_list = get_dc_list(history_id)
-    dc_elements = [col['elements'] for col in dc_list if 'SnpEff' in col['name'] and 'stats' not in col['name']]
-    vcf_list = []
-    for el in dc_elements:
-        for l in el:
-            if l['object']['file_ext']:
-                if l['object']['file_ext'] == 'vcf':
-                    vcf_list.append(l['object'])
+    datasets = gi.histories.show_matching_datasets(history_id, name_filter="SnpEff on data \d+")
+    vcf_datasets = None
+    if datasets:
+        vcf_datasets = [dataset for dataset in datasets if
+                        dataset.get('extension') == 'vcf' and dataset.get('deleted') is False and dataset.get(
+                            'purged') is False and dataset.get('file_size') > 0]
 
     return Response(
-        json.dumps(vcf_list),
+        json.dumps(vcf_datasets),
         mimetype='application/json',
         headers={
             'Cache-Control': 'no-cache',
