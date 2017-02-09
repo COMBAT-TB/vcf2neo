@@ -41,6 +41,16 @@ class Feature(GraphObject):
     published_in = RelatedTo("Publication", "PUBLISHED_IN")
     dbxref = RelatedTo("DbXref", "XREF")
     cvterm = RelatedTo("CvTerm", "ASSOC_WITH")
+    orthologous_to = RelatedTo("Feature", "ORTHOLOGOUS_TO")
+
+
+class FeatureGroup(GraphObject):
+    # I'm not sure if this should be in core - pvh
+    __primarykey__ = 'featuregroup'
+
+    name = Property()
+    description = Property()
+    contains = RelatedTo("Feature", "CONTAINS")
 
 
 class Gene(Feature):

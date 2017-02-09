@@ -60,22 +60,20 @@ schema designers reduce the burden of constructing such documents by
 creating "denormalised" schemas that merge multiple potentially independent
 entities into a smaller number of tables. In a graph database each entity
 is a node and the relationships and properties represented by edges.
- 
-**We are not yet clear on the performance characteristics of a Neo4j
-database with large (millions) of nodes, and there is not, as yet (as far as
-we know), much discussion on procedures for query-optimising graph databases.**
+
+Conceivably a query optimised graph database would also be constructed by
+merging entities to add attributes from multiple nodes to a single node that
+more closely resembles the final "document" being presented as a result of
+the query.
+
+For commentary on performance and optimisation of Neo4j databases set:
 
 * [Tackling a 1 Billion Member Social Network – Fast Search on a Large Graph](https://tech.evojam.com/2016/04/20/tackling-a-1-billion-member-social-network-fast-search-on-a-large-graph/) 
     * [Slides](http://www.slideshare.net/bankowskiartur/tackling-a-1-billion-member-social-network)
 
-**Conceivably a query optimised graph database would also be constructed by
-merging entities to add attributes from multiple nodes to a single node that
-more closely resembles the final "document" being presented as a result of
-the query.**
-
- * [Qualifying relationships](http://graphaware.com/neo4j/2013/10/24/neo4j-qualifying-relationships.html)
+* [Qualifying relationships](http://graphaware.com/neo4j/2013/10/24/neo4j-qualifying-relationships.html)
  
- * [Bidirectional relationships](http://graphaware.com/neo4j/2013/10/11/neo4j-bidirectional-relationships.html) 
+* [Bidirectional relationships](http://graphaware.com/neo4j/2013/10/11/neo4j-bidirectional-relationships.html) 
 
 ## Mapping the Chado model to Neo4j graph entities
 
@@ -102,7 +100,10 @@ correctness of the contents of a graph database cannot be assured and it might
 be useful to write a "test suite" that tests for the biological validity (as
 guided for example by the SO) of nodes and relationships in the database.
 
-* [Cypher query-constraints](http://neo4j.com/docs/developer-manual/current/cypher/#query-constraints). 
+(Neo4j does support constraints on attributes to a certain extent, although the 
+property existence constraints that might be used to specify the required attributes
+of a class are only available in Neo4j Enterprise Edition, see [Cypher query-constraints](http://neo4j.com/docs/developer-manual/current/cypher/#query-constraints).
+The support for constraints is not exposed in py2neo (yet).)
 
 In addition or as a partial alternative, SO terms such as `mRNA` can be
 inserted into the database to allow the statement "there shall be no mRNA node
@@ -116,9 +117,7 @@ to be added as key/value pairs in the `organism_prop` table. Arbitrary attribute
 can be added to nodes in a Neo4j graph database, so such an arrangement is
 not necessary. On the level of the model, however, some form of consistent
 specification is necessary, perhaps through subclassing a particular node class.
-**Note:** It is not yet clear how well OGM mappers support subclassing.
-
-   * [Subclassing in py2neo](https://github.com/nigelsmall/py2neo/issues/541).
+(py2neo supports subclassing: [Subclassing in py2neo](https://github.com/nigelsmall/py2neo/issues/541))
 
 Locations in Chado are entities independent of but related to features. Again
 this can be adopted for a Neo4j model fairly directly. While there is no widely
@@ -188,7 +187,8 @@ Chado does not support this, but it should be possible to support it
 in Neo4j if changes can be encoded in some change specification language
 and arranged into a set of related update nodes.
 
-* A possible way might be to use [dvol](https://clusterhq.com/dvol/)?
+*As databases are, in our design, often stored using
+Docker containers, we might  be able to use [dvol](https://clusterhq.com/dvol/)*.
 
 ## Migrating from Chado to Neo4j
 
@@ -202,3 +202,7 @@ a tool that already maps Chado to an object model and then map that
 object model to the proposed graph model. The Apollo annotation editor
 is one tool that might be adapted by adding a database interface
 based on Neo4j-OGM and the schema currently being developed at SANBI.
+
+## Model implementation
+
+For a draft implementation of this model using py2neo see [this](https://github.com/SANBI-SA/combat_tb_model/tree/master/model).

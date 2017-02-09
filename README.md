@@ -10,11 +10,13 @@ The COMBAT-TB Graph model is based on three Chado Modules:
 * Sequence
 * Publication
 
-[See](docs/chado_graph_model_draft.jpg)
+A diagram depicting the Graph model can be found [here,](docs/chado_graph_model_draft.jpg) with the accompanying documentation [here](docs/genome_annotation_model.md).
 
 ## Usage
 
-**Assuming you have Docker installed, pull and run the [neo4j docker image](https://hub.docker.com/_/neo4j/):**
+### With the Docker engine:
+
+Pull and run the [neo4j docker image](https://hub.docker.com/_/neo4j/):
 
 ```
 $ docker run -d \
@@ -26,14 +28,14 @@ $ docker run -d \
     neo4j:3.0.4
 ```
 
-**Clone this repository:**
+Clone this repository:
 
 ```
 $ git clone git@github.com:SANBI-SA/combat_tb_model.git
 $ cd combat_tb_model
 ```
 
-**Create a virtual environment:**
+Create a virtual environment:
 
 ```
 $ virtualenv envname
@@ -47,6 +49,3 @@ $ python main.py
 ```
 $ docker-compose up -d
 ```
-
-*Point your browser at [http://localhost:7474](http://localhost:7474) .*
-
