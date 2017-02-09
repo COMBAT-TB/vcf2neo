@@ -95,6 +95,7 @@ class CDS(Feature):
 
 
 class Polypeptide(Feature):
+    # more commonly known as a Protein - we should call it that - pvh
     so_id = "SO:0000104"
 
     family = Property()
