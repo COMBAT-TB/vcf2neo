@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+    {#    <ul class="collection with-header">#}
+    {#        <li class="collection-header"><h4>Results</h4></li>#}
+    {#        {% for gene in genes %}#}
+    {#            <li class="collection-item">{{ gene.name }}</li>#}
+    {#            <a href="/search?gene={{ gene.name }}" class="collection-item">{{ gene.name }}</a>#}
+    {#        {% endfor %}#}
+    {#    </ul>#}
+    <div class="section">
+        <h5>Showing results for {{ length }} genes</h5><br>
+    </div>
+    <ul class="collapsible" data-collapsible="accordion">
+        {% for gene in genes %}
+            <li>
+                <div class="collapsible-header"><i class="material-icons">label</i><a
+                        href="/search?gene={{ gene.name }}" class="collection-item">{{ gene.name }}</a></div>
+                <div class="collapsible-body"><p>{{ gene.description }}</p></div>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

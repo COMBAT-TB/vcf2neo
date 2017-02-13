@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="section">
+        <div class="row">
+            <div class="col s12">
+                <h1 class="header center-on-small-only">About</h1>
+                <div class="divider"></div>
+                <br>
+                <h4 class="flow-text">COMBAT-TB is a Medical Research Council (MRC) flagship project which aims
+                    to address two needs: </h4>
+                <div class="section">
+                    <h2 class="flow-text"><i>Access to computer tools for rapid deployment in a resource limited
+                        laboratory, and </i></h2>
+                    <h2 class="flow-text"><i>Access to an integrated environment that would allow researchers to
+                        interrogate in-house data.</i></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    {#    <div class="section">#}
+    <h3 class="header center-on-small-only">Made possible by</h3>
+    <div class="divider"></div>
+    <br>
+    <div class="row">
+        <div class="col s4 m4">
+            <div class="card small">
+                {#                <div class="card-image">#}
+                {#                    <img src="{{ url_for('static', filename='img/sanbi_logo.png') }}" width="400" height="150">#}
+                {#                            <span class="card-title">Card Title</span>#}
+                {#                </div>#}
+                {#                <div class="card-content">#}
+                {#                    <p>SANBI is a well-established bioinformatics centre at the University of the Western Cape and#}
+                {#                        has been running a bioinformatics post-graduate training centre as well as a centre for#}
+                {#                        bioinformatics research since it was founded in 1996.</p>#}
+                {#                </div>#}
+                {#                <div class="card-action">#}
+                {#                    <a target="_blank" href="http://www.sanbi.ac.za/">SANBI</a>#}
+                {#                </div>#}
+
+                <div class="card-image waves-effect waves-block waves-light">
+                    <img class="activator" src="{{ url_for('static', filename='img/sanbi_logo.png') }}">
+                </div>
+                <div class="card-content">
+                    <span class="card-title activator grey-text text-darken-4">SANBI<i
+                            class="material-icons right">more_vert</i></span>
+                    <p><a target="_blank" href="http://www.sanbi.ac.za/">The South African National Bioinformatics
+                        Institute</a>
+                    </p>
+                </div>
+                <div class="card-reveal">
+                    <span class="card-title grey-text text-darken-4">SANBI<i
+                            class="material-icons right">close</i></span>
+                    <p>SANBI is a well-established bioinformatics centre at the University of the Western Cape and
+                        has been running a bioinformatics post-graduate training centre as well as a centre for
+                        bioinformatics research since it was founded in 1996.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col s4 m4">
+            <div class="card small">
+                <div class="card-image waves-effect waves-block waves-light">
+                    <img class="activator" src="{{ url_for('static', filename='img/newmrcbanner.png') }}">
+                </div>
+                <div class="card-content">
+                    <span class="card-title activator grey-text text-darken-4">SAMRC<i
+                            class="material-icons right">more_vert</i></span>
+                    <p><a target="_blank" href="http://www.mrc.ac.za/">The South African Medical Research Council</a>
+                    </p>
+                </div>
+                <div class="card-reveal">
+                    <span class="card-title grey-text text-darken-4">SAMRC<i
+                            class="material-icons right">close</i></span>
+                    <p>The South African Medical Research Council (SAMRC) was established in 1969 with a mandate to
+                        improve the health of the country’s population, through research, development and technology
+                        transfer, so that people can enjoy a better quality of life.</p>
+                </div>
+
+                {#                <div class="card-image">#}
+                {#                    <img src="{{ url_for('static', filename='img/newmrcbanner.png') }}" width="400" height="150">#}
+                {#                            <span class="card-title">Card Title</span>#}
+                {#                </div>#}
+                {#                <div class="card-content">#}
+                {#                    <p>The South African Medical Research Council (SAMRC) was established in 1969 with a mandate to#}
+                {#                        improve the health of the country’s population, through research, development and technology#}
+                {#                        transfer, so that people can enjoy a better quality of life.</p>#}
+                {#                </div>#}
+                {#                <div class="card-action">#}
+                {#                    <a target="_blank" href="http://www.mrc.ac.za/">SAMRC</a>#}
+                {#                </div>#}
+            </div>
+        </div>
+        <div class="col s4 m4">
+            {#            <div class="card medium">#}
+            {#                <div class="card-image">#}
+            {#                    <img src="{{ url_for('static', filename='img/uwc_trans_logo_.gif') }}" width="400" height="150">#}
+            {#                            <span class="card-title">Card Title</span>#}
+            {#                </div>#}
+            {#                <div class="card-content">#}
+            {#                    <p>UWC is a national university, alert to its African and international context as it strives to#}
+            {#                        be a place of quality, a place to grow. It is committed to excellence in teaching, learning#}
+            {#                        and research, to nurturing the cultural diversity of South Africa.</p>#}
+            {#                </div>#}
+            {#                <div class="card-action">#}
+            {#                    <a target="_blank" href="http://www.uwc.ac.za/">UWC</a>#}
+            {#                </div>#}
+            {#            </div>#}
+            <div class="card small">
+                <div class="card-image waves-effect waves-block waves-light">
+                    <img class="activator" src="{{ url_for('static', filename='img/uwc_trans_logo_.gif') }}"
+                         height="180">
+                </div>
+                <div class="card-content">
+                    <span class="card-title activator grey-text text-darken-4">UWC<i
+                            class="material-icons right">more_vert</i></span>
+                    <p><a target="_blank" href="http://www.uwc.ac.za/">The University of the Western Cape</a></p>
+                </div>
+                <div class="card-reveal">
+                    <span class="card-title grey-text text-darken-4">UWC<i class="material-icons right">close</i></span>
+                    <p>UWC is a national university, alert to its African and international context as it strives to
+                        be a place of quality, a place to grow. It is committed to excellence in teaching, learning
+                        and research, to nurturing the cultural diversity of South Africa.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {#    </div>#}
+    {#    <div class="card">#}
+    {#        <div class="card-image waves-effect waves-block waves-light">#}
+    {#            <img class="activator" src="{{ url_for('static', filename='img/uwc_trans_logo_.gif') }}">#}
+    {#        </div>#}
+    {#        <div class="card-content">#}
+    {#            <span class="card-title activator grey-text text-darken-4">Card Title<i class="material-icons right">more_vert</i></span>#}
+    {#            <p><a href="#">This is a link</a></p>#}
+    {#        </div>#}
+    {#        <div class="card-reveal">#}
+    {#            <span class="card-title grey-text text-darken-4">Card Title<i class="material-icons right">close</i></span>#}
+    {#            <p>Here is some more information about this product that is only revealed once clicked on.</p>#}
+    {#        </div>#}
+    {#    </div>#}
+{% endblock %}

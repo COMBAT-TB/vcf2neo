@@ -1,0 +1,13 @@
+version: '2'
+services:
+  web:
+    restart: always
+    build: .
+    image: combat_tb_web
+    container_name: combat_tb_web
+    ports:
+      - "5000:5000"
+    env_file: .env
+
+
+
