@@ -172,6 +172,14 @@
                             </td>
                         </tr>
                         <tr>
+                          <th>Orthologs</th>
+                          <td>
+                            {% if ortholog != None %}
+                              <strong>CDC1551:</strong> {{ ortholog_name }}
+                            {% endif %}
+                          </td>
+                        </tr>
+                        <tr>
                             <th>GO</th>
                             <td>
                                 {% for entry in go_terms %}

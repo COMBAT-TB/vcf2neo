@@ -103,6 +103,17 @@ def search():
             gene = search_gene(feature.uniquename)
             gene_uname = gene.uniquename
             try:
+                gene_feature = next(iter(gene.is_a))
+            except StopIteration:
+                pass
+            try:
+                # TODO: support multiple orthologs from different sources
+                cdc1551_ortholog = next(iter(gene_feature.orthologous_to))
+                ortholog_name = cdc1551_ortholog.name
+            except StopIteration:
+                pass
+
+            try:
                 protein = Polypeptide.select(graph).where(
                     "_.parent = '{}'".format(gene_uname[gene_uname.find(':') + 1:])).first()
             except Exception as e:
