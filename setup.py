@@ -12,7 +12,8 @@ setup(
         'click',
         'bioservices',
         'py2neo',
-        'tqdm'
+        'tqdm',
+        'PyVCF'
     ],
     entry_points={
         'console_scripts': ['vcf2neo=vcf2neo.cli:cli']
