@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='vcf2neo',
@@ -6,6 +6,8 @@ setup(
     description='Parses VCF file and builds a graph database.',
     keywords='neo4j,and vcf',
     py_modules=['vcf2neo'],
+    packages=find_packages(),
+    include_package_data=True,
     install_requires=[
         'click',
         'bioservices',
