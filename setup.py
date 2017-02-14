@@ -11,7 +11,8 @@ setup(
     install_requires=[
         'click',
         'bioservices',
-        'py2neo'
+        'py2neo',
+        'tqdm'
     ],
     entry_points={
         'console_scripts': ['vcf2neo=vcf2neo.cli:cli']
