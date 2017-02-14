@@ -44,9 +44,9 @@ class Feature(GraphObject):
     orthologous_to = RelatedTo("Feature", "ORTHOLOGOUS_TO")
 
 
-class FeatureGroup(GraphObject):
+class FeatureSet(GraphObject):
     # I'm not sure if this should be in core - pvh
-    __primarykey__ = 'featuregroup'
+    __primarykey__ = 'name'
 
     name = Property()
     description = Property()
@@ -58,6 +58,7 @@ class Gene(Feature):
 
     biotype = Property()
     description = Property()
+    parts = RelatedFrom("Transcript", "PART_OF")
     is_a = RelatedTo("Feature", "IS_A")
 
 
@@ -103,6 +104,11 @@ class CDS(Feature):
     part_of = RelatedTo("Transcript", "PART_OF")
     polypeptide = RelatedFrom('Polypeptide', "DERIVES_FROM")
 
+
+class Chromosome(Feature):
+    so_id = "SO:0000340"
+
+    is_a = RelatedTo("Feature", "IS_A")
 
 class Polypeptide(Feature):
     # more commonly known as a Protein - we should call it that - pvh
