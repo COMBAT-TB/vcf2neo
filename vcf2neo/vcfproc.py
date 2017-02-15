@@ -1,6 +1,7 @@
 """
 Interface to handle VCF files
 """
+import sys
 import glob
 import time
 
