@@ -9,10 +9,16 @@ var gulp = require('gulp'),
     size = require('gulp-size'),
     livereload = require('gulp-livereload');
 
+let transforms = [
+    {
+        transform: "babelify",
+        options: {presets: ["es2015", "react"]}
+    }
+];
 //tasks
 gulp.task('transform', function () {
     return gulp.src('./combatwebapp/static/scripts/*.jsx')
-        .pipe(gulpBrowser.browserify({transform: ['reactify']}))
+        .pipe(gulpBrowser.browserify(transforms))
         .pipe(gulp.dest('./combatwebapp/static/scripts/js/'))
         .pipe(size())
         .pipe(livereload());

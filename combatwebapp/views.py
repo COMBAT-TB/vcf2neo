@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import json
 import os
+import subprocess
 import sys
 
 import flask_login
@@ -337,20 +338,34 @@ def galaxy_dataset_col(history_id):
     )
 
 
-@app.route('/api/galaxy_dataset/<dataset_id>')
+@app.route('/api/load_galaxy_dataset/<dataset_id>')
 @login_required
 def load_galaxy_dataset(dataset_id):
     timeout = 10000  # 10 seconds
-
+    # data, vcf_file = None
+    data_dict = dict()
     try:
         dc = DatasetClient(gi)
-        data = dc.download_dataset(dataset_id, wait_for_completion=True, maxwait=timeout)
+        for dataset_id in dataset_id.split(','):
+            vcf_file = dc.download_dataset(dataset_id, file_path=str(os.getcwd()), wait_for_completion=True,
+                                           maxwait=timeout)
+            data = dc.download_dataset(dataset_id, wait_for_completion=True, maxwait=timeout)
+            data_dict[vcf_file[str(vcf_file).find('G'):]] = data
+
     except (AssertionError, DatasetTimeoutException) as e:
         print(e, file=sys.stderr)
-        data = ''
+        data, data_dict = ''
+    try:
+        p = subprocess.Popen(["vcf2neo", "init", "-d", "{}".format(os.getcwd())], stdout=subprocess.PIPE)
+        out, err = p.communicate()
+        sys.stdout.write(out)
+        # sys.stderr.write(err)
+        # print(out, err)
+    except(OSError, ValueError) as e:
+        print(e)
 
     return Response(
-        json.dumps(data),
+        json.dumps(data_dict),
         mimetype='application/json',
         headers={
             'Cache-Control': 'no-cache',

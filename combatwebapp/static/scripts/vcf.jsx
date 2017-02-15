@@ -64,10 +64,10 @@ var VcfContainer = React.createClass({
 var HelloReact = React.createClass({
     getInitialState: function () {
         return {
-            firstName: '', lastName: '',
             text: '', mode: 'over', multi_comp: 'fdr_bh',
             histories: [], datasets: [], dataset_cols: [],
-            history_id: '', dataset_id: '', dataset_col_id: ''
+            history_id: '', dataset_id: '', dataset_col_id: '',
+            selected_datasets: [], loaded_datasets: []
         };
     },
     componentWillMount: function () {
@@ -77,7 +77,6 @@ var HelloReact = React.createClass({
         $(document).ready(function () {
             $('select').material_select();
         });
-        // this.loadHistories();
         console.log('ComponentDidMount')
     },
     componentWillUnmount: function () {
@@ -137,6 +136,32 @@ var HelloReact = React.createClass({
     handleDatasetChange: function (e) {
         this.setState({dataset_id: e.target.value});
     },
+    handleDatasetSelectChange: function (e) {
+        var options = e.target.options;
+        var values = [];
+        for (var i = 0, l = options.length; i < l; i++) {
+            if (options[i].selected) {
+                values.push(options[i].value);
+            }
+        }
+        console.log(values);
+        this.setState({selected_datasets: values});
+    },
+    loadDataset: function () {
+        var url = '/api/load_galaxy_dataset/' + this.state.selected_datasets;
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            cache: false,
+            success: function (datasets) {
+                console.log(datasets);
+                this.setState({loaded_datasets: datasets});
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error(status, err.toString());
+            }.bind(this)
+        });
+    },
     render: function () {
         var history_options = this.props.histories.map(function (history) {
             return (
@@ -188,13 +213,21 @@ var HelloReact = React.createClass({
                 </div>;
         }
         var dataset_select;
+        var load_dataset;
         if (this.state.datasets.length > 0) {
             dataset_select =
                 <div id="datasetselectdiv" className="input-field col-3">
-                    <select multiple id="datasetselect" value={this.state.dataset_id}>
+                    <select className="browser-default" id="datasetselect" onChange={this.handleDatasetSelectChange}
+                            multiple={true}>
                         { dataset_options }
                     </select>
-                    <label>Select Dataset</label>
+                    {/*<label>Select Dataset</label>*/}
+                </div>;
+            load_dataset =
+                <div className="input-field col-3">
+                    <button className="btn waves-effect waves-light light-blue darken-4"
+                            onClick={this.loadDataset}>Load Dataset(s)
+                    </button>
                 </div>;
         }
         return (
@@ -212,6 +245,7 @@ var HelloReact = React.createClass({
                     {col_dataset_query}
                     <br/>
                     {dataset_select}
+                    {load_dataset}
                 </div>
             </div>
         )
