@@ -62,6 +62,7 @@ def build_relationships():
     Build Relationships
     :return:
     """
+    sys.stdout.write("Building relationships!")
     c_sets = CallSet.select(graph)
     v_sets = VariantSet.select(graph)
     for v_set in v_sets:
