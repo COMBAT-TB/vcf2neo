@@ -31,7 +31,7 @@ def init(vcf_dir, d, refdb_dir=None):
     vcf = Vcf(vcf_dir=vcf_dir)
     vcf.process()
     build_relationships()
-
+    sys.stdout.write("Done loading VCF file to Graph database!")
 
 if __name__ == '__main__':
     cli()
