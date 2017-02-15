@@ -285,7 +285,7 @@ class Call(GraphObject):
         self.gene = gene
 
 
-class Tree(GraphObject):
+class FastTree(GraphObject):
     __primarykey__ = 'name'
     name = Property()
     data = Property()
