@@ -26,6 +26,6 @@
     "reactify": "^1.1.1"
   },
   "dependencies": {
-    "react": "^15.4.2",
+    "react": "^15.4.2"
   }
 }

@@ -147,6 +147,21 @@ var HelloReact = React.createClass({
         console.log(values);
         this.setState({selected_datasets: values});
     },
+    loadColDataset: function () {
+        var url = '/api/load_col_datasets/' + this.props.history_id;
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            cache: false,
+            success: function (datasets) {
+                console.log(datasets);
+                this.setState({loaded_datasets: datasets});
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error(status, err.toString());
+            }.bind(this)
+        });
+    },
     loadDataset: function () {
         var url = '/api/load_galaxy_dataset/' + this.state.selected_datasets;
         $.ajax({
@@ -168,7 +183,7 @@ var HelloReact = React.createClass({
                 <option key={history.id} value={history.id}>{history.name}</option>
             )
         });
-        var dataset__col_options = this.state.dataset_cols.map(function (dataset) {
+        var dataset_col_options = this.state.dataset_cols.map(function (dataset) {
             return (
                 <option key={dataset.id} value={dataset.id}>{dataset.name}</option>
             )
@@ -196,21 +211,28 @@ var HelloReact = React.createClass({
                 </div>;
         }
         var dataset_col_select;
-        var col_dataset_query;
+        // var col_dataset_query;
+        var load_col_datasets;
         if (this.state.dataset_cols.length > 0) {
             dataset_col_select =
                 <div id="datasetcolselectdiv" className="input-field col-3">
                     <select id="datasetcolselect" value={this.state.dataset_col_id}>
-                        { dataset__col_options }
+                        { dataset_col_options }
                     </select>
                     <label>Select Dataset Collection</label>
                 </div>;
-            col_dataset_query =
+            load_col_datasets =
                 <div className="input-field col-3">
                     <button className="btn waves-effect waves-light light-blue darken-4"
-                            onClick={this.handleDatasetQueryClick}>Get Collection Datasets
+                            onClick={this.loadColDataset}>Load Collection Dataset(s)
                     </button>
                 </div>;
+            // col_dataset_query =
+            //     <div className="input-field col-3">
+            //         <button className="btn waves-effect waves-light light-blue darken-4"
+            //                 onClick={this.handleDatasetQueryClick}>Get Collection Datasets
+            //         </button>
+            //     </div>;
         }
         var dataset_select;
         var load_dataset;
@@ -241,8 +263,9 @@ var HelloReact = React.createClass({
                     {history_select}
                     {dataset_col_query}
                     <br/>
-                    { dataset_col_select }
-                    {col_dataset_query}
+                    {dataset_col_select}
+                    {load_col_datasets}
+                    {/*{col_dataset_query}*/}
                     <br/>
                     {dataset_select}
                     {load_dataset}

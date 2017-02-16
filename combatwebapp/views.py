@@ -338,6 +338,56 @@ def galaxy_dataset_col(history_id):
     )
 
 
+@app.route('/api/load_col_datasets/<history_id>')
+@login_required
+def load_col_dataset(history_id):
+    datasets = gi.histories.show_matching_datasets(history_id, name_filter="SnpEff on data \d+")
+    vcf_datasets = None
+    dataset_ids = []
+    if datasets:
+        vcf_datasets = [dataset for dataset in datasets if
+                        dataset.get('extension') == 'vcf' and dataset.get('deleted') is False and dataset.get(
+                            'purged') is False and dataset.get('file_size') > 0]
+        for ds in vcf_datasets:
+            dataset_ids.append(ds.get('id'))
+    dc_list = get_dc_list(history_id)
+    elements = [item.get('elements') for item in dc_list]
+    element_identifiers = [[[el.get('element_identifier') for el in element] for element in elements]]
+    dc_name = [dc.get('name') for dc in dc_list]
+
+    try:
+        p = subprocess.Popen(["mkdir", "{}".format(dc_name[0])], stdout=subprocess.PIPE)
+        out, err = p.communicate()
+        sys.stdout.write(out)
+
+        timeout = 10000  # 10 seconds
+        data_dict = dict()
+        dc = DatasetClient(gi)
+        for dataset_id in dataset_ids:
+            vcf_file = dc.download_dataset(dataset_id, file_path=str(os.getcwd() + "/" + str(dc_name[0])),
+                                           wait_for_completion=True,
+                                           maxwait=timeout)
+            data = dc.download_dataset(dataset_id, wait_for_completion=True, maxwait=timeout)
+            data_dict[vcf_file[str(vcf_file).find('G'):]] = data
+
+        p = subprocess.Popen(["vcf2neo", "init", "-d", "{}".format(os.getcwd() + "/" + dc_name[0])],
+                             stdout=subprocess.PIPE)
+        out, err = p.communicate()
+        sys.stdout.write(out)
+    except (AssertionError, DatasetTimeoutException, OSError, ValueError) as e:
+        sys.stderr.write(e)
+        print(e, file=sys.stderr)
+
+    return Response(
+        json.dumps(vcf_datasets),
+        mimetype='application/json',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        }
+    )
+
+
 @app.route('/api/load_galaxy_dataset/<dataset_id>')
 @login_required
 def load_galaxy_dataset(dataset_id):
