@@ -1,3 +1,4 @@
+import sys
 import click
 from db import build_relationships
 from docker import Docker
@@ -29,9 +30,11 @@ def init(vcf_dir, d, refdb_dir=None):
         docker = Docker(refdb_dir=refdb_dir)
         docker.run()
     vcf = Vcf(vcf_dir=vcf_dir)
+    sys.stderr.write("About to process vcf files...\n")
     vcf.process()
+    sys.stderr.write("About to build relationships...\n")
     build_relationships()
-    sys.stdout.write("Done loading VCF file to Graph database!")
+    sys.stderr.write("Done loading VCF file to Graph database!")
 
 if __name__ == '__main__':
     cli()

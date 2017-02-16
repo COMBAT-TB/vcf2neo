@@ -274,7 +274,7 @@ class CallSet(GraphObject):
     has_call = RelatedTo("Call", "HAS_CALL")
     has_calls_in = RelatedTo("VariantSet", "HAS_CALLS_IN")
 
-    def __init__(self, name):
+    def __init__(self, name, vset):
         self.name = name
         self.vset = vset
 

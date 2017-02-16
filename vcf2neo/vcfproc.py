@@ -18,7 +18,7 @@ class Vcf(object):
         self.vcf_dir = vcf_dir
 
     def process(self):
-        sys.stdout.write("We have the following VCF files in directory ({}):\n".format(self.vcf_dir))
+        sys.stderr.write("We have the following VCF files in directory ({}):\n".format(self.vcf_dir))
         print("We have the following VCF files in directory ({}):\n".format(self.vcf_dir))
         for vcf_file in glob.glob(self.vcf_dir + "/*.vcf"):
             print(vcf_file)
@@ -32,7 +32,7 @@ class Vcf(object):
             # TODO: Let's use the file name for now
             create_variant_set_nodes(set_name=vset_name)
             create_call_set_nodes(set_name=vcf_file_name, vset=vset_name)
-            self.get_variant_sites(vcf_reader=vcf_reader, vcf_file_name=vset_name)
+            self.get_variant_sites(vcf_reader=vcf_reader, vset_name=vset_name)
             end = time.time()
             sys.stderr.write("Processed {} in {}!\n".format(vcf_file_name.upper(), end - start))
             print("Processed {} in {}!\n".format(vcf_file_name.upper(), end - start))

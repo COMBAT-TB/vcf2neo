@@ -40,7 +40,7 @@ class Docker(object):
         # cmd_str = "docker run --rm -P -v {refdb_dir}:/data/neo4jdb -e NEO4J_UID={uid} -e NEO4J_GID={gid} " \
         #           "-e NEO4J_AUTH=none -e NEO4J_MONITOR_TRAFFIC=false --name {name} thoba/neo4j_galaxy_ie:v1".format(
         #     refdb_dir=os.getcwd()+"/"+self.refdb_dir, name=self.name, uid=os.getuid(), gid=os.getgid())
-        cmd_str = "docker run --rm -v {refdb_dir}:/data -p 7575:7474 -p 7687:7687 -e NEO4J_AUTH=none --name {name} " \
+        cmd_str = "docker run --rm -v {refdb_dir}:/data -p 7474:7474 -p 7687:7687 -e NEO4J_AUTH=none --name {name} " \
                   "neo4j:3.0.4".format(refdb_dir=os.getcwd() + "/" + refdb_dir, name=self.name)
         cmd = self.new_split(cmd_str)
         sys.stderr.write("Starting docker:\n{}...".format(cmd))
@@ -56,7 +56,7 @@ class Docker(object):
             print("Neo4j running!")
         except (OSError, ValueError) as e:
             sys.stderr.write("Error running {}:\n{}".format(self.name, e))
-            print("Error running {}".format(self.name), e)
+            print("Error running {}:\n{}".format(self.name), e)
         return True
 
     def port(self):

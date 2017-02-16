@@ -39,12 +39,12 @@ def create_variant_site_nodes(record, annotation=None, set_name=None):
     return v_site
 
 
-def create_call_set_nodes(set_name):
+def create_call_set_nodes(set_name, vset):
     """
     Create CallSet Nodes
     :return:
     """
-    c_set = CallSet(name=set_name)
+    c_set = CallSet(name=set_name, vset=vset)
     graph.create(c_set)
 
 
@@ -62,13 +62,13 @@ def build_relationships():
     Build Relationships
     :return:
     """
-    sys.stdout.write("Building relationships!")
+    sys.stderr.write("Building relationships!")
     c_sets = CallSet.select(graph)
     v_sets = VariantSet.select(graph)
     for v_set in v_sets:
         for c_set in c_sets:
             # TODO: Find a better way to handle this.
-            if v_set.name == c_set.name:
+            if v_set.name == c_set.vset:
                 c_set.has_calls_in.add(v_set)
                 graph.push(c_set)
 
