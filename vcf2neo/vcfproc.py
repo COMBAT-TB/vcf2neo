@@ -29,9 +29,9 @@ class Vcf(object):
             # TODO: Have a standard way of identifying variant_set_names
             vcf_file_name = str(vcf_file).replace(str(self.vcf_dir) + "/", "")
             # TODO: Let's use the file name for now
-            create_variant_set_nodes(set_name=vcf_file_name)
+            create_variant_set_nodes(set_name=str(self.vcf_dir).split('/')[-1])
             create_call_set_nodes(set_name=vcf_file_name)
-            self.get_variant_sites(vcf_reader, vcf_file_name)
+            self.get_variant_sites(vcf_reader=vcf_reader, vcf_file_name=vcf_file_name)
             end = time.time()
             sys.stderr.write("Processed {} in {}!\n".format(vcf_file_name.upper(), end - start))
             print("Processed {} in {}!\n".format(vcf_file_name.upper(), end - start))
@@ -42,7 +42,7 @@ class Vcf(object):
         for record in vcf_reader:
             print("\n")
             print(record)
-            annotation = self.get_variant_ann(record)
+            annotation = self.get_variant_ann(record=record)
             create_variant_site_nodes(record, annotation, vcf_file_name)
 
     @staticmethod
