@@ -217,22 +217,22 @@
                 'div',
                 {className: 'row'},
                 React.createElement(
-                    'div',
+                'div',
                     {classname: 'col s12'},
+                React.createElement(
+                    'div',
+                    {className: 'input-field col-6'},
                     React.createElement(
-                        'div',
-                        {className: 'input-field col-6'},
-                        React.createElement(
-                            'button',
-                            {
-                                className: 'btn waves-effect waves-light light-blue darken-4',
-                                onClick: this.handleHistoryQueryClick
-                            },
-                            'Query Galaxy Histories'
-                        ),
-                        dataset_query,
-                        dataset_populate
+                        'button',
+                        {
+                            className: 'btn waves-effect waves-light light-blue darken-4',
+                            onClick: this.handleHistoryQueryClick
+                        },
+                        'Query Galaxy Histories'
                     ),
+                    dataset_query,
+                    dataset_populate
+                ),
                     history_select,
                     dataset_select
             )
@@ -420,21 +420,21 @@
                 'div',
                 {className: 'row'},
                 React.createElement(
-                    'div',
+                'div',
                     {className: 'col s12'},
+                React.createElement(
+                    'div',
+                    {className: 'input-field col-6'},
                     React.createElement(
-                        'div',
-                        {className: 'input-field col-6'},
-                        React.createElement(
-                            'button',
-                            {
-                                className: 'btn waves-effect waves-light light-blue darken-4',
-                                onClick: this.handleHistoryQueryClick
-                            },
-                            'Query Galaxy Histories'
-                        ),
-                        dataset_query
+                        'button',
+                        {
+                            className: 'btn waves-effect waves-light light-blue darken-4',
+                            onClick: this.handleHistoryQueryClick
+                        },
+                        'Query Galaxy Histories'
                     ),
+                    dataset_query
+                ),
                     history_select,
                     dataset_select,
                     dataset_populate
@@ -442,38 +442,38 @@
                 React.createElement(
                     'form',
                     {className: 'col s12', onSubmit: this.handleSubmit},
-                    React.createElement(
-                        'div',
-                        {className: 'input-field col s12'},
-                        React.createElement('textarea', {
-                            className: 'materialize-textarea',
-                            placeholder: 'A list of locus tags',
-                            value: this.state.text,
-                            onChange: this.handleTextChange
-                        })
-                    ),
+                React.createElement(
+                    'div',
+                    {className: 'input-field col s12'},
+                    React.createElement('textarea', {
+                        className: 'materialize-textarea',
+                        placeholder: 'A list of locus tags',
+                        value: this.state.text,
+                        onChange: this.handleTextChange
+                    })
+                ),
                     React.createElement(
                         'div',
                         {id: 'modeselectdiv', className: 'input-field col s6'},
+                    React.createElement(
+                        'select',
+                        {value: this.state.mode, onChange: this.handleModeChange},
                         React.createElement(
-                            'select',
-                            {value: this.state.mode, onChange: this.handleModeChange},
-                            React.createElement(
-                                'option',
-                                {value: 'over'},
-                                'Test for overrepresentation'
-                            ),
-                            React.createElement(
-                                'option',
-                                {value: 'under'},
-                                'Test for underrepresentation'
-                        )
+                            'option',
+                            {value: 'over'},
+                            'Test for overrepresentation'
                         ),
                         React.createElement(
-                            'label',
-                            null,
-                            'Test type'
+                            'option',
+                            {value: 'under'},
+                            'Test for underrepresentation'
                         )
+                    ),
+                    React.createElement(
+                        'label',
+                        null,
+                        'Test type'
+                    )
                     ),
                     React.createElement(
                         'div',
@@ -481,21 +481,21 @@
                         React.createElement(
                             'select',
                             {value: this.state.multi_comp, onChange: this.handleMultiCompChange},
-                            React.createElement(
-                                'option',
-                                {value: 'fdr_bh'},
-                                'Benjamini-Hochberg'
-                            ),
-                            React.createElement(
-                                'option',
-                                {value: 'bonferroni'},
-                                'Bonferroni'
-                        )
+                        React.createElement(
+                            'option',
+                            {value: 'fdr_bh'},
+                            'Benjamini-Hochberg'
                         ),
                         React.createElement(
-                            'label',
-                            null,
-                            'Multiple testing correction type'
+                            'option',
+                            {value: 'bonferroni'},
+                            'Bonferroni'
+                        )
+                    ),
+                    React.createElement(
+                        'label',
+                        null,
+                        'Multiple testing correction type'
                     )
                     ),
                     React.createElement(
@@ -551,34 +551,34 @@
                     React.createElement(
                         'table',
                         {className: 'striped'},
+                    React.createElement(
+                        'thead',
+                        null,
                         React.createElement(
-                            'thead',
+                            'tr',
                             null,
                             React.createElement(
-                                'tr',
+                                'th',
+                                {'data-field': 'goterm'},
+                                'GO Term ID'
+                            ),
+                            React.createElement(
+                                'th',
                                 null,
-                                React.createElement(
-                                    'th',
-                                    {'data-field': 'goterm'},
-                                    'GO Term ID'
-                                ),
-                                React.createElement(
-                                    'th',
-                                    null,
-                                    'GO Term Name'
-                                ),
-                                React.createElement(
-                                    'th',
-                                    null,
-                                    'Raw p-value'
-                                ),
-                                React.createElement(
-                                    'th',
-                                    null,
-                                    'Corrected p-value'
-                                )
+                                'GO Term Name'
+                            ),
+                            React.createElement(
+                                'th',
+                                null,
+                                'Raw p-value'
+                            ),
+                            React.createElement(
+                                'th',
+                                null,
+                                'Corrected p-value'
+                            )
                         )
-                        ),
+                    ),
                         React.createElement(
                             'tbody',
                             null,
