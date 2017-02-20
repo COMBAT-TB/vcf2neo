@@ -90,4 +90,5 @@ def build_relationships():
                 for location in feature.location:
                     v_site.location.add(location)
                     graph.push(v_site)
+    sys.stderr.write("Done building relationships!")
     return True
