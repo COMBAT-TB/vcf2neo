@@ -1,4 +1,5 @@
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
+from user import User
 
 # class Phenotype(GraphObject):
 #     __primarykey__ = 'type'
@@ -12,12 +13,15 @@ from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 class VariantSet(GraphObject):
     __primarykey__ = 'name'
     name = Property()
+    owner = Property()
 
     has_var = RelatedTo("VariantSite", "HAS_VAR")
     has_call = RelatedTo("Call", "HAS_CALL")
+    owned_by = RelatedFrom("User", "OWNED_BY")
 
-    def __init__(self, name):
+    def __init__(self, name, owner):
         self.name = name
+        self.owner = owner
 
 
 # VariantSite = Variant
@@ -56,12 +60,14 @@ class VariantSite(GraphObject):
 class CallSet(GraphObject):
     __primarykey__ = 'name'
     name = Property()
+    vset = Property()
 
     has_call = RelatedTo("Call", "HAS_CALL")
     has_calls_in = RelatedTo("VariantSet", "HAS_CALLS_IN")
 
-    def __init__(self, name):
+    def __init__(self, name, vset):
         self.name = name
+        self.vset = vset
 
 
 class Call(GraphObject):
