@@ -1,20 +1,21 @@
 """
 Interface to the Neo4j Database
 """
+import sys
 from combat_tb_model.model import VariantSet, CallSet, VariantSite, Call, Gene, Feature
 
 from py2neo import Graph, getenv, watch
 
 graph = Graph(host=getenv("DB", "localhost"), http_port=7474, bolt=True, password=getenv("NEO4J_PASSWORD", ""))
-watch("neo4j.bolt")
+# watch("neo4j.bolt")
 
 
-def create_variant_set_nodes(set_name):
+def create_variant_set_nodes(set_name, owner):
     """
     Create VariantSet Nodes
     :return:
     """
-    v_set = VariantSet(name=str(set_name))
+    v_set = VariantSet(name=str(set_name), owner=str(owner))
     graph.create(v_set)
 
 
@@ -89,3 +90,4 @@ def build_relationships():
                 for location in feature.location:
                     v_site.location.add(location)
                     graph.push(v_site)
+    return True

@@ -139,7 +139,8 @@ class FeatureLoc(GraphObject):
         self.locgroup = locgroup
         self.rank = rank
         if self.fmin > self.fmax:
-            raise ValueError("fmin cannot be greater than fmax: {} > {}.".format(self.fmin, self.fmax))
+            raise ValueError(
+                "fmin cannot be greater than fmax: {} > {}.".format(self.fmin, self.fmax))
 
 
 class Publication(GraphObject):
@@ -226,12 +227,14 @@ class DbXref(GraphObject):
 class VariantSet(GraphObject):
     __primarykey__ = 'name'
     name = Property()
+    owner = Property()
 
     has_var = RelatedTo("VariantSite", "HAS_VAR")
     has_call = RelatedTo("Call", "HAS_CALL")
 
-    def __init__(self, name):
+    def __init__(self, name, owner):
         self.name = name
+        self.owner = owner
 
 
 # VariantSite = Variant
