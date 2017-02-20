@@ -10,7 +10,7 @@ import requests as requests
 from bioblend import galaxy
 from bioblend.galaxy.datasets import DatasetClient, DatasetTimeoutException
 from flask import Flask, Response, render_template, request, redirect, url_for, flash
-from flask.ext.login import UserMixin, login_user, login_required
+from flask.ext.login import UserMixin, login_user, login_required, current_user
 from flask.ext.login import logout_user
 from flask_wtf.csrf import CSRFProtect
 
@@ -370,8 +370,9 @@ def load_col_dataset(history_id):
             data = dc.download_dataset(dataset_id, wait_for_completion=True, maxwait=timeout)
             data_dict[vcf_file[str(vcf_file).find('G'):]] = data
 
-        p = subprocess.Popen(["vcf2neo", "init", "-d", "{}".format(os.getcwd() + "/" + dc_name[0])],
-                             stdout=subprocess.PIPE)
+        p = subprocess.Popen(
+            ["vcf2neo", "init", "-D", "{}".format(os.getcwd() + "/" + dc_name[0]), "{}".format(current_user.id)],
+            stdout=subprocess.PIPE)
         out, err = p.communicate()
         sys.stdout.write(str(out))
     except (AssertionError, DatasetTimeoutException, OSError, ValueError) as e:
