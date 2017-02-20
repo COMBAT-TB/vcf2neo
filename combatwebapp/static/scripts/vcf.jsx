@@ -252,13 +252,27 @@ var HelloReact = React.createClass({
                     </button>
                 </div>;
         }
+        var imported_data;
+        if (this.state.loaded_datasets.length > 0) {
+            imported_data =
+                <div className="row">
+                    <div className="card-panel teal lighten-2 center-align">Successfully
+                        loaded {this.state.loaded_datasets.length} VCF files.
+                    </div>
+                    {/*<ul className="col s12 m4 l8 collection with-header">*/}
+                    {/*<li className="collection-header center-align"><h4>Uploaded VCF Files</h4></li>*/}
+                    {/*{this.state.loaded_datasets.map(function (dataset) {*/}
+                    {/*return <li className="collection-item">{dataset.name}</li>;*/}
+                    {/*})}*/}
+                    {/*</ul>*/}
+                </div>;
+        }
         return (
             <div>
                 <h2 className="center-align light-blue-text text-darken-4">Import VCF from Galaxy</h2>
                 <div className="row center">
                     <h6 className="header col s12">Import VCF collections from your Galaxy Histories.</h6>
                 </div>
-                {/*<HelloMessage className="center-align light-blue-text text-darken-4" message=""/>*/}
                 <div className="input-field col s12">
                     {history_select}
                     {dataset_col_query}
@@ -267,8 +281,9 @@ var HelloReact = React.createClass({
                     {load_col_datasets}
                     {/*{col_dataset_query}*/}
                     <br/>
-                    {dataset_select}
-                    {load_dataset}
+                    {/*{dataset_select}*/}
+                    {/*{load_dataset}*/}
+                    {imported_data}
                 </div>
             </div>
         )

@@ -373,49 +373,13 @@ def load_col_dataset(history_id):
         p = subprocess.Popen(["vcf2neo", "init", "-d", "{}".format(os.getcwd() + "/" + dc_name[0])],
                              stdout=subprocess.PIPE)
         out, err = p.communicate()
-        sys.stdout.write(out)
+        sys.stdout.write(str(out))
     except (AssertionError, DatasetTimeoutException, OSError, ValueError) as e:
-        sys.stderr.write(e)
+        sys.stderr.write(str(e))
         print(e, file=sys.stderr)
 
     return Response(
         json.dumps(vcf_datasets),
-        mimetype='application/json',
-        headers={
-            'Cache-Control': 'no-cache',
-            'Access-Control-Allow-Origin': '*'
-        }
-    )
-
-
-@app.route('/api/load_galaxy_dataset/<dataset_id>')
-@login_required
-def load_galaxy_dataset(dataset_id):
-    timeout = 10000  # 10 seconds
-    # data, vcf_file = None
-    data_dict = dict()
-    try:
-        dc = DatasetClient(gi)
-        for dataset_id in dataset_id.split(','):
-            vcf_file = dc.download_dataset(dataset_id, file_path=str(os.getcwd()), wait_for_completion=True,
-                                           maxwait=timeout)
-            data = dc.download_dataset(dataset_id, wait_for_completion=True, maxwait=timeout)
-            data_dict[vcf_file[str(vcf_file).find('G'):]] = data
-
-    except (AssertionError, DatasetTimeoutException) as e:
-        print(e, file=sys.stderr)
-        data, data_dict = ''
-    try:
-        p = subprocess.Popen(["vcf2neo", "init", "-d", "{}".format(os.getcwd())], stdout=subprocess.PIPE)
-        out, err = p.communicate()
-        sys.stdout.write(out)
-        # sys.stderr.write(err)
-        # print(out, err)
-    except(OSError, ValueError) as e:
-        print(e)
-
-    return Response(
-        json.dumps(data_dict),
         mimetype='application/json',
         headers={
             'Cache-Control': 'no-cache',
