@@ -2,8 +2,9 @@
 Interface to the Neo4j Database
 """
 import sys
-from combat_tb_model.model import VariantSet, CallSet, VariantSite, Call, Gene, Feature
-
+from combat_tb_model.model.vcf import *
+from combat_tb_model.model.core import *
+from combat_tb_model.model.user import *
 from py2neo import Graph, getenv, watch
 
 graph = Graph(host=getenv("DB", "localhost"), http_port=7474, bolt=True, password=getenv("NEO4J_PASSWORD", ""))
