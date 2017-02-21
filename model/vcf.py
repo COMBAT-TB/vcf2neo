@@ -1,5 +1,6 @@
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 from user import User
+from core import *
 
 # class Phenotype(GraphObject):
 #     __primarykey__ = 'type'
