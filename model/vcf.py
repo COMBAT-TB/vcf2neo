@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 from user import User
 from core import *
+=======
+from core import *
+
+>>>>>>> f192a35453cbe46d12e519a189a84ef8e46cc05a
 
 # class Phenotype(GraphObject):
 #     __primarykey__ = 'type'
@@ -15,19 +20,21 @@ class VariantSet(GraphObject):
     __primarykey__ = 'name'
     name = Property()
     owner = Property()
+    history_id = Property()
 
     has_var = RelatedTo("VariantSite", "HAS_VAR")
     has_call = RelatedTo("Call", "HAS_CALL")
-    owned_by = RelatedFrom("User", "OWNED_BY")
+    owned_by = RelatedFrom("GalaxyUser", "OWNED_BY")
 
-    def __init__(self, name, owner):
+    def __init__(self, name, owner, history_id=None):
         self.name = name
         self.owner = owner
+        self.history_id = history_id
 
 
 # VariantSite = Variant
 class VariantSite(GraphObject):
-    ### NOTE: relies on FeatureLoc from core.py
+    # NOTE: relies on FeatureLoc from core.py
     # __primarykey__ = 'pos'
 
     pos = Property()
