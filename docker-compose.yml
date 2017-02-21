@@ -3,10 +3,19 @@ services:
   web:
     restart: always
     build: .
-    image: combat_tb_web
-    container_name: combat_tb_web
+    image: ctb_model
+    container_name: ctb_model
+    environment:
+      DB: db
+#    env_file: .env
+    depends_on:
+      - db
+  db:
+    image: neo4j:3.0.4
+    container_name: ctb_model_neo
+    environment:
+      NEO4J_AUTH: none
+#    env_file: .env
     ports:
-      - "5000:5000"
-
-
-
+      - "7687:7687"
+      - "7474:7474"

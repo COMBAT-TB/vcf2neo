@@ -1,46 +1,51 @@
-# combattb_web
-A Web interface to the COMBAT-TB Neo4j Graph Database
+# COMBAT_TB_MODEL
 
-### Installation
-**NB: We assume you have a running instance of the Graph DB**
+COMBAT-TB Graph Model, a [Chado](https://github.com/GMOD/Chado) -derived graph model.
 
-**Clone this repository:**
+## Overview
 
-    $ git clone git@bitbucket.org:sanbidev/combattb_web.git
-    $ cd combattb_web
+The COMBAT-TB Graph model is based on three Chado Modules:
 
-**Create a virtualenv, and activate it:**
+* CV
+* Sequence
+* Publication
 
-    $ virtualenv ctbweb 
-    $ source ctbweb/bin/activate
+A diagram depicting the Graph model can be found [here,](docs/chado_graph_model_draft.jpg) with the accompanying documentation [here](docs/genome_annotation_model.md).
 
-**After that, install all necessary dependencies by running:**
+## Usage
 
-    $ pip install -r requirements.txt
-    $ pip install -U git+https://github.com/SANBI-SA/vcf2neo.git#egg=vcf2neo
-    $ npm install
-    $ bower install
-    
-**Then, run the application:**
+### With the Docker engine:
 
-	$ python run.py
-    
-**To see CombatTbWeb, access this url in your browser:** 
+Pull and run the [neo4j docker image](https://hub.docker.com/_/neo4j/):
 
-	http://localhost:5000
-	
-### Running CombatTbWeb inside a [Docker](https://www.docker.com/) container
+```
+$ docker run -d \
+    -p 7687:7687 \
+    -p 7474:7474 \
+    -e NEO4J_AUTH=none \
+    --name ctbmodel \
+    -v=$HOME/neo4j/data:/data \
+    neo4j:3.0.4
+```
 
-*To run CombatTbWeb inside a Docker container, you need to have [Docker installed](https://docs.docker.com/installation/ubuntulinux/). Then:*
-     
-**Build the image using:**
+Clone this repository:
 
-    $ docker build -t docker-combattb . 
-   
-**Run the image:**
-    
-    $ docker run -it -p 5001:5000 --name combattb-on-docker docker-combattb
-    
-**Access CombatTbWeb on `0.0.0.0:5001`:** 
-        
-    http://0.0.0.0:5001/
+```
+$ git clone git@github.com:SANBI-SA/combat_tb_model.git
+$ cd combat_tb_model
+```
+
+Create a virtual environment:
+
+```
+$ virtualenv envname
+$ source envname/bin/activate
+$ pip install -r requirements.txt
+$ python main.py
+```
+*Point your browser at [http://localhost:7474](http://localhost:7474) .*
+
+### With `docker-compose`, assuming you have `docker-compose` installed
+```
+$ docker-compose up -d
+```
