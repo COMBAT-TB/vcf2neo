@@ -14,14 +14,16 @@ class VariantSet(GraphObject):
     __primarykey__ = 'name'
     name = Property()
     owner = Property()
+    history_id = Property()
 
     has_var = RelatedTo("VariantSite", "HAS_VAR")
     has_call = RelatedTo("Call", "HAS_CALL")
     owned_by = RelatedFrom("GalaxyUser", "OWNED_BY")
 
-    def __init__(self, name, owner):
+    def __init__(self, name, owner, history_id=None):
         self.name = name
         self.owner = owner
+        self.history_id = history_id
 
 
 # VariantSite = Variant

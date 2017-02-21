@@ -2,6 +2,8 @@ from vcf import *
 
 
 class GalaxyUser(GraphObject):
+    __primarykey__ = 'email'
+
     username = Property()
     email = Property()
 
