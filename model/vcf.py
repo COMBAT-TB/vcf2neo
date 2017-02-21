@@ -1,4 +1,5 @@
-from core import *
+from .core import *
+from .user import *
 
 
 # class Phenotype(GraphObject):
