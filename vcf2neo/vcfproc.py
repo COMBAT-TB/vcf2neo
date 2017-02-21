@@ -37,7 +37,7 @@ class Vcf(object):
                 vset_name = str(self.vcf_dir).split('/')[-1]
                 # TODO: Let's use the file name for now
                 create_variant_set_nodes(
-                    set_name=vset_name, owner=str(self.owner))
+                    set_name=vset_name, owner=str(self.owner), history_id=str(self.history_id))
                 create_call_set_nodes(set_name=vcf_file_name, vset=vset_name)
                 self.get_variant_sites(
                     vcf_reader=vcf_reader, vset_name=vset_name)

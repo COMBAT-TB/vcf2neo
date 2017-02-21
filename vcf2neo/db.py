@@ -11,12 +11,12 @@ graph = Graph(host=getenv("DB", "localhost"), http_port=7474, bolt=True, passwor
 # watch("neo4j.bolt")
 
 
-def create_variant_set_nodes(set_name, owner):
+def create_variant_set_nodes(set_name, owner, history_id):
     """
     Create VariantSet Nodes
     :return:
     """
-    v_set = VariantSet(name=str(set_name), owner=str(owner))
+    v_set = VariantSet(name=str(set_name), owner=str(owner), history_id=history_id)
     graph.create(v_set)
 
 
