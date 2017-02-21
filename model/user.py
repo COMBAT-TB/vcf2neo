@@ -1,7 +1,7 @@
-from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 from vcf import *
 
-class User(GraphObject):
+
+class GalaxyUser(GraphObject):
     username = Property()
     email = Property()
 
