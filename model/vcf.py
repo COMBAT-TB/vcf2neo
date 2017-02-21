@@ -1,4 +1,5 @@
 from core import *
+from user import *
 # class Phenotype(GraphObject):
 #     __primarykey__ = 'type'
 #     # type {XDR, DR, MDR, SUS}
