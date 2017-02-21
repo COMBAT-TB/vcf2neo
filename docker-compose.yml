@@ -1,25 +1,21 @@
 version: '2'
 services:
-  vcf2neo:
+  web:
+    restart: always
     build: .
-    image: vcf2neo
-    container_name: vcf2neo
+    image: ctb_model
+    container_name: ctb_model
     environment:
       DB: db
+#    env_file: .env
     depends_on:
       - db
   db:
     image: neo4j:3.0.4
-    container_name: vcf2neo-db
-    volumes_from:
-      - dc:rw
+    container_name: ctb_model_neo
     environment:
       NEO4J_AUTH: none
+#    env_file: .env
     ports:
       - "7687:7687"
       - "7474:7474"
-    depends_on:
-      - dc
-  dc:
-      build: dc/
-      container_name: vcf2neo-dc
