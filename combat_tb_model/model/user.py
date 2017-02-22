@@ -1,6 +1,6 @@
 
 from py2neo.ogm import GraphObject, Property, RelatedTo
-from vcf import VariantSet
+from combat_tb_model.model.vcf import VariantSet
 
 
 class GalaxyUser(GraphObject):

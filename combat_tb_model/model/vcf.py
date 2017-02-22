@@ -1,5 +1,5 @@
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
-from user import *
+from user import GalaxyUser
 
 # class Phenotype(GraphObject):
 #     __primarykey__ = 'type'

@@ -69,10 +69,10 @@ def build_relationships(owner):
     Build Relationships
     :return:
     """
-    sys.stderr.write("Building relationships!")
+    sys.stderr.write("Building relationships!\n")
     v_sets = VariantSet.select(graph).where("_.owner = '{}'".format(owner))
     if v_sets:
-        sys.stderr.write("Building VariantSet relationships!")
+        sys.stderr.write("Building VariantSet relationships!\n")
 
         # c_sets = CallSet.select(graph)
         # v_sets = VariantSet.select(graph)
@@ -84,7 +84,7 @@ def build_relationships(owner):
                     c_set.has_calls_in.add(v_set)
                     graph.push(c_set)
 
-    sys.stderr.write("Building VariantSite relationships!")
+    sys.stderr.write("Building VariantSite relationships!\n")
     v_sites = VariantSite.select(graph)
     for v_site in v_sites:
         call = Call.select(graph).where(
