@@ -1,5 +1,6 @@
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
-from user import GalaxyUser
+from combat_tb_model.model.user import GalaxyUser
+from combat_tb_model.model.core import FeatureLoc, Gene
 
 # class Phenotype(GraphObject):
 #     __primarykey__ = 'type'

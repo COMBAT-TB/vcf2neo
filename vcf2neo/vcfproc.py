@@ -15,6 +15,7 @@ class Vcf(object):
     Handling VCF processing.
     """
     OWNER = getpass.getuser()
+
     def __init__(self, vcf_dir=None, owner=OWNER, history_id=None):
         self.vcf_dir = vcf_dir
         self.owner = owner
