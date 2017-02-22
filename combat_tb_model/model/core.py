@@ -110,6 +110,7 @@ class Chromosome(Feature):
 
     is_a = RelatedTo("Feature", "IS_A")
 
+
 class Polypeptide(Feature):
     # more commonly known as a Protein - we should call it that - pvh
     so_id = "SO:0000104"
@@ -156,7 +157,8 @@ class FeatureLoc(GraphObject):
         self.locgroup = locgroup
         self.rank = rank
         if self.fmin > self.fmax:
-            raise ValueError("fmin cannot be greater than fmax: {} > {}.".format(self.fmin, self.fmax))
+            raise ValueError(
+                "fmin cannot be greater than fmax: {} > {}.".format(self.fmin, self.fmax))
 
 
 class Publication(GraphObject):
