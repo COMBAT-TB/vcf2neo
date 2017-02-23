@@ -98,11 +98,11 @@ def build_relationships(owner):
         if gene:
             v_site.occurs_in.add(gene)
             graph.push(v_site)
-            feature = Feature.select(graph).where(
-                "_.uniquename = '{}'".format(gene.uniquename)).first()
-            if feature:
-                for location in feature.location:
-                    v_site.location.add(location)
-                    graph.push(v_site)
+            # feature = Feature.select(graph).where(
+            #     "_.uniquename = '{}'".format(gene.uniquename)).first()
+            # if feature:
+            #     for location in feature.location:
+            #         v_site.location.add(location)
+            #         graph.push(v_site)
     sys.stderr.write("Done building relationships!")
     return True
