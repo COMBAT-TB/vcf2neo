@@ -2,10 +2,10 @@
 Interface to the Neo4j Database
 """
 import sys
-from combat_tb_model.model.vcf import *
-from combat_tb_model.model.core import *
-from combat_tb_model.model.user import *
 from py2neo import Graph, getenv, watch
+from vcf2neo.combat_tb_model.model.core import *
+from vcf2neo.combat_tb_model.model.vcfmodel import *
+from vcf2neo.combat_tb_model.model.galaxyuser import *
 
 graph = Graph(host=getenv("DB", "localhost"), http_port=7474,
               bolt=True, password=getenv("NEO4J_PASSWORD", ""))
@@ -77,7 +77,8 @@ def build_relationships(owner):
         # c_sets = CallSet.select(graph)
         # v_sets = VariantSet.select(graph)
         for v_set in v_sets:
-            c_sets = CallSet.select(graph).where("_.vset = '{}'".format(v_set.name))
+            c_sets = CallSet.select(graph).where(
+                "_.vset = '{}'".format(v_set.name))
             for c_set in c_sets:
                 # Find a better way to handle this.
                 if v_set.name == c_set.vset:

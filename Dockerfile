@@ -1,6 +1,6 @@
 FROM python:2.7
 MAINTAINER Thoba Lose "thoba@sanbi.ac.za"
-
+LABEL Name=vcf2neo Version="0.1"
 RUN apt-get update -y --fix-missing \
     && apt-get upgrade -y \
     && mkdir -p /code/data \
