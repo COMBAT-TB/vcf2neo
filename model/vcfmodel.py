@@ -1,5 +1,6 @@
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
-from user import *
+from .core import Gene, FeatureLoc
+from .galaxyuser import GalaxyUser
 
 
 # class Phenotype(GraphObject):

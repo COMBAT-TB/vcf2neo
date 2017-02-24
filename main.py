@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 from __future__ import print_function
 try:
-  from StringIO import StringIO
+    from StringIO import StringIO
 except ImportError:
-  from io import StringIO
+    from io import StringIO
 import csv
 import time
 from os import getenv
@@ -13,7 +13,7 @@ from bioservices import UniProt
 from py2neo import Graph, watch
 from tqdm import tqdm
 
-from model.model import Organism, Feature, FeatureLoc, Gene, PseudoGene, CDS, Transcript, Exon, TRna, NCRna, RRna, \
+from model.core import Organism, Feature, FeatureLoc, Gene, PseudoGene, CDS, Transcript, Exon, TRna, NCRna, RRna, \
     DbXref, Polypeptide, CvTerm, Publication
 
 # https://neo4j.com/developer/kb/explanation-of-error-on-session-connection-using-uniform-drivers/
@@ -25,6 +25,7 @@ watch("neo4j.bolt")
 gff_file = "data/MTB_H37rv.gff3"
 
 u = UniProt(verbose=False)
+
 
 def delete_data():
     """
@@ -427,12 +428,14 @@ def build_protein_interaction_rels(protein_interaction_dict):
     """
     for uni_id, interactors in protein_interaction_dict.items():
         if len(interactors) > 0:
-            poly = Polypeptide.select(graph).where("_.uniquename = '{}'".format(uni_id)).first()
+            poly = Polypeptide.select(graph).where(
+                "_.uniquename = '{}'".format(uni_id)).first()
             interactors = interactors.split('; ')
             for interactor in interactors:
                 if interactor == 'Itself':
                     interactor = poly.uniquename
-                _poly = Polypeptide.select(graph).where("_.uniquename = '{}'".format(interactor)).first()
+                _poly = Polypeptide.select(graph).where(
+                    "_.uniquename = '{}'".format(interactor)).first()
                 if _poly is None:
                     print("No Polypeptide with uniquename: {}".format(interactor))
                     time.sleep(2)
@@ -471,11 +474,14 @@ def create_uniprot_nodes(uniprot_data):
         polypeptide.function = entry[13]
         graph.create(polypeptide)
 
-        gene = Gene.select(graph).where("_.uniquename = 'gene:{}'".format(entry[2])).first()
+        gene = Gene.select(graph).where(
+            "_.uniquename = 'gene:{}'".format(entry[2])).first()
         if gene:
-            _feature = Feature.select(graph).where("_.parent = '{}'".format(gene.uniquename)).first()
+            _feature = Feature.select(graph).where(
+                "_.parent = '{}'".format(gene.uniquename)).first()
             if _feature:
-                transcript = Transcript.select(graph).where("_.uniquename = '{}'".format(_feature.uniquename)).first()
+                transcript = Transcript.select(graph).where(
+                    "_.uniquename = '{}'".format(_feature.uniquename)).first()
                 if transcript:
                     cds = CDS.select(graph).where("_.uniquename = '{}'".format(
                         "CDS" + transcript.uniquename[transcript.uniquename.find(":"):])).first()
