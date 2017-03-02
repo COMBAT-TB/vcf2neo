@@ -7,7 +7,7 @@ from vcf2neo.combat_tb_model.model.core import *
 from vcf2neo.combat_tb_model.model.vcfmodel import *
 from vcf2neo.combat_tb_model.model.galaxyuser import *
 
-graph = Graph(host=getenv("DB", "localhost"), http_port=7474,
+graph = Graph(host=getenv("DB", "thoba.sanbi.ac.za"), http_port=7474,
               bolt=True, password=getenv("NEO4J_PASSWORD", ""))
 watch("neo4j.bolt")
 
