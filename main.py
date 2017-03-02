@@ -17,7 +17,7 @@ from model.core import Organism, Feature, FeatureLoc, Gene, PseudoGene, CDS, Tra
     DbXref, Polypeptide, CvTerm, Publication
 
 # https://neo4j.com/developer/kb/explanation-of-error-on-session-connection-using-uniform-drivers/
-graph = Graph(host=getenv("DB", "localhost"), bolt=True,
+graph = Graph(host=getenv("DB", "http://thoba.sanbi.ac.za:7474"), bolt=True,
               password=getenv("NEO4J_PASSWORD", ""), encrypted=False)
 
 watch("neo4j.bolt")
