@@ -6,6 +6,8 @@ services:
     container_name: vcf2neo
     environment:
       DB: db
+    networks:
+      - default
     depends_on:
       - db
   db:
@@ -15,6 +17,8 @@ services:
       - dc:rw
     environment:
       NEO4J_AUTH: none
+    networks:
+      - default
     ports:
       - "7687:7687"
       - "7474:7474"
@@ -23,3 +27,8 @@ services:
   dc:
       build: dc/
       container_name: vcf2neo-dc
+#join an already existing network. Prevents IP conflict
+networks:
+  default:
+    external:
+      name: combattbweb_default
