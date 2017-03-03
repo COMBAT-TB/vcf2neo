@@ -1,5 +1,5 @@
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
-from vcf import *
+from vcfmodel import *
 
 
 class FastTree(GraphObject):
