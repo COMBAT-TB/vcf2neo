@@ -1,5 +1,6 @@
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
-from user import *
+from core import Gene, FeatureLoc
+from galaxyuser import GalaxyUser
 
 
 # class Phenotype(GraphObject):
@@ -64,6 +65,7 @@ class CallSet(GraphObject):
     __primarykey__ = 'name'
     name = Property()
     vset = Property()
+    identifier = Property()
 
     has_call = RelatedTo("Call", "HAS_CALL")
     has_calls_in = RelatedTo("VariantSet", "HAS_CALLS_IN")
