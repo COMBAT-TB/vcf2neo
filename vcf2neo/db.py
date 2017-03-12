@@ -7,7 +7,7 @@ from vcf2neo.combat_tb_model.model.core import *
 from vcf2neo.combat_tb_model.model.vcfmodel import *
 from vcf2neo.combat_tb_model.model.galaxyuser import *
 
-graph = Graph(host=getenv("DB", "thoba.sanbi.ac.za"), http_port=7474,
+graph = Graph(host=getenv("DB", "192.168.2.211"), http_port=7474,
               bolt=True, password=getenv("NEO4J_PASSWORD", ""))
 watch("neo4j.bolt")
 
@@ -40,6 +40,8 @@ def create_variant_site_nodes(record, annotation=None, set_name=None):
     v_set = VariantSet.select(graph).where(
         "_.name = '{}'".format(set_name)).first()
     if v_set:
+        # v_set.has_variant.add(v_site)
+        # graph.push(v_set)
         v_site.belongs_to_vset.add(v_set)
         graph.push(v_site)
     return v_site
