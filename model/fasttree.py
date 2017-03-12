@@ -1,5 +1,5 @@
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
-from .vcfmodel import *
+from vcfmodel import *
 
 
 class FastTree(GraphObject):
@@ -8,7 +8,7 @@ class FastTree(GraphObject):
     data = Property()
     history_id = Property()
 
-    has_var = RelatedTo("VariantSet", "HAS_VAR")
+    from_variant_set = RelatedTo("VariantSet", "FROM_VARIANT_SET")
 
     def __init__(self, name, data, history_id):
         self.name = name
