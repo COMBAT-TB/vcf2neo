@@ -1,6 +1,6 @@
 # from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 from core import *
-from galaxyuser import GalaxyUser
+from galaxyuser import *
 from fasttree import FastTree
 
 
