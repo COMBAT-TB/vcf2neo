@@ -1,16 +1,8 @@
-from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
-from core import Gene, FeatureLoc
+# from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
+from core import *
 from galaxyuser import GalaxyUser
 
 
-# class Phenotype(GraphObject):
-#     __primarykey__ = 'type'
-#     # type {XDR, DR, MDR, SUS}
-#     _type = Property()
-#     has_var = RelatedFrom("Variant", "HAS_VAR")
-# Adapting GA4GH Variant Data Model
-# https://ga4gh-schemas.readthedocs.io/en/latest/api/variants.html
-# VariantSet = Phenotype
 # TODO: Dataset and ReferenceSet?
 class VariantSet(GraphObject):
     __primarykey__ = 'name'

@@ -1,5 +1,5 @@
-from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
-from .vcfmodel import *
+# from py2neo.ogm import GraphObject, Property, RelatedTo
+from vcfmodel import *
 
 
 class GalaxyUser(GraphObject):
