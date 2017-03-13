@@ -1,6 +1,7 @@
-from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
-from .core import Gene, FeatureLoc
-from .galaxyuser import GalaxyUser
+# from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
+from core import *
+from galaxyuser import GalaxyUser
+from fasttree import FastTree
 
 
 # class Phenotype(GraphObject):
@@ -13,14 +14,15 @@ from .galaxyuser import GalaxyUser
 # VariantSet = Phenotype
 # TODO: Dataset and ReferenceSet?
 class VariantSet(GraphObject):
-    __primarykey__ = 'name'
+    __primarykey__ = 'history_id'
     name = Property()
     owner = Property()
     history_id = Property()
 
-    has_var = RelatedTo("VariantSite", "HAS_VAR")
+    has_variant = RelatedTo("VariantSite", "HAS_VARIANT")
     has_call = RelatedTo("Call", "HAS_CALL")
-    owned_by = RelatedFrom("GalaxyUser", "OWNED_BY")
+    owned_by = RelatedFrom("GalaxyUser", "OWNS_SET")
+    forms_tree = RelatedFrom("FastTree", "FROM_VARIANT_SET")
 
     def __init__(self, name, owner, history_id=None):
         self.name = name
@@ -31,6 +33,7 @@ class VariantSet(GraphObject):
 # VariantSite = Variant
 class VariantSite(GraphObject):
     # NOTE: relies on FeatureLoc from core.py
+    # make __primarykey__ = VariantSite.name+POS
     # __primarykey__ = 'pos'
 
     pos = Property()
@@ -65,6 +68,7 @@ class CallSet(GraphObject):
     __primarykey__ = 'name'
     name = Property()
     vset = Property()
+    identifier = Property()
 
     has_call = RelatedTo("Call", "HAS_CALL")
     has_calls_in = RelatedTo("VariantSet", "HAS_CALLS_IN")
@@ -75,6 +79,7 @@ class CallSet(GraphObject):
 
 
 class Call(GraphObject):
+    # make __primarykey__ = CallSet.name+VariantSet.name
     # __primarykey__ = 'pos'
     genotype = Property()
     ref_allele = Property()
