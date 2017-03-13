@@ -1,6 +1,7 @@
-from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
-from core import Gene, FeatureLoc
+# from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
+from core import *
 from galaxyuser import GalaxyUser
+from fasttree import FastTree
 
 
 # class Phenotype(GraphObject):
@@ -13,14 +14,15 @@ from galaxyuser import GalaxyUser
 # VariantSet = Phenotype
 # TODO: Dataset and ReferenceSet?
 class VariantSet(GraphObject):
-    __primarykey__ = 'name'
+    __primarykey__ = 'history_id'
     name = Property()
     owner = Property()
     history_id = Property()
 
-    has_var = RelatedTo("VariantSite", "HAS_VAR")
+    has_variant = RelatedTo("VariantSite", "HAS_VARIANT")
     has_call = RelatedTo("Call", "HAS_CALL")
-    owned_by = RelatedFrom("GalaxyUser", "OWNED_BY")
+    owned_by = RelatedFrom("GalaxyUser", "OWNS_SET")
+    forms_tree = RelatedFrom("FastTree", "FROM_VARIANT_SET")
 
     def __init__(self, name, owner, history_id=None):
         self.name = name
