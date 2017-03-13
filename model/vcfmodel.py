@@ -33,6 +33,7 @@ class VariantSet(GraphObject):
 # VariantSite = Variant
 class VariantSite(GraphObject):
     # NOTE: relies on FeatureLoc from core.py
+    # make __primarykey__ = VariantSite.name+POS
     # __primarykey__ = 'pos'
 
     pos = Property()
@@ -78,6 +79,7 @@ class CallSet(GraphObject):
 
 
 class Call(GraphObject):
+    # make __primarykey__ = CallSet.name+VariantSet.name
     # __primarykey__ = 'pos'
     genotype = Property()
     ref_allele = Property()
