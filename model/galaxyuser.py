@@ -1,4 +1,4 @@
-from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
+# from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 from vcfmodel import *
 
 
@@ -19,7 +19,6 @@ class GalaxyUser(GraphObject):
 
 
 class UserJob(GraphObject):
-
     user_key = Property()
     task_id = Property()
 
