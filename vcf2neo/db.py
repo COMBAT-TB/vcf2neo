@@ -5,7 +5,8 @@ from combat_tb_model.model import VariantSet, CallSet, VariantSite, Call, Gene, 
 
 from py2neo import Graph, getenv, watch
 
-graph = Graph(host=getenv("DB", "localhost"), http_port=7474, bolt=True, password=getenv("NEO4J_PASSWORD", ""))
+graph = Graph(host=getenv("DB", "localhost"), http_port=7474,
+              bolt=True, password=getenv("NEO4J_PASSWORD", ""))
 watch("neo4j.bolt")
 
 
@@ -16,7 +17,6 @@ def create_variant_set_nodes(set_name):
     """
     v_set = VariantSet(name=str(set_name))
     graph.create(v_set)
-
 
 
 def create_variant_site_nodes(record, known_sites, annotation=None, set_name=None):
@@ -34,11 +34,12 @@ def create_variant_site_nodes(record, known_sites, annotation=None, set_name=Non
     graph.create(v_site)
     call = create_call_nodes(record, annotation[4])
     if pos in known_sites:
-        known_sites[pos][1].append(calls)
+        known_sites[pos][1].append(call)
     else:
         known_sites[pos] = [v_site, [call]]
 
-    v_set = VariantSet.select(graph).where("_.name = '{}'".format(set_name)).first()
+    v_set = VariantSet.select(graph).where(
+        "_.name = '{}'".format(set_name)).first()
     if v_set:
         v_site.belongs_to_vset.add(v_set)
         graph.push(v_site)
@@ -59,7 +60,8 @@ def create_call_nodes(record, annotation=None):
     Create Call Nodes
     :return:
     """
-    call = Call(pos=record.POS, ref_allele=str(record.REF), alt_allele=str(record.ALT), gene=annotation[4])
+    call = Call(pos=record.POS, ref_allele=str(record.REF),
+                alt_allele=str(record.ALT), gene=annotation[4])
     graph.create(call)
     return call
 
@@ -80,7 +82,8 @@ def build_relationships():
 
     v_sites = VariantSite.select(graph)
     for v_site in v_sites:
-        call = Call.select(graph).where("_.pos = {}".format(v_site.pos)).first()
+        call = Call.select(graph).where(
+            "_.pos = {}".format(v_site.pos)).first()
         if call:
             v_site.has_call.add(call)
             graph.push(v_site)
