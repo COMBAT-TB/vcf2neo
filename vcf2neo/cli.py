@@ -37,7 +37,7 @@ def init(vcf_dir, owner, history_id, d, refdb_dir=None):
     vcf.process()
     sys.stderr.write("About to build relationships...\n")
     build_relationships(owner)
-    sys.stderr.write("Done loading VCF file to Graph database!")
+    sys.stderr.write("Done loading VCF file to Graph database!\n")
 
 if __name__ == '__main__':
     cli()

@@ -28,7 +28,7 @@ services:
       build: dc/
       container_name: vcf2neo-dc
 #join an already existing network. Prevents IP conflict
-networks:
-  default:
-    external:
-      name: combattbweb_default
+# networks:
+#   default:
+#     external:
+#       name: combattbweb_default

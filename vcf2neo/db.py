@@ -2,6 +2,7 @@
 Interface to the Neo4j Database
 """
 import sys
+import uuid
 from py2neo import Graph, getenv, watch
 from vcf2neo.combat_tb_model.model.core import *
 from vcf2neo.combat_tb_model.model.vcfmodel import *
@@ -18,7 +19,7 @@ def create_variant_set_nodes(set_name, owner, history_id):
     :return:
     """
     v_set = VariantSet(name=str(set_name), owner=str(
-        owner), history_id=history_id)
+        owner), history_id=history_id, _uuid=str(uuid.uuid4()))
     graph.create(v_set)
 
 
@@ -33,8 +34,7 @@ def create_variant_site_nodes(record, annotation=None, set_name=None):
     alt_allele = record.ALT
 
     v_site = VariantSite(chrom=str(chrom), pos=pos, ref_allele=str(ref_allele),
-                         alt_allele=str(alt_allele),
-                         gene=annotation[4])
+                         alt_allele=str(alt_allele), gene=annotation[4], _uuid=str(uuid.uuid5(uuid.uuid4(), str(uuid.uuid4))))
     graph.create(v_site)
     create_call_nodes(record, annotation[4])
     v_set = VariantSet.select(graph).where(
@@ -52,7 +52,7 @@ def create_call_set_nodes(set_name, vset):
     Create CallSet Nodes
     :return:
     """
-    c_set = CallSet(name=set_name, vset=vset)
+    c_set = CallSet(name=set_name, vset=vset, _uuid=str(uuid.uuid4()))
     graph.create(c_set)
 
 
@@ -61,8 +61,8 @@ def create_call_nodes(record, annotation=None):
     Create Call Nodes
     :return:
     """
-    call = Call(pos=record.POS, ref_allele=str(record.REF),
-                alt_allele=str(record.ALT), gene=annotation[4])
+    call = Call(pos=record.POS, ref_allele=str(record.REF), alt_allele=str(
+        record.ALT), gene=annotation[4], _uuid=str(uuid.uuid4()))
     graph.create(call)
 
 
@@ -107,5 +107,5 @@ def build_relationships(owner):
             #     for location in feature.location:
             #         v_site.location.add(location)
             #         graph.push(v_site)
-    sys.stderr.write("Done building relationships!")
+    sys.stderr.write("Done building relationships!\n")
     return True
