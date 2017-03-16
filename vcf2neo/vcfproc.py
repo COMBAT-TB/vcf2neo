@@ -61,7 +61,7 @@ class Vcf(object):
         for record in vcf_reader:
             print("\n")
             print(record)
-            annotation = self.get_variant_ann(record)
+            annotation = self.get_variant_ann(record=record)
             known_sites = create_variant_site_nodes(
                 record, known_sites, annotation, vset_name)
         return known_sites
