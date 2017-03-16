@@ -39,10 +39,11 @@ class Vcf(object):
                     str(self.vcf_dir) + "/", "")
                 vset_name = str(self.vcf_dir).split('/')[-1]
                 # TODO: Let's use the file name for now
-                create_variant_set_nodes(set_name=vcf_file_name)
-                create_call_set_nodes(set_name=vcf_file_name)
+                create_variant_set_nodes(set_name=vset_name, owner=str(
+                    self.owner), history_id=str(self.history_id))
+                create_call_set_nodes(set_name=vcf_file_name, vset=vset_name)
                 known_sites = self.get_variant_sites(
-                    known_sites, vcf_reader, vcf_file_name)
+                    known_sites, vcf_reader, vset_name=vset_name)
                 end = time.time()
                 sys.stderr.write("Processed {} in {}!\n".format(
                     vcf_file_name.upper(), end - start))
@@ -55,14 +56,14 @@ class Vcf(object):
                 v_site.has_call.add(call)
             graph.push(v_site)
 
-    def get_variant_sites(self, known_sites, vcf_reader=None, vcf_file_name=None):
+    def get_variant_sites(self, known_sites, vcf_reader=None, vset_name=None):
         sites = []
         for record in vcf_reader:
             print("\n")
             print(record)
             annotation = self.get_variant_ann(record)
             known_sites = create_variant_site_nodes(
-                record, known_sites, annotation, vcf_file_name)
+                record, known_sites, annotation, vset_name)
         return known_sites
 
     @staticmethod
