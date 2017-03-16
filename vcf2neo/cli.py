@@ -1,8 +1,6 @@
 import sys
-
 import click
-
-from db import build_relationships
+import time
 from docker import Docker
 from vcfproc import Vcf
 
@@ -34,10 +32,10 @@ def init(vcf_dir, owner, history_id, d, refdb_dir=None):
         docker.run()
     vcf = Vcf(vcf_dir=vcf_dir, owner=owner, history_id=history_id)
     sys.stderr.write("About to process vcf files...\n")
+    start = time.time()
     vcf.process()
-    sys.stderr.write("About to build relationships...\n")
-    build_relationships(owner)
-    sys.stderr.write("Done loading VCF file to Graph database!\n")
+    end = time.time()
+    sys.stderr.write("Done loading VCF files to Graph database!\n It took me {} ms.\n".format(end - start))
 
 if __name__ == '__main__':
     cli()

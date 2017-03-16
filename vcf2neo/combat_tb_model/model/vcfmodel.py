@@ -63,15 +63,14 @@ class VariantSite(GraphObject):
 class CallSet(GraphObject):
     # __primarykey__ = '_uuid'
     name = Property()
-    vset = Property()
     identifier = Property()
 
     has_call = RelatedTo("Call", "HAS_CALL")
     has_calls_in = RelatedTo("VariantSet", "HAS_CALLS_IN")
 
-    def __init__(self, name, vset):
+    def __init__(self, name):
         self.name = name
-        self.vset = vset
+        # self.vset = vset
 
 
 class Call(GraphObject):

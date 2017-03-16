@@ -21,9 +21,10 @@ def create_variant_set_nodes(set_name, owner, history_id):
     v_set = VariantSet(name=str(set_name), owner=str(
         owner), history_id=history_id)
     graph.create(v_set)
+    return v_set
 
 
-def create_variant_site_nodes(record, known_sites, annotation=None, set_name=None):
+def create_variant_site_nodes(record, known_sites, annotation=None, v_set=None, c_set=None):
     """
      Create VariantSite Nodes
     :return:
@@ -33,30 +34,51 @@ def create_variant_site_nodes(record, known_sites, annotation=None, set_name=Non
     ref_allele = record.REF
     alt_allele = record.ALT
 
-    v_site = VariantSite(chrom=str(chrom), pos=pos, ref_allele=str(ref_allele),
-                         alt_allele=str(alt_allele), gene=annotation[4])
-    graph.create(v_site)
-    call = create_call_nodes(record, annotation[4])
     if pos in known_sites:
-        known_sites[pos][1].append(call)
+        # we have already seen this variant site in another VCF file
+        # data structure known_sites:
+        # key: pos (genomic position)
+        # value: VariantSite
+        v_site = known_sites[pos]
+        # known_sites[pos][1].append(call)
     else:
-        known_sites[pos] = [v_site, [call]]
-
-    v_set = VariantSet.select(graph).where(
-        "_.name = '{}'".format(set_name)).first()
+        # we don't know about this variant site yet
+        v_site = VariantSite(chrom=str(chrom), pos=pos, ref_allele=str(ref_allele),
+                             alt_allele=str(alt_allele), gene=annotation[4])
+        graph.create(v_site)
+        known_sites[pos] = v_site
+    gene = Gene.select(graph, "gene:" + str(v_site.gene)).first()
+    if gene:
+        v_site.occurs_in.add(gene)
+        graph.push(v_site)
+    call = create_call_nodes(record, annotation[4])
+    if c_set is not None:
+        call.belongs_to_cset.add(c_set)
+        graph.push(call)
+    v_site.has_call.add(call)
+    if c_set is not None:
+        c_set.has_call.add(call)
+        graph.push(c_set)
+    # v_set = VariantSet.select(graph).where(
+    #     "_.name = '{}'".format(set_name)).first()
     if v_set:
         v_site.belongs_to_vset.add(v_set)
         graph.push(v_site)
     return known_sites
 
 
-def create_call_set_nodes(set_name, vset):
+def create_call_set_nodes(set_name, v_set):
     """
     Create CallSet Nodes
     :return:
     """
-    c_set = CallSet(name=set_name, vset=vset)
+    print(v_set.name)
+    c_set = CallSet(name=set_name)
     graph.create(c_set)
+    c_set.has_calls_in.add(v_set)
+    graph.push(c_set)
+
+    return(c_set)
 
 
 def create_call_nodes(record, annotation=None):
@@ -68,48 +90,3 @@ def create_call_nodes(record, annotation=None):
                 alt_allele=str(record.ALT), gene=annotation[4])
     graph.create(call)
     return call
-
-
-def build_relationships(owner):
-    """
-    Build Relationships
-    :return:
-    """
-    sys.stderr.write("Building relationships!\n")
-    v_sets = VariantSet.select(graph).where("_.owner = '{}'".format(owner))
-    if v_sets:
-        sys.stderr.write("Building VariantSet relationships!\n")
-
-        # c_sets = CallSet.select(graph)
-        # v_sets = VariantSet.select(graph)
-        for v_set in v_sets:
-            c_sets = CallSet.select(graph).where(
-                "_.vset = '{}'".format(v_set.name))
-            for c_set in c_sets:
-                # Find a better way to handle this.
-                if v_set.name == c_set.vset:
-                    c_set.has_calls_in.add(v_set)
-                    graph.push(c_set)
-
-    sys.stderr.write("Building VariantSite relationships!\n")
-    v_sites = VariantSite.select(graph)
-    for v_site in v_sites:
-        call = Call.select(graph).where(
-            "_.pos = {}".format(v_site.pos)).first()
-        if call:
-            v_site.has_call.add(call)
-            graph.push(v_site)
-            call.associated_with.add(v_site)
-            graph.push(call)
-        gene = Gene.select(graph, "gene:" + str(v_site.gene)).first()
-        if gene:
-            v_site.occurs_in.add(gene)
-            graph.push(v_site)
-            # feature = Feature.select(graph).where(
-            #     "_.uniquename = '{}'".format(gene.uniquename)).first()
-            # if feature:
-            #     for location in feature.location:
-            #         v_site.location.add(location)
-            #         graph.push(v_site)
-    sys.stderr.write("Done building relationships!\n")
-    return True
