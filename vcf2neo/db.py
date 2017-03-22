@@ -56,11 +56,6 @@ def create_variant_site_nodes(record, known_sites, annotation=None, v_set=None, 
         call.belongs_to_cset.add(c_set)
         graph.push(call)
     v_site.has_call.add(call)
-    if c_set is not None:
-        c_set.has_call.add(call)
-        graph.push(c_set)
-    # v_set = VariantSet.select(graph).where(
-    #     "_.name = '{}'".format(set_name)).first()
     if v_set:
         v_site.belongs_to_vset.add(v_set)
         graph.push(v_site)
