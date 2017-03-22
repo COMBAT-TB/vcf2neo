@@ -67,18 +67,14 @@ def create_variant_site_nodes(record, known_sites, annotation=None, v_set=None, 
     return known_sites
 
 
-def create_call_set_nodes(set_name, v_set):
+def create_call_set_nodes(set_name):
     """
     Create CallSet Nodes
     :return:
     """
-    print(v_set.name)
     c_set = CallSet(name=set_name)
     graph.create(c_set)
-    c_set.has_calls_in.add(v_set)
-    graph.push(c_set)
-
-    return(c_set)
+    return c_set
 
 
 def create_call_nodes(record, annotation=None):

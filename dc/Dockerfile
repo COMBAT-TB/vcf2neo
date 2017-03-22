@@ -1,5 +1,6 @@
-FROM python:2.7
+FROM python:2.7-alpine
 MAINTAINER Thoba Lose "thoba@sanbi.ac.za"
+LABEL Name=vcf2neo-dc Version="0.1"
 
 # RUN wget "https://zenodo.org/record/252101/files/data.tar.bz2" \
 #     -O data.tar.bz2

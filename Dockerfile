@@ -1,11 +1,11 @@
-FROM python:2.7
+FROM python:2.7-alpine
 MAINTAINER Thoba Lose "thoba@sanbi.ac.za"
 LABEL Name=vcf2neo Version="0.1"
-RUN apt-get update -y --fix-missing \
-    && apt-get upgrade -y \
+RUN apk update \
+    && apk upgrade\
     && mkdir -p /code/data \
     && pip install -U pip
-
+RUN apk add wget linux-headers musl-dev gcc
 RUN wget "https://drive.google.com/uc?export=download&id=0B5cdXx4b_kIyaDZGWEtBZF85TEU" \
     -O vcf.tar.bz2
 RUN tar xvfj vcf.tar.bz2

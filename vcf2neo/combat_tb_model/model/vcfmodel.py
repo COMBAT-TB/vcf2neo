@@ -73,9 +73,9 @@ class CallSet(GraphObject):
     has_call = RelatedTo("Call", "HAS_CALL")
     has_calls_in = RelatedTo("VariantSet", "HAS_CALLS_IN")
 
-    def __init__(self, name, vset):
+    def __init__(self, name):
         self.name = name
-        self.vset = vset
+        # self.vset = vset
 
 
 class Call(GraphObject):
@@ -88,7 +88,7 @@ class Call(GraphObject):
     pos = Property()
 
     associated_with = RelatedTo("VariantSite", "ASSOC_WITH_VARIANT")
-    belongs_to_cset = RelatedTo("CallSet", "BELONGS_TO_SET")
+    belongs_to_cset = RelatedTo("CallSet", "BELONGS_TO_CSET")
 
     def __init__(self, pos, ref_allele, alt_allele, gene=None):
         self.pos = pos
