@@ -1,4 +1,4 @@
-appdirs>=1.4.0
+appdirs==1.4.2
 beautifulsoup4==4.5.3
 bioservices==1.4.14
 click==6.7
