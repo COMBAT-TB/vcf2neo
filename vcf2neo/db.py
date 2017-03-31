@@ -44,14 +44,15 @@ def create_variant_site_nodes(record, known_sites, annotation=None, v_set=None, 
     else:
         # we don't know about this variant site yet
         v_site = VariantSite(chrom=str(chrom), pos=pos, ref_allele=str(ref_allele),
-                             alt_allele=str(alt_allele), gene=annotation[4])
+                             alt_allele=str(alt_allele), gene=annotation[4],
+                             pk=str(v_set.name) + str(pos))
         graph.create(v_site)
         known_sites[pos] = v_site
     gene = Gene.select(graph, "gene:" + str(v_site.gene)).first()
     if gene:
         v_site.occurs_in.add(gene)
         graph.push(v_site)
-    call = create_call_nodes(record, annotation[4])
+    call = create_call_nodes(record, v_set, c_set, annotation[4])
     if c_set is not None:
         call.belongs_to_cset.add(c_set)
         graph.push(call)
@@ -72,12 +73,13 @@ def create_call_set_nodes(set_name):
     return c_set
 
 
-def create_call_nodes(record, annotation=None):
+def create_call_nodes(record, v_set, c_set, annotation=None):
     """
     Create Call Nodes
     :return:
     """
     call = Call(pos=record.POS, ref_allele=str(record.REF),
-                alt_allele=str(record.ALT), gene=annotation[4])
+                alt_allele=str(record.ALT),
+                pk=str(v_set.name) + str(c_set.name) + str(record.POS), gene=annotation[4])
     graph.create(call)
     return call
