@@ -26,8 +26,7 @@ $ cd vcf2neo
      $ pip install -r requirements.txt
      $ pip install --editable .
      $ vcf2neo --help
-     $ export DB=ref_db_urn  #defaults to `localhost`
-     $ vcf2neo init -d data/vcf data/db/data
+     $ vcf2neo init -d data/refvcf data/db/data
     ```
 
 -   **Using docker/docker-compose :whale: :**

@@ -45,7 +45,7 @@ def create_variant_site_nodes(record, known_sites, annotation=None, v_set=None, 
         # we don't know about this variant site yet
         v_site = VariantSite(chrom=str(chrom), pos=pos, ref_allele=str(ref_allele),
                              alt_allele=str(alt_allele), gene=annotation[4],
-                             pk=str(v_set.name) + str(pos))
+                             pk=str(v_set.name) + str(pos), impact=annotation[2])
         graph.create(v_site)
         known_sites[pos] = v_site
     gene = Gene.select(graph, "gene:" + str(v_site.gene)).first()
