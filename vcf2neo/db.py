@@ -10,7 +10,7 @@ from vcf2neo.combat_tb_model.model.galaxyuser import *
 
 graph = Graph(host=getenv("DB", "192.168.2.211"), http_port=7474,
               bolt=True, password=getenv("NEO4J_PASSWORD", ""))
-watch("neo4j.bolt")
+# watch("neo4j.bolt")
 
 
 def create_variant_set_nodes(set_name, owner, history_id):
@@ -63,12 +63,13 @@ def create_variant_site_nodes(record, known_sites, annotation=None, v_set=None, 
     return known_sites
 
 
-def create_call_set_nodes(set_name):
+def create_call_set_nodes(set_name, v_set):
     """
     Create CallSet Nodes
     :return:
     """
     c_set = CallSet(name=set_name)
+    c_set.has_calls_in.add(v_set)
     graph.create(c_set)
     return c_set
 

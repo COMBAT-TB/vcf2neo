@@ -1,6 +1,7 @@
 """
 Interface to handle VCF files
 """
+from __future__ import print_function
 import sys
 import getpass
 import glob
@@ -39,7 +40,7 @@ class Vcf(object):
                 # TODO: Have a standard way of identifying variant_set_names
                 vcf_file_name = str(vcf_file).replace(
                     str(self.vcf_dir) + "/", "")
-                c_set = create_call_set_nodes(set_name=vcf_file_name)
+                c_set = create_call_set_nodes(set_name=vcf_file_name, v_set=v_set)
                 known_sites = self.get_variant_sites(
                     known_sites, vcf_reader, v_set=v_set, c_set=c_set)
                 end = time.time()
@@ -52,15 +53,17 @@ class Vcf(object):
     def get_variant_sites(self, known_sites, vcf_reader=None, v_set=None, c_set=None):
         sites = []
         for record in vcf_reader:
-            print("\n")
-            print(record)
+            print(".", end='')
+            # print("\n")
+            # print(record)
             annotation = self.get_variant_ann(record=record)
             known_sites = create_variant_site_nodes(
                 record, known_sites, annotation, v_set, c_set)
+        print()
         return known_sites
 
     @staticmethod
     def get_variant_ann(record=None):
         ann = record.INFO['ANN'][0].split('|')
-        print(ann)
+        # print(ann)
         return ann
