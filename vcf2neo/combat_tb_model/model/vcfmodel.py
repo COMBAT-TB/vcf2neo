@@ -48,7 +48,6 @@ class VariantSite(GraphObject):
     gene_id = Property()
     known = Property()
     novel = Property()
-    impact = Property()
     pk = Property()
 
     occurs_in = RelatedTo("Gene", "OCCURS_IN")
@@ -57,14 +56,13 @@ class VariantSite(GraphObject):
     has_call = RelatedTo("Call", "HAS_CALL")
     belongs_to_vset = RelatedTo("VariantSet", "BELONGS_TO_VSET")
 
-    def __init__(self, chrom, pos, ref_allele, alt_allele, pk, impact, gene=None):
+    def __init__(self, chrom, pos, ref_allele, alt_allele, pk, gene=None):
         self.chrom = chrom
         self.pos = pos
         self.ref_allele = ref_allele
         self.alt_allele = alt_allele
         self.gene = gene
         self.pk = pk
-        self.impact = impact
 
 
 # CallSet = VCF file
@@ -91,13 +89,15 @@ class Call(GraphObject):
     gene = Property()
     pos = Property()
     pk = Property()
+    impact = Property()
 
     associated_with = RelatedTo("VariantSite", "ASSOC_WITH_VARIANT")
     belongs_to_cset = RelatedTo("CallSet", "BELONGS_TO_CSET")
 
-    def __init__(self, pos, ref_allele, alt_allele, pk, gene=None):
+    def __init__(self, pos, ref_allele, alt_allele, pk, impact, gene=None):
         self.pos = pos
         self.ref_allele = ref_allele
         self.alt_allele = alt_allele
+        self.impact = impact
         self.gene = gene
         self.pk = pk
