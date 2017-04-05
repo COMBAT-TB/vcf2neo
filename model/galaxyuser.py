@@ -1,6 +1,8 @@
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 #from vcfmodel import VariantSet
 
+from vcfmodel import *
+
 class GalaxyUser(GraphObject):
     __primarykey__ = 'email'
 

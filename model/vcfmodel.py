@@ -33,8 +33,8 @@ class VariantSet(GraphObject):
 # VariantSite = Variant
 class VariantSite(GraphObject):
     # NOTE: relies on FeatureLoc from core.py
-    # make __primarykey__ = VariantSite.name+POS
-    # __primarykey__ = 'pos'
+    # make __primarykey__ = VariantSet.name+POS
+    __primarykey__ = 'pk'
 
     pos = Property()
     feature_id = Property()
@@ -48,6 +48,8 @@ class VariantSite(GraphObject):
     gene_id = Property()
     known = Property()
     novel = Property()
+    impact = Property()
+    pk = Property()
 
     occurs_in = RelatedTo("Gene", "OCCURS_IN")
     location = RelatedTo("FeatureLoc", "LOCATED_AT")
@@ -55,12 +57,14 @@ class VariantSite(GraphObject):
     has_call = RelatedTo("Call", "HAS_CALL")
     belongs_to_vset = RelatedTo("VariantSet", "BELONGS_TO_VSET")
 
-    def __init__(self, chrom, pos, ref_allele, alt_allele, gene=None):
+    def __init__(self, chrom, pos, ref_allele, alt_allele, pk, impact, gene=None):
         self.chrom = chrom
         self.pos = pos
         self.ref_allele = ref_allele
         self.alt_allele = alt_allele
         self.gene = gene
+        self.pk = pk
+        self.impact = impact
 
 
 # CallSet = VCF file
@@ -73,25 +77,27 @@ class CallSet(GraphObject):
     has_call = RelatedTo("Call", "HAS_CALL")
     has_calls_in = RelatedTo("VariantSet", "HAS_CALLS_IN")
 
-    def __init__(self, name, vset):
+    def __init__(self, name):
         self.name = name
-        self.vset = vset
+        # self.vset = vset
 
 
 class Call(GraphObject):
-    # make __primarykey__ = CallSet.name+VariantSet.name
-    # __primarykey__ = 'pos'
+    # make __primarykey__ = CallSet.name+VariantSet.name+pos
+    __primarykey__ = 'pk'
     genotype = Property()
     ref_allele = Property()
     alt_allele = Property()
     gene = Property()
     pos = Property()
+    pk = Property()
 
     associated_with = RelatedTo("VariantSite", "ASSOC_WITH_VARIANT")
-    belongs_to_cset = RelatedTo("CallSet", "BELONGS_TO_SET")
+    belongs_to_cset = RelatedTo("CallSet", "BELONGS_TO_CSET")
 
-    def __init__(self, pos, ref_allele, alt_allele, gene=None):
+    def __init__(self, pos, ref_allele, alt_allele, pk, gene=None):
         self.pos = pos
         self.ref_allele = ref_allele
         self.alt_allele = alt_allele
         self.gene = gene
+        self.pk = pk
