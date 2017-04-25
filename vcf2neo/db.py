@@ -80,7 +80,7 @@ def create_call_nodes(record, v_set, c_set, annotation):
     :return:
     """
     call = Call(pos=record.POS, ref_allele=str(record.REF),
-                alt_allele=str(record.ALT),
+                alt_allele=str(record.ALT[0]),
                 pk=str(v_set.name) + str(c_set.name) + str(record.POS), gene=annotation[4],
                 impact=annotation[2])
     graph.create(call)
