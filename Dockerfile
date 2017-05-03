@@ -6,8 +6,7 @@ RUN apk update \
     && mkdir -p /code/data \
     && pip install -U pip
 RUN apk add wget linux-headers musl-dev gcc
-RUN wget "https://doc-00-5c-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/3ovp6p4bpil90k42tpe74ndqnrfcidfb/1493107200000/07482904762578063898/*/0By2-i8xoBou_Wl9yUXZIWXRIeFU?e=download" \
-    -O vcf.tar.bz2
+RUN wget -O vcf.tar.bz2 'https://drive.google.com/uc?export=download&id=0By2-i8xoBou_Wl9yUXZIWXRIeFU'
 RUN echo '351338cfccc9326764abf58a1dd8915d  vcf2neo.tar.bz2'|md5sum -c
 RUN tar xvfj vcf.tar.bz2
 RUN mv vcf refvcf

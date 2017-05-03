@@ -23,7 +23,7 @@ dct:creator:
 
 hints:
   - class: DockerRequirement
-    dockerPull: "quay.io/sanbi-sa/vcf2neo:0.0.1"
+    dockerPull: "quay.io/sanbi-sa/vcf2neo:0.0.2"
   - class: ResourceRequirement
     coresMin: 1
     ramMin: 128
