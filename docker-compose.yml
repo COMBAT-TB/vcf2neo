@@ -6,8 +6,7 @@ services:
     container_name: vcf2neo
     environment:
       DB: db
-    networks:
-      - default
+    network_mode: "bridge"
     depends_on:
       - db
   db:
@@ -17,18 +16,14 @@ services:
       - dc:rw
     environment:
       NEO4J_AUTH: none
-    networks:
-      - default
+    network_mode: "bridge"
     ports:
       - "7687:7687"
       - "7474:7474"
     depends_on:
       - dc
   dc:
-      build: dc/
-      container_name: vcf2neo-dc
-#join an already existing network. Prevents IP conflict
-#networks:
-#  default:
-#    external:
-#      name: combattbweb_default
+    build: dc/
+    container_name: vcf2neo-dc
+    network_mode: "bridge"
+
