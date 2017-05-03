@@ -1,6 +1,7 @@
 import sys
 import click
 import time
+import os
 from docker import Docker
 from vcfproc import Vcf
 
@@ -31,6 +32,7 @@ def init(vcf_dir, owner, history_id, d, refdb_dir=None):
         docker = Docker(refdb_dir=refdb_dir)
         docker.run()
     vcf = Vcf(vcf_dir=vcf_dir, owner=owner, history_id=history_id)
+    sys.stderr.write('Database IP: {}\n'.format(os.environ.get('DB', 'default')))
     sys.stderr.write("About to process vcf files...\n")
     start = time.time()
     vcf.process()

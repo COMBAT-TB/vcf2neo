@@ -21,14 +21,30 @@ dct:creator:
   foaf:name: Thoba Lose
   foaf:mbox: "mailto:thoba@sanbi.ac.za"
 
+requirements:
+  - class: EnvVarRequirement
+    envDef:
+      - envName: DB
+        envValue: $(inputs.database_host)
+      - envName: NEO4J_PASSWORD
+        envValue: $(inputs.database_password)
+
 hints:
   - class: DockerRequirement
-    dockerPull: "quay.io/sanbi-sa/vcf2neo:0.0.2"
+    dockerPull: "quay.io/sanbi-sa/vcf2neo:0.0.3"
   - class: ResourceRequirement
     coresMin: 1
     ramMin: 128
 
 inputs:
+  database_host:
+    label: "IP or hostname of Neo4J database host"
+    type: string?
+    default: 192.168.2.211
+  database_password:
+    label: "Neo4J database password"
+    type: string?
+    default: ""
   no_docker:
     label: "Skip use of Docker container"
     type: boolean?
@@ -63,6 +79,6 @@ outputs:
   output_report:
     type: stdout
   error_report:
-    type: stdout
+    type: stderr
 
 baseCommand: ["vcf2neo", "init"]

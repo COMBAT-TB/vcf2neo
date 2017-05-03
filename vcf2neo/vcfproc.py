@@ -15,7 +15,10 @@ class Vcf(object):
     """
     Handling VCF processing.
     """
-    OWNER = getpass.getuser()
+    try:
+        OWNER = getpass.getuser()
+    except KeyError:
+        OWNER = 'nobody'
 
     def __init__(self, vcf_dir=None, owner=OWNER, history_id=None):
         self.vcf_dir = vcf_dir
