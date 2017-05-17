@@ -15,7 +15,7 @@ from galaxyuser import GalaxyUser
 # https://ga4gh-schemas.readthedocs.io/en/latest/api/variants.html
 # VariantSet = Phenotype
 # TODO: Dataset and ReferenceSet?
-REF_COL_ID = uuid.uuid3(uuid.NAMESPACE_DNS, 'www.internationalgenome.org')
+REF_COL_ID = str(uuid.uuid3(uuid.NAMESPACE_DNS, 'www.internationalgenome.org'))
 
 
 class VariantSet(GraphObject):

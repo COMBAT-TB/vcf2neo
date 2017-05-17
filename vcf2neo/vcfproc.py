@@ -17,7 +17,7 @@ class Vcf(object):
     Handling VCF processing.
     """
     OWNER = getpass.getuser()
-    REF_COL_ID = uuid.uuid3(uuid.NAMESPACE_DNS, 'www.internationalgenome.org')
+    REF_COL_ID = str(uuid.uuid3(uuid.NAMESPACE_DNS, 'www.internationalgenome.org'))
 
     def __init__(self, vcf_dir=None, owner=OWNER, history_id=None, col_id=REF_COL_ID):
         self.vcf_dir = vcf_dir
