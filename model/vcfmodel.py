@@ -5,6 +5,7 @@ from core import *
 from galaxyuser import GalaxyUser
 
 
+
 # class Phenotype(GraphObject):
 #     __primarykey__ = 'type'
 #     # type {XDR, DR, MDR, SUS}
@@ -24,7 +25,7 @@ class VariantSet(GraphObject):
     history_id = Property()
     col_id = Property()
 
-    has_variant = RelatedTo("VariantSite", "HAS_VARIANT")
+    has_variant = RelatedFrom("VariantSite", "BELONGS_TO_VSET")
     has_call = RelatedTo("Call", "HAS_CALL")
     owned_by = RelatedFrom("GalaxyUser", "OWNS_SET")
     forms_tree = RelatedFrom("FastTree", "FROM_VARIANT_SET")
