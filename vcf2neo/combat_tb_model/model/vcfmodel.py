@@ -1,8 +1,9 @@
 # from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
+import uuid
+
 from core import *
 from galaxyuser import GalaxyUser
 from fasttree import FastTree
-
 
 # class Phenotype(GraphObject):
 #     __primarykey__ = 'type'
@@ -13,21 +14,26 @@ from fasttree import FastTree
 # https://ga4gh-schemas.readthedocs.io/en/latest/api/variants.html
 # VariantSet = Phenotype
 # TODO: Dataset and ReferenceSet?
+REF_COL_ID = uuid.uuid3(uuid.NAMESPACE_DNS, 'www.internationalgenome.org')
+
+
 class VariantSet(GraphObject):
-    __primarykey__ = 'history_id'
+    __primarykey__ = 'col_id'
     name = Property()
     owner = Property()
     history_id = Property()
+    col_id = Property()
 
     has_variant = RelatedTo("VariantSite", "HAS_VARIANT")
     has_call = RelatedTo("Call", "HAS_CALL")
     owned_by = RelatedFrom("GalaxyUser", "OWNS_SET")
     forms_tree = RelatedFrom("FastTree", "FROM_VARIANT_SET")
 
-    def __init__(self, name, owner, history_id=None):
+    def __init__(self, name, owner, history_id=None, col_id=REF_COL_ID):
         self.name = name
         self.owner = owner
         self.history_id = history_id
+        self.col_id = col_id
 
 
 # VariantSite = Variant
