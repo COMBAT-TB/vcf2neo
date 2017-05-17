@@ -5,6 +5,7 @@ from core import *
 from galaxyuser import GalaxyUser
 from fasttree import FastTree
 
+
 # class Phenotype(GraphObject):
 #     __primarykey__ = 'type'
 #     # type {XDR, DR, MDR, SUS}
@@ -28,6 +29,7 @@ class VariantSet(GraphObject):
     has_call = RelatedTo("Call", "HAS_CALL")
     owned_by = RelatedFrom("GalaxyUser", "OWNS_SET")
     forms_tree = RelatedFrom("FastTree", "FROM_VARIANT_SET")
+    has_callsets = RelatedFrom("CallSet", "HAS_CALLS_IN")
 
     def __init__(self, name, owner, history_id=None, col_id=REF_COL_ID):
         self.name = name
@@ -78,7 +80,7 @@ class CallSet(GraphObject):
     vset = Property()
     identifier = Property()
 
-    has_call = RelatedTo("Call", "HAS_CALL")
+    has_call = RelatedFrom("Call", "BELONGS_TO_CSET")
     has_calls_in = RelatedTo("VariantSet", "HAS_CALLS_IN")
 
     def __init__(self, name):
@@ -107,3 +109,16 @@ class Call(GraphObject):
         self.impact = impact
         self.gene = gene
         self.pk = pk
+
+class FastTree(GraphObject):
+    __primarykey__ = 'name'
+    name = Property()
+    data = Property()
+    history_id = Property()
+
+    from_variant_set = RelatedTo("VariantSet", "FROM_VARIANT_SET")
+
+    def __init__(self, name, data, history_id):
+        self.name = name
+        self.data = data
+        self.history_id = history_id
