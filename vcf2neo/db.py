@@ -1,11 +1,8 @@
 """
 Interface to the Neo4j Database
 """
-import sys
-import uuid
-from py2neo import Graph, getenv, watch
-from vcf2neo.combat_tb_model.model.core import *
-from vcf2neo.combat_tb_model.model.vcfmodel import *
+from py2neo import Graph, getenv
+
 from vcf2neo.combat_tb_model.model.galaxyuser import *
 
 graph = Graph(host=getenv("DB", "192.168.2.211"), http_port=7474,
@@ -13,13 +10,13 @@ graph = Graph(host=getenv("DB", "192.168.2.211"), http_port=7474,
 # watch("neo4j.bolt")
 
 
-def create_variant_set_nodes(set_name, owner, history_id):
+def create_variant_set_nodes(set_name, owner, history_id, col_id):
     """
     Create VariantSet Nodes
     :return:
     """
     v_set = VariantSet(name=str(set_name), owner=str(
-        owner), history_id=history_id)
+        owner), history_id=history_id, col_id=col_id)
     graph.create(v_set)
     return v_set
 

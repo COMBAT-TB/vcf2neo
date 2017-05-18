@@ -2,14 +2,16 @@
 Interface to handle VCF files
 """
 from __future__ import print_function
-import sys
+
 import getpass
 import glob
+import sys
 import time
 import uuid
 
 import vcf
-from db import create_variant_set_nodes, create_call_set_nodes, create_variant_site_nodes, graph
+
+from db import create_variant_set_nodes, create_call_set_nodes, create_variant_site_nodes
 
 
 class Vcf(object):
@@ -32,7 +34,7 @@ class Vcf(object):
         known_sites = dict()
         vset_name = str(self.vcf_dir).split('/')[-1]
         v_set = create_variant_set_nodes(set_name=vset_name, owner=str(
-            self.owner), history_id=str(self.history_id))
+            self.owner), history_id=str(self.history_id), col_id=str(self.col_id))
         for vcf_file in glob.glob(self.vcf_dir + "/*.vcf"):
             # TODO: Remove the two files from data
             if 'Drug' not in str(vcf_file):

@@ -2,9 +2,6 @@
 import uuid
 
 from core import *
-from galaxyuser import GalaxyUser
-
-
 
 # class Phenotype(GraphObject):
 #     __primarykey__ = 'type'
@@ -31,7 +28,7 @@ class VariantSet(GraphObject):
     forms_tree = RelatedFrom("FastTree", "FROM_VARIANT_SET")
     has_callsets = RelatedFrom("CallSet", "HAS_CALLS_IN")
 
-    def __init__(self, name, owner, history_id=None, col_id=REF_COL_ID):
+    def __init__(self, name, owner, history_id=None, col_id=None):
         self.name = name
         self.owner = owner
         self.history_id = history_id
@@ -109,6 +106,7 @@ class Call(GraphObject):
         self.impact = impact
         self.gene = gene
         self.pk = pk
+
 
 class FastTree(GraphObject):
     __primarykey__ = 'name'
