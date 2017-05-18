@@ -3,7 +3,7 @@ Interface to the Neo4j Database
 """
 from py2neo import Graph, getenv
 
-from vcf2neo.combat_tb_model.model.galaxyuser import *
+from vcf2neo.combat_tb_model.model.vcfmodel import *
 
 graph = Graph(host=getenv("DB", "192.168.2.211"), http_port=7474,
               bolt=True, password=getenv("NEO4J_PASSWORD", ""))
