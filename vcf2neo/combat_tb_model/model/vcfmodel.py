@@ -24,7 +24,6 @@ class VariantSet(GraphObject):
 
     has_variant = RelatedFrom("VariantSite", "BELONGS_TO_VSET")
     has_call = RelatedTo("Call", "HAS_CALL")
-    owned_by = RelatedFrom("GalaxyUser", "OWNS_SET")
     forms_tree = RelatedFrom("FastTree", "FROM_VARIANT_SET")
     has_callsets = RelatedFrom("CallSet", "HAS_CALLS_IN")
 

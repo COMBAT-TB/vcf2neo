@@ -3,6 +3,7 @@ Interface to the Neo4j Database
 """
 from py2neo import Graph, getenv
 
+from vcf2neo.combat_tb_model.model.galaxyuser import GalaxyUser
 from vcf2neo.combat_tb_model.model.vcfmodel import *
 
 graph = Graph(host=getenv("DB", "192.168.2.211"), http_port=7474,
@@ -18,6 +19,10 @@ def create_variant_set_nodes(set_name, owner, history_id, col_id):
     v_set = VariantSet(name=str(set_name), owner=str(
         owner), history_id=history_id, col_id=col_id)
     graph.create(v_set)
+    owner = GalaxyUser.select(graph, "email:" + str(owner)).first()
+    if owner:
+        owner.owns.add(v_set)
+        graph.push(owner)
     return v_set
 
 
