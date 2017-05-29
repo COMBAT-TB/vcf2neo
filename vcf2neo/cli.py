@@ -31,15 +31,18 @@ def init(vcf_dir, owner, history_id, col_id, d, refdb_dir=None):
     :param d:
     :return:
     """
-    if d:
-        docker = Docker(refdb_dir=refdb_dir)
-        docker.run()
-    vcf = Vcf(vcf_dir=vcf_dir, owner=owner, history_id=history_id, col_id=col_id)
-    sys.stderr.write("About to process vcf files...\n")
-    start = time.time()
-    vcf.process()
-    end = time.time()
-    sys.stderr.write("Done loading VCF files to Graph database!\n It took me {} ms.\n".format(end - start))
+    try:
+        if d:
+            docker = Docker(refdb_dir=refdb_dir)
+            docker.run()
+        vcf = Vcf(vcf_dir=vcf_dir, owner=owner, history_id=history_id, col_id=col_id)
+        sys.stderr.write("About to process vcf files...\n")
+        start = time.time()
+        vcf.process()
+        end = time.time()
+        sys.stderr.write("Done loading VCF files to Graph database!\n It took me {} ms.\n".format(end - start))
+    except Exception as e:
+        raise Exception(e)
 
 if __name__ == '__main__':
     cli()
