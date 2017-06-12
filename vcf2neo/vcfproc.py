@@ -56,7 +56,7 @@ class Vcf(object):
                         vcf_file_name.upper(), end - start))
                     time.sleep(2)
         except Exception as e:
-            print("An Error has occured while processing vcf2neo")
+            print("An Error has occurred while processing vcf2neo")
             raise Exception(e)
 
 
