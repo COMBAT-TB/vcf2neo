@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='vcf2neo',
-    version='0.0.2',
+    version='0.0.3',
     description='Parses VCF file and builds a graph database.',
     keywords='neo4j,and vcf',
     py_modules=['vcf2neo'],
@@ -13,7 +13,8 @@ setup(
         'bioservices',
         'py2neo',
         'tqdm',
-        'PyVCF'
+        'PyVCF',
+        'combat_tb_model'
     ],
     entry_points={
         'console_scripts': ['vcf2neo=vcf2neo.cli:cli']
