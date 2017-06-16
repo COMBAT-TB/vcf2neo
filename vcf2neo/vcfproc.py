@@ -2,12 +2,14 @@
 Interface to handle VCF files
 """
 from __future__ import print_function
-import sys
+
 import getpass
 import glob
 import time
+import sys
 
 import vcf
+
 
 
 class Vcf(object):

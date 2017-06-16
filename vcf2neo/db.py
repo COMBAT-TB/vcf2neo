@@ -11,6 +11,9 @@ from combat_tb_model.model.core import Gene
 from combat_tb_model.model.vcfmodel import VariantSet, CallSet,\
     Call, VariantSite
 
+graph = Graph(host=getenv("DB", "192.168.2.211"), http_port=7474,
+              bolt=True, password=getenv("NEO4J_PASSWORD", ""))
+# watch("neo4j.bolt")
 
 class GraphDb(object):
     def __init__(self, host, password=None, bolt_port=7687, http_port=7474,
