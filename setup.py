@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='vcf2neo',
-    version='0.0.4',
+    version='0.0.5',
     description='Parses VCF file and builds a graph database.',
     keywords='neo4j,and vcf',
     py_modules=['vcf2neo'],
