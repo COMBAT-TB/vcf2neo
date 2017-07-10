@@ -51,7 +51,7 @@ def init(vcf_dir, owner, history_id, d, output_dir=None):
     else:
         http_port = 7474
         bolt_port = 7687
-    db = GraphDb(host='localhost', password='', use_bolt=False,
+    db = GraphDb(host=os.environ.get('DB', 'localhost'), password='', use_bolt=False,
                  bolt_port=bolt_port, http_port=http_port)
     vcf = Vcf(db, vcf_dir=vcf_dir, owner=owner, history_id=history_id)
     sys.stderr.write('Database IP: {}\n'.format(os.environ.get('DB',
@@ -59,7 +59,8 @@ def init(vcf_dir, owner, history_id, d, output_dir=None):
     sys.stderr.write("About to process vcf files...\n")
     start = time.time()
     vcf.process()
-    docker.stop()
+    if d:
+        docker.stop()
     end = time.time()
     sys.stderr.write("Done loading VCF files to Graph database!\n" +
                      "It took me {} ms.\n".format(end - start))
