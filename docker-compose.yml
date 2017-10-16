@@ -9,7 +9,7 @@ services:
     depends_on:
       - db
   db:
-    image: neo4j:3.2.1
+    image: neo4j:3.2.6
     container_name: vcf2neo-db
     volumes_from:
       - dc:rw
