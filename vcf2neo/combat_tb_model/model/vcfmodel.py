@@ -34,6 +34,21 @@ class VariantSet(GraphObject):
         self.col_id = col_id
 
 
+# CallSet = VCF file
+class CallSet(GraphObject):
+    __primarykey__ = 'name'
+    name = Property()
+    vset = Property()
+    identifier = Property()
+
+    has_call = RelatedFrom("Call", "BELONGS_TO_CSET")
+    has_calls_in = RelatedTo("VariantSet", "HAS_CALLS_IN")
+
+    def __init__(self, name):
+        self.name = name
+        # self.vset = vset
+
+
 # VariantSite = Variant
 class VariantSite(GraphObject):
     # NOTE: relies on FeatureLoc from core.py
@@ -67,21 +82,6 @@ class VariantSite(GraphObject):
         self.alt_allele = alt_allele
         self.gene = gene
         self.pk = pk
-
-
-# CallSet = VCF file
-class CallSet(GraphObject):
-    __primarykey__ = 'name'
-    name = Property()
-    vset = Property()
-    identifier = Property()
-
-    has_call = RelatedFrom("Call", "BELONGS_TO_CSET")
-    has_calls_in = RelatedTo("VariantSet", "HAS_CALLS_IN")
-
-    def __init__(self, name):
-        self.name = name
-        # self.vset = vset
 
 
 class Call(GraphObject):

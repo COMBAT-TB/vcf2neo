@@ -2,9 +2,13 @@ from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 
 
 class Organism(GraphObject):
+    """
+    Organism
+    """
     __primarykey__ = 'genus'
 
     abbreviation = Property()
+    strain = Property()
     genus = Property()
     species = Property()
     common_name = Property()
@@ -12,8 +16,9 @@ class Organism(GraphObject):
 
     dbxref = RelatedTo("DbXref", "XREF")
 
-    def __init__(self, abbreviation=None, genus=None, species=None, common_name=None, comment=None):
+    def __init__(self, abbreviation=None, strain=None, genus=None, species=None, common_name=None, comment=None):
         self.abbreviation = abbreviation
+        self.strain = strain
         self.genus = genus
         self.species = species
         self.common_name = common_name
@@ -21,6 +26,9 @@ class Organism(GraphObject):
 
 
 class Feature(GraphObject):
+    """
+    Used for inheritance purposes
+    """
     __primarykey__ = 'uniquename'
 
     name = Property()
@@ -36,85 +44,151 @@ class Feature(GraphObject):
     ontology_id = Property()
 
     belongs_to = RelatedTo("Organism", "BELONGS_TO")
-    location = RelatedTo("FeatureLoc", "LOCATED_AT")
-    related_to = RelatedTo("Feature", "RELATED_TO")
+    location = RelatedTo("Location", "LOCATED_AT")
+    located_on = RelatedTo("Chromosome", "LOCATED_ON")
+    # related_to = RelatedTo("Feature", "RELATED_TO")
     published_in = RelatedTo("Publication", "PUBLISHED_IN")
     dbxref = RelatedTo("DbXref", "XREF")
-    cvterm = RelatedTo("CvTerm", "ASSOC_WITH")
-    orthologous_to = RelatedTo("Feature", "ORTHOLOGOUS_TO")
 
 
-class FeatureSet(GraphObject):
-    # I'm not sure if this should be in core - pvh
-    __primarykey__ = 'name'
+# class FeatureSet(GraphObject):
+#     # I'm not sure if this should be in core - pvh
+#     __primarykey__ = 'name'
 
-    name = Property()
-    description = Property()
-    contains = RelatedTo("Feature", "CONTAINS")
+#     name = Property()
+#     description = Property()
+#     contains = RelatedTo("Feature", "CONTAINS")
 
 
 class Gene(Feature):
-    so_id = "SO:0000704"
-
+    """
+    Gene is_a Feature
+    """
+    _so_id = "SO:0000704"
+    so_id = Property()
     biotype = Property()
     description = Property()
-    parts = RelatedFrom("Transcript", "PART_OF")
-    is_a = RelatedTo("Feature", "IS_A")
+
+    part_of = RelatedFrom("Transcript", "PART_OF")
+    orthologous_to = RelatedTo("Gene", "ORTHOLOGOUS_TO")
+    encodes = RelatedTo("Protein", "ENCODES")
+
+    def __init__(self, so_id=_so_id):
+        self.so_id = so_id
 
 
 class PseudoGene(Feature):
-    so_id = "SO:0000336"
-
+    """
+    PseudoGene is_a Feature
+    """
+    _so_id = "SO:0000336"
+    so_id = Property()
     biotype = Property()
     description = Property()
-    is_a = RelatedTo("Feature", "IS_A")
+
+    part_of = RelatedFrom("Transcript", "PART_OF")
+
+    def __init__(self, so_id=_so_id):
+        self.so_id = so_id
 
 
 class Transcript(Feature):
-    so_id = "SO:0000673"
-
+    """
+    Transcript is_a Feature
+    """
+    _so_id = "SO:0000673"
+    so_id = Property()
     biotype = Property()
-    is_a = RelatedTo("Feature", "IS_A")
-    part_of = RelatedTo("Gene", "PART_OF")
+
+    part_of_g = RelatedTo("Gene", "PART_OF")
+    part_of_pg = RelatedTo("PseudoGene", "PART_OF")
+    part_of_cds = RelatedFrom("CDS", "PART_OF")
+
+    def __init__(self, so_id=_so_id):
+        self.so_id = so_id
 
 
 class TRna(Feature):
-    so_id = "SO:0000253"
+    """
+    TRna is_a Feature
+    """
+    _so_id = "SO:0000253"
+    so_id = Property()
+
+    def __init__(self, so_id=_so_id):
+        self.so_id = so_id
 
 
 class NCRna(Feature):
-    so_id = "SO:0000655"
+    """
+    NCRna is_a Feature
+    """
+    _so_id = "SO:0000655"
+    so_id = Property()
+
+    def __init__(self, so_id=_so_id):
+        self.so_id = so_id
 
 
 class RRna(Feature):
-    so_id = "SO:0000252"
+    """
+    RRna is_a Feature
+    """
+    _so_id = "SO:0000252"
+    so_id = Property()
+
+    def __init__(self, so_id=_so_id):
+        self.so_id = so_id
 
 
 class Exon(Feature):
-    so_id = "SO:0000147"
+    """
+    Exon is_a Feature
+    """
+    _so_id = "SO:0000147"
+    so_id = Property()
 
-    is_a = RelatedTo("Feature", "IS_A")
     part_of = RelatedTo("Transcript", "PART_OF")
+
+    def __init__(self, so_id=_so_id):
+        self.so_id = so_id
 
 
 class CDS(Feature):
-    so_id = "SO:0000316"
+    """
+    CDS is_a Feature
+    """
+    _so_id = "SO:0000316"
+    so_id = Property()
 
-    is_a = RelatedTo("Feature", "IS_A")
     part_of = RelatedTo("Transcript", "PART_OF")
-    polypeptide = RelatedFrom('Polypeptide', "DERIVES_FROM")
+    derived = RelatedFrom("Protein", "DERIVES_FROM")
+
+    def __init__(self, so_id=_so_id):
+        self.so_id = so_id
 
 
 class Chromosome(Feature):
-    so_id = "SO:0000340"
+    """
+    Chromosome is_a Feature
+    """
+    _so_id = "SO:0000340"
+    so_id = Property()
 
-    is_a = RelatedTo("Feature", "IS_A")
+    # is_a = RelatedTo("Feature", "IS_A")
+
+    def __init__(self, so_id=_so_id):
+        self.so_id = so_id
 
 
-class Polypeptide(Feature):
+class Protein(Feature):
+    """
+    Protein is_a Feature
+    """
     # more commonly known as a Protein - we should call it that - pvh
-    so_id = "SO:0000104"
-
+    _so_id = "SO:0000104"
+    so_id = Property()
+    entry_name = Property()
     family = Property()
     function = Property()
     pdb_id = Property()
@@ -123,12 +197,24 @@ class Polypeptide(Feature):
     mass = Property()
 
     derives_from = RelatedTo("CDS", "DERIVES_FROM")
-    interacts_with = RelatedTo("Polypeptide", "INTERACTS_WITH")
+    interacts_with = RelatedTo("Protein", "INTERACTS_WITH")
+    assoc_goterm = RelatedTo("GOTerm", 'ASSOCIATED_WITH')
+    assoc_intterm = RelatedTo("InterProTerm", "ASSOCIATED_WITH")
+    drug = RelatedFrom("Drug", "TARGET")
+    pathway = RelatedTo("Pathway", "INVOLVED_IN")
+    encoded_by = RelatedFrom("Gene", "ENCODES")
+
+    def __init__(self, so_id=_so_id):
+        self.so_id = so_id
 
 
-class FeatureLoc(GraphObject):
-    __primarykey__ = 'srcfeature_id'  # used feature.uniquename
+class Location(GraphObject):
+    """
+    FeatureLoc not used
+    """
+    __primarykey__ = 'pk'  # used feature.uniquename
 
+    pk = Property()
     srcfeature_id = Property()
     fmin = Property()
     is_fmin_partial = Property()
@@ -140,13 +226,13 @@ class FeatureLoc(GraphObject):
     locgroup = Property()
     rank = Property()
 
-    feature = RelatedFrom("Feature", "ON")
-    published_in = RelatedTo("Publication", "PUBLISHED_IN")
+    # feature = RelatedFrom("Feature", "ON")
+    # published_in = RelatedTo("Publication", "PUBLISHED_IN")
 
-    def __init__(self, srcfeature_id, fmin=None, is_fmin_partial=None, fmax=None, is_fmax_partial=None, strand=None,
+    def __init__(self, pk, fmin=None, is_fmin_partial=None, fmax=None, is_fmax_partial=None, strand=None,
                  phase=None, residue_info=None, locgroup=None,
                  rank=None):
-        self.srcfeature_id = srcfeature_id
+        self.pk = pk
         self.fmin = fmin
         self.is_fmin_partial = is_fmin_partial
         self.fmax = fmax
@@ -157,10 +243,14 @@ class FeatureLoc(GraphObject):
         self.locgroup = locgroup
         self.rank = rank
         if self.fmin > self.fmax:
-            raise ValueError("fmin cannot be greater than fmax: {} > {}.".format(self.fmin, self.fmax))
+            raise ValueError(
+                "fmin cannot be greater than fmax: {} > {}.".format(self.fmin, self.fmax))
 
 
 class Publication(GraphObject):
+    """
+    Publication from PubMed
+    """
     __primarykey__ = 'pmid'
 
     pmid = Property()
@@ -181,6 +271,9 @@ class Publication(GraphObject):
 
 
 class Author(GraphObject):
+    """
+    Authors
+    """
     __primarykey__ = 'givennames'
 
     editor = Property()
@@ -198,26 +291,80 @@ class Author(GraphObject):
         self.suffix = suffix
 
 
-class CvTerm(GraphObject):
-    __primarykey__ = 'name'
+class GOTerm(GraphObject):
+    """
+    Gene Ontology Terms
+    """
+    __primarykey__ = 'accession'
 
+    accession = Property()
     name = Property()
     definition = Property()
     is_obsolete = Property()
+    ontology = Property()  # same as namespace
     namespace = Property()
 
-    dbxref = RelatedTo("DbXref", "XREF")
-    is_a = RelatedTo("CvTerm", "IS_A")
-    part_of = RelatedTo("CvTerm", "PART_OF")
-    feature = RelatedFrom("Feature", "ASSOC_WITH")
+    is_a = RelatedTo("GOTerm", "IS_A")
+    protein = RelatedFrom("Protein", "ASSOCIATED_WITH")
 
-    def __init__(self, name=None, definition=None, is_obsolete=None):
+    # part_of = RelatedTo("GOTerm", "PART_OF")
+    # feature = RelatedFrom("Feature", "ASSOC_WITH")
+
+    def __init__(self, accession, name=None, definition=None, is_obsolete=None):
+        self.accession = accession
         self.name = name
         self.definition = definition
         self.is_obsolete = is_obsolete
 
 
+class InterProTerm(GraphObject):
+    """
+    InterPro Terms
+    """
+    __primarykey__ = 'accession'
+
+    accession = Property()
+    name = Property()
+    definition = Property()
+
+    dbxref = RelatedTo("DbXref", "XREF")
+    assoc_protein = RelatedFrom("Protein", "ASSOCIATED_WITH")
+    feature = RelatedFrom("Feature", "ASSOC_WITH")
+
+    def __init__(self, accession=None, name=None, definition=None):
+        self.accession = accession
+        self.name = name
+        self.definition = definition
+
+
+class Drug(GraphObject):
+    """
+    InterPro Terms
+    """
+    __primarykey__ = 'accession'
+
+    accession = Property()
+    name = Property()
+    synonyms = Property()
+    definition = Property()
+    # attr. from tbdtdb
+    _class = Property()
+    toxicity = Property()
+    cost = Property()
+
+    target = RelatedTo("Protein", "TARGET")
+
+    def __init__(self, accession, name=None, synonyms=None, definition=None):
+        self.accession = accession
+        self.name = name
+        self.synonyms = synonyms
+        self.definition = definition
+
+
 class DbXref(GraphObject):
+    """
+    External references
+    """
     __primarykey__ = 'accession'
 
     accession = Property()
@@ -225,8 +372,36 @@ class DbXref(GraphObject):
     db = Property()
     description = Property()
 
-    def __init__(self, db, accession, version, description=None):
+    # adding target rel for drugbank data
+    target = RelatedTo("Protein", "TARGET")
+
+    def __init__(self, db, accession, version=None, description=None):
         self.accession = accession
         self.version = version
         self.db = db
         self.description = description
+
+
+class Contig(GraphObject):
+    """
+    Contigs
+    """
+    pass
+
+
+class Pathway(GraphObject):
+    """
+    Pathway
+    """
+    __primarykey__ = 'accession'
+
+    accession = Property()
+    _type = Property()
+    species = Property()
+    _class = Property()
+    name = Property()
+    compartment = Property()
+    # Description
+    summation = Property()
+
+    protein = RelatedFrom("Protein", "INVOLVED_IN")

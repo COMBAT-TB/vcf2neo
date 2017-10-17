@@ -11,7 +11,6 @@ import sys
 import vcf
 
 
-
 class Vcf(object):
     """
     Handling VCF processing.
