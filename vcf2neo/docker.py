@@ -8,6 +8,7 @@ from subprocess import Popen, PIPE, STDOUT, check_output, \
     CalledProcessError, check_call
 import sys
 import time
+
 try:
     from io import StringIO
 except:
@@ -17,7 +18,6 @@ from tqdm import tqdm
 
 
 class Docker(object):
-
     WORDS = ['again', 'ages', 'almost', 'america', 'ancient', 'another',
              'antagonisms', 'apprentices', 'armies', 'arrangement', 'away',
              'background', 'before', 'between', 'bourgeois', 'bourgeoisie',
@@ -74,10 +74,8 @@ class Docker(object):
     """
 
     # TODO: Where are we getting the reference database?
-    def __init__(self, outputdir, use_bolt=False,
-                 image_name='quay.io/sanbi-sa/neo_ie:3.1'):
-        self.name = '_'.join(['vcf2neo', random.choice(self.__class__.WORDS),
-                             random.choice(self.__class__.WORDS)])
+    def __init__(self, outputdir, use_bolt=False, image_name='quay.io/sanbi-sa/neo_ie:3.1'):
+        self.name = '_'.join(['vcf2neo', random.choice(self.__class__.WORDS), random.choice(self.__class__.WORDS)])
         self.outputdir = outputdir
         self.container = None
         self.use_bolt = use_bolt
@@ -104,13 +102,8 @@ class Docker(object):
                   "-e USER_UID={uid} -e USER_GID={gid} " \
                   "-e MONITOR_TRAFFIC=false {bolt} " \
                   "-e NEO4J_AUTH=none --name {name} " \
-                  "{image_name}".format(
-                    outputdir=self.outputdir,
-                    bolt=bolt_string,
-                    uid=os.getuid(),
-                    gid=os.getgid(),
-                    name=self.name,
-                    image_name=self.image_name)
+                  "{image_name}".format(outputdir=self.outputdir, bolt=bolt_string, uid=os.getuid(), gid=os.getgid(),
+                                        name=self.name, image_name=self.image_name)
         cmd = self.new_split(cmd_str)
         sys.stderr.write("Starting docker:\n{}...".format(cmd))
         print("Starting docker:\n{}...".format(cmd))

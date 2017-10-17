@@ -1,15 +1,15 @@
 """
 Interface to the Neo4j Database
 """
-import sys
 import logging
 import socket
+import sys
 import time
-import uuid
+
 from py2neo import Graph, watch
+
 from combat_tb_model.model.core import Gene
-from combat_tb_model.model.vcfmodel import VariantSet, CallSet, \
-    Call, VariantSite
+from combat_tb_model.model.vcfmodel import VariantSet, CallSet, Variant
 
 
 class GraphDb(object):
@@ -25,6 +25,7 @@ class GraphDb(object):
                 timeout=30):
         """connect - make connection to Neo4j DB
 
+        :param use_bolt:
         :type host: str - hostname or IP of Neo4j database server
         :type password: str - password for Neo4j database server
         :type bolt_port: int - port for Neo4j Bolt protocol
@@ -95,22 +96,19 @@ class GraphDb(object):
             # known_sites[pos][1].append(call)
         else:
             # we don't know about this variant site yet
-            v_site = VariantSite(chrom=str(chrom), pos=pos,
-                                 ref_allele=str(ref_allele),
-                                 alt_allele=str(alt_allele),
-                                 gene=annotation[4],
-                                 pk=str(v_set.name) + str(pos))
+            v_site = Variant(chrom=str(chrom), pos=pos,
+                             ref_allele=str(ref_allele),
+                             alt_allele=str(alt_allele),
+                             gene=annotation[4],
+                             pk=str(v_set.name) + str(pos),
+                             impact=annotation[2])
             self.graph.create(v_site)
             known_sites[pos] = v_site
         gene = Gene.select(self.graph, "gene:" + str(v_site.gene)).first()
         if gene:
             v_site.occurs_in.add(gene)
             self.graph.push(v_site)
-        call = self.create_call_nodes(record, v_set, c_set, annotation)
-        if c_set is not None:
-            call.belongs_to_cset.add(c_set)
-            self.graph.push(call)
-        v_site.has_call.add(call)
+
         if v_set:
             v_site.belongs_to_vset.add(v_set)
             self.graph.push(v_site)
@@ -126,15 +124,3 @@ class GraphDb(object):
         self.graph.create(c_set)
         return c_set
 
-    def create_call_nodes(self, record, v_set, c_set, annotation):
-        """
-        Create Call Nodes
-        :return:
-        """
-        call = Call(pos=record.POS, ref_allele=str(record.REF),
-                    alt_allele=str(record.ALT[0]),
-                    pk=str(v_set.name) + str(c_set.name) + str(record.POS),
-                    gene=annotation[4],
-                    impact=annotation[2])
-        self.graph.create(call)
-        return call

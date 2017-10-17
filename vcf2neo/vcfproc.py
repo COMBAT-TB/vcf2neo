@@ -34,8 +34,10 @@ class Vcf(object):
             self.vcf_dir))
         known_sites = dict()
         vset_name = str(self.vcf_dir).split('/')[-1]
+
         v_set = self.db.create_variant_set_nodes(set_name=vset_name, owner=str(
             self.owner), history_id=str(self.history_id))
+
         for vcf_file in glob.glob(self.vcf_dir + "/*.vcf"):
             # TODO: Remove the two files from data
             if 'Drug' not in str(vcf_file):
@@ -47,8 +49,10 @@ class Vcf(object):
                 # TODO: Have a standard way of identifying variant_set_names
                 vcf_file_name = str(vcf_file).replace(
                     str(self.vcf_dir) + "/", "")
+
                 c_set = self.db.create_call_set_nodes(
                     set_name=vcf_file_name, v_set=v_set)
+
                 known_sites = self.get_variant_sites(
                     known_sites, vcf_reader, v_set=v_set, c_set=c_set)
                 end = time.time()
