@@ -34,8 +34,22 @@ class VariantSet(GraphObject):
         self.col_id = col_id
 
 
-# VariantSite = Variant
-class VariantSite(GraphObject):
+# CallSet = VCF file
+class CallSet(GraphObject):
+    __primarykey__ = 'name'
+    name = Property()
+    vset = Property()
+    identifier = Property()
+
+    has_call = RelatedFrom("Call", "BELONGS_TO_CSET")
+    has_calls_in = RelatedTo("VariantSet", "HAS_CALLS_IN")
+
+    def __init__(self, name):
+        self.name = name
+        # self.vset = vset
+
+
+class Variant(GraphObject):
     # NOTE: relies on FeatureLoc from core.py
     # make __primarykey__ = VariantSet.name+POS
     __primarykey__ = 'pk'
@@ -53,6 +67,7 @@ class VariantSite(GraphObject):
     known = Property()
     novel = Property()
     pk = Property()
+    impact = Property()
 
     occurs_in = RelatedTo("Gene", "OCCURS_IN")
     location = RelatedTo("FeatureLoc", "LOCATED_AT")
@@ -60,51 +75,14 @@ class VariantSite(GraphObject):
     has_call = RelatedTo("Call", "HAS_CALL")
     belongs_to_vset = RelatedTo("VariantSet", "BELONGS_TO_VSET")
 
-    def __init__(self, chrom, pos, ref_allele, alt_allele, pk, gene=None):
+    def __init__(self, chrom, pos, ref_allele, alt_allele, pk, impact, gene=None):
         self.chrom = chrom
         self.pos = pos
         self.ref_allele = ref_allele
         self.alt_allele = alt_allele
         self.gene = gene
         self.pk = pk
-
-
-# CallSet = VCF file
-class CallSet(GraphObject):
-    __primarykey__ = 'name'
-    name = Property()
-    vset = Property()
-    identifier = Property()
-
-    has_call = RelatedFrom("Call", "BELONGS_TO_CSET")
-    has_calls_in = RelatedTo("VariantSet", "HAS_CALLS_IN")
-
-    def __init__(self, name):
-        self.name = name
-        # self.vset = vset
-
-
-class Call(GraphObject):
-    # make __primarykey__ = CallSet.name+VariantSet.name+pos
-    __primarykey__ = 'pk'
-    genotype = Property()
-    ref_allele = Property()
-    alt_allele = Property()
-    gene = Property()
-    pos = Property()
-    pk = Property()
-    impact = Property()
-
-    associated_with = RelatedTo("VariantSite", "ASSOC_WITH_VARIANT")
-    belongs_to_cset = RelatedTo("CallSet", "BELONGS_TO_CSET")
-
-    def __init__(self, pos, ref_allele, alt_allele, pk, impact, gene=None):
-        self.pos = pos
-        self.ref_allele = ref_allele
-        self.alt_allele = alt_allele
         self.impact = impact
-        self.gene = gene
-        self.pk = pk
 
 
 class FastTree(GraphObject):
