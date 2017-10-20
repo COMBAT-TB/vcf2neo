@@ -14,7 +14,6 @@ setup(
         'py2neo',
         'tqdm',
         'PyVCF',
-        'combat_tb_model'
     ],
     entry_points={
         'console_scripts': ['vcf2neo=vcf2neo.cli:cli']

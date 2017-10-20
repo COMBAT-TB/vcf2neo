@@ -16,6 +16,7 @@ def cli():
     """
     pass
 
+
 try:
     # Python 2
     u_str = unicode
@@ -36,11 +37,15 @@ except NameError:
 def init(vcf_dir, owner, history_id, d, output_dir=None):
     """
     Copy reference database and load VCF to Neo4j Graph database.
+    :param output_dir:
+    :param history_id:
+    :param owner:
     :param vcf_dir:
     :param refdb_dir:
     :param d:
     :return:
     """
+    docker = None
     if d:
         if output_dir is None:
             exit("When running in Docker spawn mode we need an output dir.")
@@ -64,6 +69,7 @@ def init(vcf_dir, owner, history_id, d, output_dir=None):
     end = time.time()
     sys.stderr.write("Done loading VCF files to Graph database!\n" +
                      "It took me {} ms.\n".format(end - start))
+
 
 if __name__ == '__main__':
     cli()

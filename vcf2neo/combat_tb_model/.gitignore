@@ -87,12 +87,5 @@ ENV/
 
 # Rope project settings
 .ropeproject
-
 .idea
-data/
-dc/reference_data/
-dc/reference_data.tar.bz2
-*.orig
-None/
-refvcf/
 .vscode
