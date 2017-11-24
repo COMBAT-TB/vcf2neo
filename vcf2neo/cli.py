@@ -3,10 +3,12 @@
 import os
 import sys
 import time
+
 import click
-from .db import GraphDb
-from .docker import Docker
-from .vcfproc import Vcf
+
+from vcf2neo.db import GraphDb
+from vcf2neo.docker import Docker
+from vcf2neo.vcfproc import Vcf
 
 
 @click.group()
@@ -29,7 +31,7 @@ except NameError:
 @click.argument('vcf_dir', type=click.Path(exists=True, dir_okay=True),
                 required=True)
 @click.argument('owner', type=u_str,
-                required=True)
+                required=False)
 @click.argument('history_id', type=u_str, required=False)
 @click.argument('output_dir', type=click.Path(exists=True, dir_okay=True),
                 required=False)

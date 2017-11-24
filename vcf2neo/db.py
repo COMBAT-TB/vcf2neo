@@ -103,6 +103,8 @@ class GraphDb(object):
                              pk=str(v_set.name) + str(pos),
                              impact=annotation[2])
             self.graph.create(v_site)
+            v_site.belongs_to_cset.add(c_set)
+            c_set.has_variant.add(v_site)
             known_sites[pos] = v_site
         gene = Gene.select(self.graph, "gene:" + str(v_site.gene)).first()
         if gene:
