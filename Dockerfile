@@ -6,7 +6,6 @@ RUN apk update \
     && apk add --no-cache wget linux-headers musl-dev gcc libffi-dev \
     libressl-dev \
     libssl-dev \
-    openssl-dev \
     && mkdir -p /code/data \
     && pip install -U pip
 
