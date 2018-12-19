@@ -33,7 +33,7 @@ $ git subtree pull --prefix=vcf2neo/combat_tb_model combat_tb_model master --squ
      $ pip install -r requirements.txt
      $ pip install --editable .
      $ vcf2neo --help
-     $ vcf2neo init -d data/refvcf data/db/data
+     $ vcf2neo load_vcf -d data/refvcf data/db/data
     ```
 
 -   **Using docker/docker-compose :whale: :**

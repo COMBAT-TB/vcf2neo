@@ -27,11 +27,9 @@ class Vcf(object):
         self.db = db
 
     def process(self):
-        sys.stderr.write(
+        sys.stdout.write(
             "We have the following VCF files in directory ({}):\n".format(
                 self.vcf_dir))
-        print("We have the following VCF files in directory ({}):\n".format(
-            self.vcf_dir))
         known_sites = dict()
         vset_name = str(self.vcf_dir).split('/')[-1]
 
@@ -56,10 +54,9 @@ class Vcf(object):
                 known_sites = self.get_variant_sites(
                     known_sites, vcf_reader, v_set=v_set, c_set=c_set)
                 end = time.time()
-                sys.stderr.write("Processed {} in {}!\n".format(
+                sys.stdout.write("Processed {} in {}!\n".format(
                     vcf_file_name.upper(), end - start))
-                print("Processed {} in {}!\n".format(
-                    vcf_file_name.upper(), end - start))
+
                 time.sleep(2)
 
     def get_variant_sites(self, known_sites, vcf_reader=None,
@@ -72,7 +69,6 @@ class Vcf(object):
             annotation = self.get_variant_ann(record=record)
             known_sites = self.db.create_variant_site_nodes(
                 record, known_sites, annotation, v_set, c_set)
-        print()
         return known_sites
 
     @staticmethod

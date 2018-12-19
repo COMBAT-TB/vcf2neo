@@ -2,6 +2,7 @@ beautifulsoup4==4.5.3
 bioservices==1.4.14
 click==6.7
 colorama==0.3.7
+coveralls==1.2.0
 easydev==0.9.30
 gevent==1.2.0
 greenlet==0.4.11
@@ -9,10 +10,12 @@ grequests==0.3.0
 packaging==16.8
 pexpect==4.2.1
 ptyprocess==0.5.1
-py2neo>=3.1.2
+py2neo==3.1.2
 pyparsing==2.2.0
+pytest==3.3.2
+pytest-cov==2.5.1
 PyVCF==0.6.8
-requests==2.12.4
+requests>=2.20.0
 requests-cache==0.4.13
 six==1.10.0
 suds-jurko==0.6

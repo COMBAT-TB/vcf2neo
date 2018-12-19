@@ -16,4 +16,4 @@ RUN pip install -Ur /code/requirements.txt
 COPY . /code
 WORKDIR /code
 RUN pip install --editable .
-CMD ["vcf2neo" ,"init", "-D", "/refvcf", "zahra"]
+CMD ["vcf2neo" ,"load_vcf", "-D", "/refvcf", "zahra"]

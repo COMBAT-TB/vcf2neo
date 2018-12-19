@@ -1,0 +1,30 @@
+os:
+  - linux
+dist: trusty
+sudo: required
+
+language: python
+cache:
+   directories:
+     - $HOME/.cache/pip
+python:
+  - "2.7"
+  - "3.5"
+  - "3.6"
+
+services:
+  - neo4j
+
+before_script:
+  - sleep 30
+
+# command to install dependencies
+install:
+  - pip install -r requirements.txt
+  - pip install -e .
+
+script:
+  - travis_wait 30 pytest -v test/ --cov=vcf2neo --cov-report term
+
+after_success:
+  coveralls

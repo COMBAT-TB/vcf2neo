@@ -36,7 +36,7 @@ except NameError:
 @click.argument('output_dir', type=click.Path(exists=True, dir_okay=True),
                 required=False)
 @click.option('-d/-D', default=True, help='Run Neo4j docker container.')
-def init(vcf_dir, owner, history_id, d, output_dir=None):
+def load_vcf(vcf_dir, owner, history_id, d, output_dir=None):
     """
     Copy reference database and load VCF to Neo4j Graph database.
     :param output_dir:
@@ -61,15 +61,15 @@ def init(vcf_dir, owner, history_id, d, output_dir=None):
     db = GraphDb(host=os.environ.get('DB', 'localhost'), password='', use_bolt=False,
                  bolt_port=bolt_port, http_port=http_port)
     vcf = Vcf(db, vcf_dir=vcf_dir, owner=owner, history_id=history_id)
-    sys.stderr.write('Database IP: {}\n'.format(os.environ.get('DB',
+    sys.stdout.write('Database IP: {}\n'.format(os.environ.get('DB',
                                                                'default')))
-    sys.stderr.write("About to process vcf files...\n")
+    sys.stdout.write("About to process vcf files...\n")
     start = time.time()
     vcf.process()
     if d:
         docker.stop()
     end = time.time()
-    sys.stderr.write("Done loading VCF files to Graph database!\n" +
+    sys.stdout.write("Done loading VCF files to Graph database!\n" +
                      "It took me {} ms.\n".format(end - start))
 
 
