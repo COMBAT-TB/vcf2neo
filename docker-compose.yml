@@ -1,13 +1,13 @@
 version: '2'
 services:
-  vcf2neo:
-    build: .
-    image: vcf2neo
-    container_name: vcf2neo
-    environment:
-      DB: db
-    depends_on:
-      - db
+#  vcf2neo:
+#    build: .
+#    image: vcf2neo
+#    container_name: vcf2neo
+#    environment:
+#      DB: db
+#    depends_on:
+#      - db
   db:
     image: neo4j:3.5
     container_name: vcf2neo-db

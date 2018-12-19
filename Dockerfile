@@ -3,9 +3,11 @@ MAINTAINER Thoba Lose "thoba@sanbi.ac.za"
 LABEL Name=vcf2neo Version="0.1"
 RUN apk update \
     && apk upgrade \
-    && apk add --no-cache wget linux-headers libssl-dev musl-dev gcc \
+    && apk add --no-cache ca-certificates wget linux-headers libssl-dev
+    musl-dev \
+    gcc \
     libffi-dev \
-    libressl-dev \
+    && update-ca-certificates \
     && mkdir -p /code/data \
     && pip install -U pip
 
