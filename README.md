@@ -1,5 +1,5 @@
 # **vcf2neo**
-[![Build Status](https://travis-ci.org/thobalose/vcf2neo.svg?branch=master)](https://travis-ci.org/thobalose/vcf2neo)
+[![Build Status](https://travis-ci.org/COMBAT-TB/vcf2neo.svg?branch=master)](https://travis-ci.org/COMBAT-TB/vcf2neo)
 
 A tool to import SnpEff annotated vcf files to a Neo4j Graph database.
 
