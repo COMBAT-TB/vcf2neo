@@ -7,9 +7,8 @@ import sys
 import time
 
 from py2neo import Graph, watch
-
-from combat_tb_model.model.core import Gene
-from combat_tb_model.model.vcfmodel import VariantSet, CallSet, Variant
+from vcf2neo.combat_tb_model.model.core import Gene
+from vcf2neo.combat_tb_model.model.vcfmodel import VariantSet, CallSet, Variant
 
 
 class GraphDb(object):
