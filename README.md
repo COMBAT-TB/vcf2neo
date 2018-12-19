@@ -1,6 +1,7 @@
 # **vcf2neo**
+[![Build Status](https://travis-ci.org/thobalose/vcf2neo.svg?branch=master)](https://travis-ci.org/thobalose/vcf2neo)
 
-A tool to import SnpEff produced vcf files to a Neo4j Graph database.
+A tool to import SnpEff annotated vcf files to a Neo4j Graph database.
 
 This tool does the following:
 
@@ -11,21 +12,21 @@ This tool does the following:
 
 ## Usage
 
-**Clone this repository:**
+- **Clone this repository:**
 
-```
-$ git clone https://github.com/SANBI-SA/vcf2neo.git
-$ cd vcf2neo
-```
-Adding the combattb_model sub-project as a remote:
-```
-$ git remote add -f combat_tb_model git@github.com:SANBI-SA/combat_tb_model.git
-$ git subtree add --prefix=vcf2neo/combat_tb_model combat_tb_model master --squash
-$ git fetch combat_tb_model master
-$ git subtree pull --prefix=vcf2neo/combat_tb_model combat_tb_model master --squash
-```
+    ```
+    $ git clone https://github.com/SANBI-SA/vcf2neo.git
+    $ cd vcf2neo
+    ```
 
--   **Standalone :computer: :**
+- **Install [`docker`](https://docs.docker.com/v17.12/install/) and 
+[`docker-compose`](https://docs.docker.com/compose/install/) and run :whale: 
+:** 
+    ```
+    $ docker-compose up --build -d
+    ```
+
+-   **Install and run `vcf2neo` :computer: :**
 
     ```
      $ virtualenv envname
@@ -33,11 +34,20 @@ $ git subtree pull --prefix=vcf2neo/combat_tb_model combat_tb_model master --squ
      $ pip install -r requirements.txt
      $ pip install --editable .
      $ vcf2neo --help
-     $ vcf2neo load_vcf -d data/refvcf data/db/data
+     $ vcf2neo load_vcf -D PATH/TO/VCF_FILES
     ```
+    
+Point your browser to [localhost:7474](http://0.0.0.0:7474) to access the Neo4j browser.
 
--   **Using docker/docker-compose :whale: :**
+To view the schema, run:
 
-    ```
-    $ docker-compose up --build -d
-    ```
+```java
+call db.schema
+```
+
+Sample query:
+
+```java
+MATCH(g:Gene)-[r:OCCURS_IN]-(v:Variant) RETURN g.name as gene, v.consequence 
+as variant LIMIT 25
+```

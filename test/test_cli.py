@@ -19,5 +19,5 @@ def cli_runner():
 
 
 def test_load_vcf(cli_runner):
-    result = cli_runner.invoke(load_vcf, [TEST_DATA_DIR])
+    result = cli_runner.invoke(load_vcf, ['-D', TEST_DATA_DIR])
     assert result.exit_code == 0

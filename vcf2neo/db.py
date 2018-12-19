@@ -51,8 +51,8 @@ class GraphDb(object):
         self.bolt_port = bolt_port
         self.http_port = http_port
         sys.stdout.write(
-            "connecting to http port: {} bolt_port: {} host: {} bolt: {}\n".
-                format(http_port, bolt_port, host, use_bolt))
+            "connecting to http port: {} bolt_port: {} host: {} bolt: {}\n".format(
+                http_port, bolt_port, host, use_bolt))
         time.sleep(5)
 
         graph = Graph('http://{}:{}/db/data/'.format(host, self.http_port),
@@ -124,4 +124,3 @@ class GraphDb(object):
         c_set.has_calls_in.add(v_set)
         self.graph.create(c_set)
         return c_set
-
