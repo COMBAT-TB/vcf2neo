@@ -1,7 +1,7 @@
 # from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 import uuid
 
-from core import *
+from vcf2neo.combat_tb_model.model.core import *
 
 # class Phenotype(GraphObject):
 #     __primarykey__ = 'type'
@@ -41,8 +41,8 @@ class CallSet(GraphObject):
     vset = Property()
     identifier = Property()
 
-    has_call = RelatedFrom("Call", "BELONGS_TO_CSET")
-    has_calls_in = RelatedTo("VariantSet", "HAS_CALLS_IN")
+    has_variant = RelatedFrom("Variant", "BELONGS_TO_CSET")
+    has_calls_in = RelatedTo("VariantSet", "HAS_VARIANTS_IN")
 
     def __init__(self, name):
         self.name = name
@@ -72,8 +72,8 @@ class Variant(GraphObject):
     occurs_in = RelatedTo("Gene", "OCCURS_IN")
     location = RelatedTo("FeatureLoc", "LOCATED_AT")
 
-    has_call = RelatedTo("Call", "HAS_CALL")
     belongs_to_vset = RelatedTo("VariantSet", "BELONGS_TO_VSET")
+    belongs_to_cset = RelatedTo("CallSet", "BELONGS_TO_CSET")
 
     def __init__(self, chrom, pos, ref_allele, alt_allele, pk, impact, gene=None):
         self.chrom = chrom
