@@ -3,9 +3,13 @@ MAINTAINER Thoba Lose "thoba@sanbi.ac.za"
 LABEL Name=vcf2neo Version="0.1"
 RUN apk update \
     && apk upgrade \
+    && apk add --no-cache wget linux-headers musl-dev gcc libffi-dev \
+    libressl-dev \
+    libssl-dev \
+    openssl-dev \
     && mkdir -p /code/data \
     && pip install -U pip
-RUN apk add wget linux-headers musl-dev gcc
+
 RUN wget -O vcf.tar.bz2 'https://drive.google.com/uc?export=download&id=0By2-i8xoBou_Wl9yUXZIWXRIeFU'
 RUN echo '351338cfccc9326764abf58a1dd8915d  vcf.tar.bz2'|md5sum -c
 RUN tar xvfj vcf.tar.bz2

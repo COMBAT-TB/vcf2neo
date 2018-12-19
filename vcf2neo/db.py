@@ -7,9 +7,8 @@ import sys
 import time
 
 from py2neo import Graph, watch
-
-from combat_tb_model.model.core import Gene
-from combat_tb_model.model.vcfmodel import VariantSet, CallSet, Variant
+from vcf2neo.combat_tb_model.model.core import Gene
+from vcf2neo.combat_tb_model.model.vcfmodel import VariantSet, CallSet, Variant
 
 
 class GraphDb(object):
@@ -52,8 +51,8 @@ class GraphDb(object):
         self.bolt_port = bolt_port
         self.http_port = http_port
         sys.stdout.write(
-            "connecting to http port: {} bolt_port: {} host: {} bolt: {}\n".
-                format(http_port, bolt_port, host, use_bolt))
+            "connecting to http port: {} bolt_port: {} host: {} bolt: {}\n".format(
+                http_port, bolt_port, host, use_bolt))
         time.sleep(5)
 
         graph = Graph('http://{}:{}/db/data/'.format(host, self.http_port),
@@ -125,4 +124,3 @@ class GraphDb(object):
         c_set.has_calls_in.add(v_set)
         self.graph.create(c_set)
         return c_set
-

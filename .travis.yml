@@ -13,10 +13,11 @@ python:
   - "3.6"
 
 services:
-  - neo4j
+  - docker
 
 before_script:
-  - sleep 30
+  - docker-compose up --build -d
+  - sleep 10
 
 # command to install dependencies
 install:

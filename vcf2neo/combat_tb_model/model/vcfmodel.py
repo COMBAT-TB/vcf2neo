@@ -1,7 +1,7 @@
 # from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 import uuid
 
-from core import *
+from vcf2neo.combat_tb_model.model.core import *
 
 # class Phenotype(GraphObject):
 #     __primarykey__ = 'type'

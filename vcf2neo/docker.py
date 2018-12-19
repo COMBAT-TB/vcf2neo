@@ -118,7 +118,7 @@ class Docker(object):
             print("Neo4j running!")
         except (OSError, ValueError) as e:
             sys.stderr.write("Error running {}:\n{}".format(self.name, e))
-            print("Error running {}:\n{}".format(self.name), e)
+            print("Error running {}:\n{}".format(self.name, e))
         self.find_docker_portmapping()
         return True
 
