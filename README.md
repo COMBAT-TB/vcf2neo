@@ -1,5 +1,6 @@
 # **vcf2neo**
 [![Build Status](https://travis-ci.org/COMBAT-TB/vcf2neo.svg?branch=master)](https://travis-ci.org/COMBAT-TB/vcf2neo)
+[![Coverage Status](https://coveralls.io/repos/github/COMBAT-TB/vcf2neo/badge.svg?branch=master)](https://coveralls.io/github/COMBAT-TB/vcf2neo?branch=master)
 
 A tool to import **SnpEff annotated** vcf files to a Neo4j Graph database.
 
