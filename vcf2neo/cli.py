@@ -35,7 +35,7 @@ except NameError:
 @click.argument('history_id', type=u_str, required=False)
 @click.argument('output_dir', type=click.Path(exists=True, dir_okay=True),
                 required=False)
-@click.option('-d/-D', default=True, help='Run Neo4j docker container.')
+@click.option('-d/-D', default=False, help='Run Neo4j docker container.')
 def load_vcf(vcf_dir, owner, history_id, d, output_dir=None):
     """
     Copy reference database and load VCF to Neo4j Graph database.

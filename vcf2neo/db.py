@@ -7,6 +7,7 @@ import sys
 import time
 
 from py2neo import Graph, watch
+
 from vcf2neo.combat_tb_model.model.core import Gene
 from vcf2neo.combat_tb_model.model.vcfmodel import VariantSet, CallSet, Variant
 
@@ -105,7 +106,7 @@ class GraphDb(object):
             v_site.belongs_to_cset.add(c_set)
             c_set.has_variant.add(v_site)
             known_sites[pos] = v_site
-        gene = Gene.select(self.graph, "gene:" + str(v_site.gene)).first()
+        gene = Gene.select(self.graph, str(v_site.gene)).first()
         if gene:
             v_site.occurs_in.add(gene)
             self.graph.push(v_site)
