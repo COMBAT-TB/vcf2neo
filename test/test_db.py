@@ -27,10 +27,8 @@ def test_db_nodes():
      type(None)),
     ("MATCH (g:Gene) OPTIONAL MATCH ((g)-[:ENCODES]->(p)) RETURN p.parent",
      type(None)),
-    (
-    "MATCH (g:Gene)<-[:OCCURS_IN]-(v:Variant) where tolower(g.name)='rv0897c' "
-    "RETURN v.gene",
-    type(None)),
+    ("MATCH (g:Gene)<-[:OCCURS_IN]-(v:Variant) where tolower("
+     "g.name)='rv0897c' RETURN v.gene", type(None)),
 ])
 def test_db_data(test_input, expected):
     assert isinstance(type(db.evaluate(test_input)), expected) is False
