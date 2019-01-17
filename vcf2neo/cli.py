@@ -30,8 +30,7 @@ except NameError:
 @cli.command()
 @click.argument('vcf_dir', type=click.Path(exists=True, dir_okay=True),
                 required=True)
-@click.argument('owner', type=u_str,
-                required=False)
+@click.argument('owner', type=u_str, required=False)
 @click.argument('history_id', type=u_str, required=False)
 @click.argument('output_dir', type=click.Path(exists=True, dir_okay=True),
                 required=False)
@@ -58,8 +57,8 @@ def load_vcf(vcf_dir, owner, history_id, d, output_dir=None):
     else:
         http_port = 7474
         bolt_port = 7687
-    db = GraphDb(host=os.environ.get('DB', 'localhost'), password='', use_bolt=False,
-                 bolt_port=bolt_port, http_port=http_port)
+    db = GraphDb(host=os.environ.get('DATABASE_URL', 'localhost'), password='',
+                 use_bolt=False, bolt_port=bolt_port, http_port=http_port)
     vcf = Vcf(db, vcf_dir=vcf_dir, owner=owner, history_id=history_id)
     sys.stdout.write('Database IP: {}\n'.format(os.environ.get('DB',
                                                                'default')))

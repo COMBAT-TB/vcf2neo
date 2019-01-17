@@ -5,8 +5,8 @@ from __future__ import print_function
 
 import getpass
 import glob
-import time
 import sys
+import time
 
 import vcf
 
@@ -15,14 +15,9 @@ class Vcf(object):
     """
     Handling VCF processing.
     """
-    try:
-        OWNER = getpass.getuser()
-    except KeyError:
-        OWNER = 'nobody'
-
-    def __init__(self, db, vcf_dir=None, owner=OWNER, history_id=None):
+    def __init__(self, db, vcf_dir=None, owner=None, history_id=None):
         self.vcf_dir = vcf_dir
-        self.owner = owner
+        self.owner = owner if owner else getpass.getuser()
         self.history_id = history_id
         self.db = db
 
