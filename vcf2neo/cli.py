@@ -8,7 +8,7 @@ import click
 
 from vcf2neo.db import GraphDb
 from vcf2neo.docker import Docker
-from vcf2neo.vcfproc import Vcf
+from vcf2neo.vcfproc import process_vcf_files
 
 
 @click.group()
@@ -57,19 +57,17 @@ def load_vcf(vcf_dir, owner, history_id, d, output_dir=None):
     else:
         http_port = 7474
         bolt_port = 7687
-    db = GraphDb(host=os.environ.get('DATABASE_URL', 'localhost'), password='',
+
+    db = GraphDb(host=os.environ.get("DATABASE_URL", "localhost"), password="",
                  use_bolt=False, bolt_port=bolt_port, http_port=http_port)
-    vcf = Vcf(db, vcf_dir=vcf_dir, owner=owner, history_id=history_id)
-    sys.stdout.write('Database IP: {}\n'.format(os.environ.get('DB',
-                                                               'default')))
-    sys.stdout.write("About to process vcf files...\n")
+    sys.stdout.write("Database IP: {}\n".format(db.graph.address.host))
+
     start = time.time()
-    vcf.process()
+    process_vcf_files(db, vcf_dir=vcf_dir, owner=owner, history_id=history_id)
     if d:
         docker.stop()
     end = time.time()
-    sys.stdout.write("Done loading VCF files to Graph database!\n" +
-                     "It took me {} ms.\n".format(end - start))
+    sys.stdout.write("\nDone in {} ms.\n".format(end - start))
 
 
 if __name__ == '__main__':

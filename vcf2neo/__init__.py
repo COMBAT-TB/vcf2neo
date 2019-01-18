@@ -1,3 +1,1 @@
-import time
-
-time.sleep(15)
+name = "vcf2neo"

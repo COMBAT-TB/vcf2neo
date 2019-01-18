@@ -5,9 +5,10 @@ import logging
 import socket
 import time
 
+from py2neo import Graph, watch
+
 from combattbmodel.core import Gene
 from combattbmodel.vcfmodel import CallSet, Variant, VariantSet
-from py2neo import Graph, watch
 
 
 class GraphDb(object):
