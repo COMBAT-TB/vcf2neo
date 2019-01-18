@@ -5,6 +5,7 @@ import os
 
 import pytest
 from click.testing import CliRunner
+
 from vcf2neo.cli import load_vcf
 
 CURR_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -19,5 +20,5 @@ def cli_runner():
 
 
 def test_load_vcf(cli_runner):
-    result = cli_runner.invoke(load_vcf, ['-D', TEST_DATA_DIR])
+    result = cli_runner.invoke(load_vcf, [TEST_DATA_DIR])
     assert result.exit_code == 0

@@ -3,13 +3,12 @@ Interface to the Neo4j Database
 """
 import logging
 import socket
-import sys
 import time
 
 from py2neo import Graph, watch
 
-from vcf2neo.combat_tb_model.model.core import Gene
-from vcf2neo.combat_tb_model.model.vcfmodel import VariantSet, CallSet, Variant
+from combattbmodel.core import Gene
+from combattbmodel.vcfmodel import CallSet, Variant, VariantSet
 
 
 class GraphDb(object):
@@ -51,9 +50,6 @@ class GraphDb(object):
                 http_port, bolt_port, host))
         self.bolt_port = bolt_port
         self.http_port = http_port
-        sys.stdout.write(
-            "connecting to http port: {} bolt_port: {} host: {} bolt: {}\n".format(
-                http_port, bolt_port, host, use_bolt))
         time.sleep(5)
 
         graph = Graph('http://{}:{}/db/data/'.format(host, self.http_port),
@@ -104,7 +100,7 @@ class GraphDb(object):
                              impact=annotation[2])
             self.graph.create(v_site)
             v_site.belongs_to_cset.add(c_set)
-            c_set.has_variant.add(v_site)
+            c_set.has_variants.add(v_site)
             known_sites[pos] = v_site
         gene = Gene.select(self.graph, str(v_site.gene)).first()
         if gene:
@@ -112,8 +108,8 @@ class GraphDb(object):
             self.graph.push(v_site)
 
         if v_set:
-            v_site.belongs_to_vset.add(v_set)
-            self.graph.push(v_site)
+            v_set.has_variant.add(v_site)
+            self.graph.push(v_set)
         return known_sites
 
     def create_call_set_nodes(self, set_name, v_set):
@@ -122,6 +118,6 @@ class GraphDb(object):
         :return:
         """
         c_set = CallSet(name=set_name)
-        c_set.has_calls_in.add(v_set)
+        c_set.belongs_to_vset.add(v_set)
         self.graph.create(c_set)
         return c_set
