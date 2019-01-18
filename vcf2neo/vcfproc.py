@@ -15,7 +15,9 @@ def process_vcf_files(db, vcf_dir, owner=None, history_id=None):
     known_sites = dict()
     if os.path.isdir(vcf_dir):
         for root, dirs, files in os.walk(vcf_dir):
-            v_set_name = str(vcf_dir).split('/')[-1]
+            v_set_name = os.path.basename(os.path.abspath(root))
+            sys.stdout.write(
+                "Processing file in: {}\n".format(os.path.abspath(root)))
             v_set = db.create_variant_set_nodes(
                 set_name=v_set_name, owner=str(owner), history_id=history_id)
             for _file in files:
@@ -26,7 +28,8 @@ def process_vcf_files(db, vcf_dir, owner=None, history_id=None):
                         sys.stdout.write("Processing: {}!\n".format(_file))
                         with open(_file, 'r') as vcf_input:
                             vcf_reader = vcf.Reader(vcf_input)
-                            c_set_name = str(vcf_input.name).split('/')[-1]
+                            c_set_name = os.path.basename(
+                                os.path.abspath(_file))
                             c_set = db.create_call_set_nodes(
                                 set_name=c_set_name, v_set=v_set
                             )
