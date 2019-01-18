@@ -4,75 +4,55 @@ Interface to handle VCF files
 from __future__ import print_function
 
 import getpass
-import glob
-import time
+import os
 import sys
 
 import vcf
 
 
-class Vcf(object):
-    """
-    Handling VCF processing.
-    """
-    try:
-        OWNER = getpass.getuser()
-    except KeyError:
-        OWNER = 'nobody'
+def process_vcf_files(db, vcf_dir, owner=None, history_id=None):
+    owner = owner if owner else getpass.getuser()
+    known_sites = dict()
+    if os.path.isdir(vcf_dir):
+        for root, dirs, files in os.walk(vcf_dir):
+            v_set_name = str(vcf_dir).split('/')[-1]
+            v_set = db.create_variant_set_nodes(
+                set_name=v_set_name, owner=str(owner), history_id=history_id)
+            for _file in files:
+                _file = '/'.join([os.path.abspath(vcf_dir), _file])
+                if check_file(_file) and _file.endswith(".vcf"):
+                    # TODO: Remove the two files from data
+                    if 'Drug' not in str(_file):
+                        sys.stdout.write("Processing: {}!\n".format(_file))
+                        with open(_file, 'r') as vcf_input:
+                            vcf_reader = vcf.Reader(vcf_input)
+                            c_set_name = str(vcf_input.name).split('/')[-1]
+                            c_set = db.create_call_set_nodes(
+                                set_name=c_set_name, v_set=v_set
+                            )
+                            known_sites = get_variant_sites(
+                                db, known_sites, vcf_reader, v_set=v_set,
+                                c_set=c_set)
 
-    def __init__(self, db, vcf_dir=None, owner=OWNER, history_id=None):
-        self.vcf_dir = vcf_dir
-        self.owner = owner
-        self.history_id = history_id
-        self.db = db
 
-    def process(self):
-        sys.stdout.write(
-            "We have the following VCF files in directory ({}):\n".format(
-                self.vcf_dir))
-        known_sites = dict()
-        vset_name = str(self.vcf_dir).split('/')[-1]
+def get_variant_sites(db, known_sites, vcf_reader, v_set=None,
+                      c_set=None):
+    # sites = []
+    for record in vcf_reader:
+        print(".", end='')
+        annotation = get_variant_ann(record=record)
+        known_sites = db.create_variant_site_nodes(
+            record, known_sites, annotation, v_set, c_set)
+    return known_sites
 
-        v_set = self.db.create_variant_set_nodes(set_name=vset_name, owner=str(
-            self.owner), history_id=str(self.history_id))
 
-        for vcf_file in glob.glob(self.vcf_dir + "/*.vcf"):
-            # TODO: Remove the two files from data
-            if 'Drug' not in str(vcf_file):
-                sys.stderr.write("Processing: {}!\n".format(vcf_file))
-                print("Processing: {}!\n".format(vcf_file))
-                start = time.time()
-                vcf_input = open(vcf_file, 'r')
-                vcf_reader = vcf.Reader(vcf_input)
-                # TODO: Have a standard way of identifying variant_set_names
-                vcf_file_name = str(vcf_file).replace(
-                    str(self.vcf_dir) + "/", "")
+def get_variant_ann(record):
+    ann = record.INFO['ANN'][0].split('|')
+    return ann
 
-                c_set = self.db.create_call_set_nodes(
-                    set_name=vcf_file_name, v_set=v_set)
 
-                known_sites = self.get_variant_sites(
-                    known_sites, vcf_reader, v_set=v_set, c_set=c_set)
-                end = time.time()
-                sys.stdout.write("Processed {} in {}!\n".format(
-                    vcf_file_name.upper(), end - start))
-
-                time.sleep(2)
-
-    def get_variant_sites(self, known_sites, vcf_reader=None,
-                          v_set=None, c_set=None):
-        # sites = []
-        for record in vcf_reader:
-            print(".", end='')
-            # print("\n")
-            # print(record)
-            annotation = self.get_variant_ann(record=record)
-            known_sites = self.db.create_variant_site_nodes(
-                record, known_sites, annotation, v_set, c_set)
-        return known_sites
-
-    @staticmethod
-    def get_variant_ann(record=None):
-        ann = record.INFO['ANN'][0].split('|')
-        # print(ann)
-        return ann
+def check_file(vcf_file):
+    _file = False
+    if os.path.exists(vcf_file) and os.stat(vcf_file).st_size > 0:
+        _file = True
+    return _file
