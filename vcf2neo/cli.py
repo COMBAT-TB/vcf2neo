@@ -6,9 +6,9 @@ import time
 
 import click
 
-from db import GraphDb
-from docker import Docker
-from vcfproc import process_vcf_files
+from vcf2neo.db import GraphDb
+from vcf2neo.docker import Docker
+from vcf2neo.vcfproc import process_vcf_files
 
 
 @click.group()
