@@ -5,8 +5,8 @@ sudo: required
 
 language: python
 cache:
-   directories:
-     - $HOME/.cache/pip
+  directories:
+    - $HOME/.cache/pip
 python:
   - "2.7"
   - "3.5"
@@ -23,9 +23,10 @@ before_script:
 install:
   - pip install -r requirements.txt
   - python setup.py install
+  # - pip install -e .
 
 script:
   - travis_wait 30 pytest -v test/ --cov=vcf2neo --cov-report term
 
 after_success:
-  coveralls
+  - coveralls

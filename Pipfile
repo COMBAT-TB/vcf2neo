@@ -1,0 +1,43 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[[source]]
+name = "testpypi"
+url = "https://test.pypi.org/simple/"
+verify_ssl = true
+
+[dev-packages]
+vcf2neo = {editable = true,path = "."}
+autopep8 = "*"
+
+[packages]
+combattbmodel = {editable = true,git = "https://github.com/COMBAT-TB/combattbmodel.git",ref = "0.0.6"}
+beautifulsoup4 = "==4.5.3"
+bioservices = "==1.4.14"
+click = "==6.7"
+colorama = "==0.3.7"
+coveralls = "*"
+easydev = "==0.9.30"
+gevent = "*"
+greenlet = "==0.4.15"
+grequests = "==0.3.0"
+pexpect = "==4.2.1"
+ptyprocess = "==0.5.1"
+py2neo = "==3.1.2"
+pyparsing = "==2.2.0"
+pytest = ">=3.6"
+pytest-cov = "*"
+pyvcf = "==0.6.8"
+requests = ">=2.20.0"
+requests-cache = "==0.4.13"
+six = "==1.10.0"
+suds-jurko = "==0.6"
+tqdm = "==4.10.0"
+wrapt = "==1.10.8"
+xmltodict = "==0.10.2"
+coverage = "*"
+
+[requires]
+python_version = "3.7"

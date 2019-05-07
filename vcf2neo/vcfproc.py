@@ -43,15 +43,18 @@ def get_variant_sites(db, known_sites, vcf_reader, v_set=None,
     # sites = []
     for record in vcf_reader:
         print(".", end='')
-        annotation = get_variant_ann(record=record)
-        known_sites = db.create_variant_site_nodes(
-            record, known_sites, annotation, v_set, c_set)
+        annotations = get_variant_ann(record=record)
+        for annotation in annotations:
+            known_sites = db.create_variant_site_nodes(
+                record, known_sites, annotation, v_set, c_set)
     return known_sites
 
 
 def get_variant_ann(record):
-    ann = record.INFO['ANN'][0].split('|')
-    return ann
+    annotations = []
+    if record.INFO.get('ANN'):
+        annotations = [ann.split("|") for ann in record.INFO['ANN']]
+    return annotations
 
 
 def check_file(vcf_file):
