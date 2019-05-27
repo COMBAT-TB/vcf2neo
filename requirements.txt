@@ -1,24 +1,39 @@
+-i https://pypi.org/simple
+--extra-index-url https://test.pypi.org/simple/
+-e git+https://github.com/COMBAT-TB/combattbmodel.git@be8cf1068a6caa13e913da4c70c762af55afde2e#egg=combattbmodel
+appdirs==1.4.3
+atomicwrites==1.3.0
+attrs==19.1.0
 beautifulsoup4==4.5.3
 bioservices==1.4.14
+certifi==2019.3.9
+chardet==3.0.4
 click==6.7
 colorama==0.3.7
-coveralls==1.2.0
+coverage==4.5.3
+coveralls==1.7.0
+docopt==0.6.2
 easydev==0.9.30
-gevent==1.2.0
-greenlet==0.4.11
+gevent==1.4.0
+greenlet==0.4.15
 grequests==0.3.0
-packaging==16.8
+idna==2.8
+more-itertools==7.0.0 ; python_version > '2.7'
 pexpect==4.2.1
+pluggy==0.11.0
 ptyprocess==0.5.1
 py2neo==3.1.2
+py==1.8.0
 pyparsing==2.2.0
-pytest==3.3.2
-pytest-cov==2.5.1
-PyVCF==0.6.8
-requests>=2.20.0
+pytest-cov==2.7.1
+pytest==4.5.0
+pyvcf==0.6.8
 requests-cache==0.4.13
+requests==2.22.0
 six==1.10.0
 suds-jurko==0.6
 tqdm==4.10.0
+urllib3==1.25.3
+wcwidth==0.1.7
 wrapt==1.10.8
 xmltodict==0.10.2

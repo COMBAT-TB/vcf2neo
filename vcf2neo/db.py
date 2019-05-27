@@ -96,12 +96,14 @@ class GraphDb(object):
                              ref_allele=str(ref_allele),
                              alt_allele=str(alt_allele),
                              gene=annotation[4],
+                             consequence=annotation[10],
                              pk=str(v_set.name) + str(pos),
                              impact=annotation[2])
             self.graph.create(v_site)
             v_site.belongs_to_cset.add(c_set)
             c_set.has_variants.add(v_site)
             known_sites[pos] = v_site
+
         gene = Gene.select(self.graph, str(v_site.gene)).first()
         if gene:
             v_site.occurs_in.add(gene)

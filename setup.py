@@ -9,8 +9,6 @@ setup(
     py_modules=['vcf2neo'],
     packages=find_packages(),
     include_package_data=True,
-    dependency_links=[
-        'git+https://github.com/COMBAT-TB/combattbmodel.git#egg=combattbmodel-0.0.6'],
     install_requires=[
         'click',
         'bioservices',
@@ -18,6 +16,9 @@ setup(
         'tqdm',
         'PyVCF',
         'combattbmodel'
+    ],
+    dependency_links=[
+        'git+https://github.com/COMBAT-TB/combattbmodel.git@0.0.6#egg=combattbmodel',
     ],
     entry_points={
         'console_scripts': ['vcf2neo=vcf2neo.cli:cli']

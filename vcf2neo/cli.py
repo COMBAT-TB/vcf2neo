@@ -59,7 +59,7 @@ def load_vcf(vcf_dir, owner, history_id, d, output_dir=None):
         bolt_port = 7687
 
     db = GraphDb(host=os.environ.get("DATABASE_URL", "localhost"), password="",
-                 use_bolt=False, bolt_port=bolt_port, http_port=http_port)
+                 use_bolt=True, bolt_port=bolt_port, http_port=http_port)
     sys.stdout.write("Database IP: {}\n".format(db.graph.address.host))
 
     start = time.time()
