@@ -8,22 +8,22 @@ cache:
   directories:
     - $HOME/.cache/pip
 python:
-  - "2.7"
-  - "3.5"
   - "3.6"
 
 services:
   - docker
 
-before_script:
+before_install:
   - docker-compose up --build -d
   - sleep 10
 
 # command to install dependencies
 install:
   - pip install -r requirements.txt
-  - python setup.py install
-  # - pip install -e .
+  # - python setup.py install
+  - pip install pipenv
+  - pipenv install
+  - pipenv install -e .
 
 script:
   - travis_wait 30 pytest -v test/ --cov=vcf2neo --cov-report term
