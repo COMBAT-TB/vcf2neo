@@ -9,7 +9,7 @@ This tool does the following:
 
 - Starts up a Neo4j docker container (if used with `-d`)
 - Downloads the [COMBAT-TB](https://combattb.org/) reference database in the `/data` directory of the container
-- Import and map SnpEff annotated VCF files to genes in the database
+- Import and map **SnpEff annotated** VCF files to genes and drugs in the database
 
 ## Usage
 
@@ -21,15 +21,14 @@ This tool does the following:
   $ cd vcf2neo
   ```
 
-- **Install [`docker`](https://docs.docker.com/v17.12/install/) and [`docker-compose`](https://docs.docker.com/compose/install/) and run :whale::**
+- :whale: **Install [`docker`](https://docs.docker.com/v17.12/install/) and [`docker-compose`](https://docs.docker.com/compose/install/) and run:**
 
   ```sh
   $ docker-compose up --build -d
   ...
   ```
 
-  The above command will download and spin up the COMBAT-TB Neo4j reference
-  database found in the DOI below:
+  The above command will download and spin up [COMBAT-TB NeoDB](https://github.com/COMBAT-TB/combat-tb-db) found in the DOI below:
 
   [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219127.svg)
   ](https://doi.org/10.5281/zenodo.1219127)
