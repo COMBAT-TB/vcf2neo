@@ -11,6 +11,7 @@ verify_ssl = true
 [dev-packages]
 vcf2neo = {editable = true,path = "."}
 autopep8 = "*"
+pylint = "*"
 
 [packages]
 combattbmodel = {editable = true,git = "https://github.com/COMBAT-TB/combattbmodel.git",ref = "0.0.6"}

@@ -43,23 +43,19 @@ class GraphDb(object):
                 connected = True
                 break
         if not connected:
-            raise socket.timeout('timed out trying to connect to {}'.format(
+            raise socket.timeout('timed out trying to connect to {}{}'.format(
                 host, http_port))
         logging.debug(
-            "connecting graph to http port: {} bolt_port: {} host: {}".format(
-                http_port, bolt_port, host))
+            f"connecting graph to http port: {http_port} bolt_port: {bolt_port} host: {host}")
         self.bolt_port = bolt_port
         self.http_port = http_port
         time.sleep(5)
 
-        graph = Graph('http://{}:{}/db/data/'.format(host, self.http_port),
-                      'bolt://{}:{}/'.format(host, self.bolt_port),
-                      bolt=use_bolt, password=password,
-                      bolt_port=bolt_port,
-                      http_port=http_port)
+        graph = Graph(host=host, bolt=use_bolt, password=password,
+                      bolt_port=bolt_port, http_port=http_port)
         if self.debug:
             watch("neo4j.bolt")
-        logging.debug("connected", graph)
+        logging.debug("connected {}".format(graph))
         return graph
 
     def create_variant_set_nodes(self, set_name, owner, history_id):

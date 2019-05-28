@@ -60,14 +60,12 @@ def load_vcf(vcf_dir, owner, history_id, d, output_dir=None):
 
     db = GraphDb(host=os.environ.get("DATABASE_URL", "localhost"), password="",
                  use_bolt=True, bolt_port=bolt_port, http_port=http_port)
-    sys.stdout.write("Database IP: {}\n".format(db.graph.address.host))
-
     start = time.time()
     process_vcf_files(db, vcf_dir=vcf_dir, owner=owner, history_id=history_id)
     if d:
         docker.stop()
     end = time.time()
-    sys.stdout.write("\nDone in {} ms.\n".format(end - start))
+    sys.stdout.write(f"\nDone in {end - start} ms.\n")
 
 
 if __name__ == '__main__':
