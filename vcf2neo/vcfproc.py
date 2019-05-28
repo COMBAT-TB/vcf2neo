@@ -58,7 +58,16 @@ def get_variant_ann(record):
 
 
 def check_file(vcf_file):
-    _file = False
-    if os.path.exists(vcf_file) and os.stat(vcf_file).st_size > 0:
+    """
+    Check if vcf_file exists.
+    :param vcf_file:
+    :return:
+    """
+    try:
+        _vcf_file = open(vcf_file, 'r')
+    except OSError:
+        _file = False
+    else:
+        _vcf_file.close()
         _file = True
     return _file
