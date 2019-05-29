@@ -1,5 +1,11 @@
 version: '2'
 services:
+  cli:
+    build: .
+    environment:
+      DATABASE_URL: db
+    depends_on:
+      - db
   db:
     image: neo4j:3.5-enterprise
     volumes_from:
