@@ -11,7 +11,7 @@ from combattbmodel.core import Gene
 from combattbmodel.vcfmodel import CallSet, Variant, VariantSet
 
 
-class GraphDb(object):
+class NeoDb(object):
     def __init__(self, host, password=None, bolt_port=7687, http_port=7474,
                  use_bolt=False, debug=False):
         if password is None:
@@ -77,26 +77,34 @@ class GraphDb(object):
         pos = record.POS
         chrom = record.CHROM
         ref_allele = record.REF
-        alt_allele = record.ALT
+        alt_allele = annotation[0]
+        gene = annotation[4]
+        consequence = annotation[10] if annotation[10] != '' else annotation[9]
+        # A variant can affect multiple genes.
+        # E.g a variant can be DOWNSTREAM from one gene and
+        # UPSTREAM from another gene.
+        gene_pos = str(pos)+gene
 
         if pos in known_sites:
             # we have already seen this variant site in another VCF file
             # data structure known_sites:
-            # key: pos (genomic position)
+            # key: pos (genomic position) and gene
             # value: VariantSite
-            v_site = known_sites[pos]
+            v_site = known_sites[gene_pos]
             # known_sites[pos][1].append(call)
         else:
             # we don't know about this variant site yet
             v_site = Variant(chrom=str(chrom), pos=pos,
                              ref_allele=str(ref_allele),
                              alt_allele=str(alt_allele),
-                             gene=annotation[4],
-                             consequence=annotation[10],
-                             pk=str(v_set.name) + str(pos),
+                             gene=gene,
+                             consequence=consequence,
+                             pk=v_set.name + gene_pos,
                              impact=annotation[2])
+            v_site.biotype = annotation[7]
+            v_site.effect = annotation[1]
             self.graph.create(v_site)
-            known_sites[pos] = v_site
+            known_sites[gene_pos] = v_site
 
         if c_set:
             v_site.belongs_to_cset.add(c_set)

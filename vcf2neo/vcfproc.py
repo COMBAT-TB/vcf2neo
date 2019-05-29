@@ -17,7 +17,7 @@ def process_vcf_files(db, vcf_dir, owner=None, history_id=None):
         for root, _, files in os.walk(vcf_dir):
             v_set_name = os.path.basename(os.path.abspath(root))
             sys.stdout.write(
-                f"Processing file in: {os.path.abspath(root)}\n")
+                f"Processing file(s) in: {os.path.abspath(root)}\n")
             v_set = db.create_variant_set_nodes(
                 set_name=v_set_name, owner=str(owner), history_id=history_id)
             for _file in files:
@@ -38,9 +38,7 @@ def process_vcf_files(db, vcf_dir, owner=None, history_id=None):
                                 c_set=c_set)
 
 
-def get_variant_sites(db, known_sites, vcf_reader, v_set=None,
-                      c_set=None):
-    # sites = []
+def get_variant_sites(db, known_sites, vcf_reader, v_set=None, c_set=None):
     for record in vcf_reader:
         print(".", end='')
         annotations = get_variant_ann(record=record)
@@ -51,6 +49,11 @@ def get_variant_sites(db, known_sites, vcf_reader, v_set=None,
 
 
 def get_variant_ann(record):
+    """
+    Get Annotation from ANN
+    :param record:
+    :return:
+    """
     annotations = []
     if record.INFO.get('ANN'):
         annotations = [ann.split("|") for ann in record.INFO['ANN']]

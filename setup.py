@@ -10,7 +10,7 @@ setup(
     description='Parses SnpEff annotated VCF files and builds a graph '
                 'database.',
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type='text/markdown',
     keywords='neo4j,and vcf',
     license="GPLv3",
     py_modules=['vcf2neo'],
@@ -26,7 +26,7 @@ setup(
         'combattbmodel'
     ],
     dependency_links=[
-        'git+https://github.com/COMBAT-TB/combattbmodel.git@0.0.6#egg=combattbmodel',
+        'https://test.pypi.org/simple/',
     ],
     entry_points={
         'console_scripts': ['vcf2neo=vcf2neo.cli:cli']

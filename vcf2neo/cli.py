@@ -6,7 +6,7 @@ import time
 
 import click
 
-from vcf2neo.db import GraphDb
+from vcf2neo.db import NeoDb
 from vcf2neo.docker import Docker
 from vcf2neo.vcfproc import process_vcf_files
 
@@ -37,7 +37,7 @@ except NameError:
 @click.option('-d/-D', default=False, help='Run Neo4j docker container.')
 def load_vcf(vcf_dir, owner, history_id, d, output_dir=None):
     """
-    Load SnpEff annotated VCF files to genes and drugs in NeoDB.
+    Load SnpEff annotated VCF files to genes and drugs in NeoDb.
     """
     docker = None
     if d:
@@ -51,10 +51,11 @@ def load_vcf(vcf_dir, owner, history_id, d, output_dir=None):
         http_port = 7474
         bolt_port = 7687
 
-    db = GraphDb(host=os.environ.get("DATABASE_URL", "localhost"), password="",
-                 use_bolt=True, bolt_port=bolt_port, http_port=http_port)
+    neo_db = NeoDb(host=os.environ.get("DATABASE_URL", "localhost"), password="",
+                   use_bolt=True, bolt_port=bolt_port, http_port=http_port)
     start = time.time()
-    process_vcf_files(db, vcf_dir=vcf_dir, owner=owner, history_id=history_id)
+    process_vcf_files(neo_db, vcf_dir=vcf_dir,
+                      owner=owner, history_id=history_id)
     if d:
         docker.stop()
     end = time.time()
