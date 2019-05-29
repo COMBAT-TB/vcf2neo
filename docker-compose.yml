@@ -2,7 +2,6 @@ version: '2'
 services:
   db:
     image: neo4j:3.5-enterprise
-    container_name: vcf2neo-db
     volumes_from:
       - dc:rw
     environment:
@@ -17,4 +16,3 @@ services:
       - dc
   dc:
     build: dc/
-    container_name: vcf2neo-dc
