@@ -14,7 +14,6 @@ autopep8 = "*"
 pylint = "*"
 
 [packages]
-combattbmodel = {editable = true,git = "https://github.com/COMBAT-TB/combattbmodel.git",ref = "0.0.6"}
 beautifulsoup4 = "==4.5.3"
 bioservices = "==1.4.14"
 click = "==6.7"
@@ -39,6 +38,7 @@ tqdm = "==4.10.0"
 wrapt = "==1.10.8"
 xmltodict = "==0.10.2"
 coverage = "*"
+combattbmodel = "*"
 
 [requires]
 python_version = "3.7"

@@ -1,6 +1,5 @@
 -i https://pypi.org/simple
 --extra-index-url https://test.pypi.org/simple/
--e git+https://github.com/COMBAT-TB/combattbmodel.git@be8cf1068a6caa13e913da4c70c762af55afde2e#egg=combattbmodel
 appdirs==1.4.3
 atomicwrites==1.3.0
 attrs==19.1.0
@@ -10,6 +9,7 @@ certifi==2019.3.9
 chardet==3.0.4
 click==6.7
 colorama==0.3.7
+combattbmodel==0.0.7
 coverage==4.5.3
 coveralls==1.7.0
 docopt==0.6.2
@@ -18,9 +18,10 @@ gevent==1.4.0
 greenlet==0.4.15
 grequests==0.3.0
 idna==2.8
+importlib-metadata==0.15
 more-itertools==7.0.0 ; python_version > '2.7'
 pexpect==4.2.1
-pluggy==0.11.0
+pluggy==0.12.0
 ptyprocess==0.5.1
 py2neo==3.1.2
 py==1.8.0
@@ -37,3 +38,4 @@ urllib3==1.25.3
 wcwidth==0.1.7
 wrapt==1.10.8
 xmltodict==0.10.2
+zipp==0.5.1
