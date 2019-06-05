@@ -4,7 +4,7 @@ LABEL MAINTAINER="thoba@sanbi.ac.za"
 RUN apk update \
     && apk upgrade \
     && mkdir /code \
-    && apk add --no-cache py-pip git build-base
+    && apk add --no-cache py-pip git build-base libxml2-dev libxslt-dev
 
 COPY requirements.txt /code
 

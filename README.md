@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/COMBAT-TB/vcf2neo/badge.svg?branch=master)](https://coveralls.io/github/COMBAT-TB/vcf2neo?branch=master)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219127.svg)](https://doi.org/10.5281/zenodo.1219127)
 
-A tool to import and map **[SnpEff annotated](http://snpeff.sourceforge.net/SnpEff.html)** vcf files to [COMBAT-TB NeoDB](https://github.com/COMBAT-TB/combat-tb-db) Graph database.
+A tool to import and map **[SnpEff annotated](http://snpeff.sourceforge.net/SnpEff.html)** VCF files to [COMBAT-TB NeoDB](https://github.com/COMBAT-TB/combat-tb-db) Graph database.
 
 **Prerequisites**:
 
