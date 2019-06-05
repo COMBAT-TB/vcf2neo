@@ -15,7 +15,6 @@ services:
 
 before_install:
   - docker-compose up --build -d
-  - sleep 10
 
 # command to install dependencies
 install:
@@ -25,8 +24,24 @@ install:
   - pipenv install
   - pipenv install -e .
 
+before_script:
+  - sudo apt-get update
+  - wget https://repo.continuum.io/miniconda/Miniconda3-4.3.31-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda config --get channels
+  - conda config --add channels conda-forge
+  - conda config --add channels bioconda
+  - conda config --add channels https://conda.anaconda.org/thoba
+  - conda info -a
+  - conda install conda-build anaconda-client
+
 script:
   - travis_wait 30 pytest -v test/ --cov=vcf2neo --cov-report term
 
 after_success:
   - coveralls
+  - test $TRAVIS_BRANCH = "master" && bash conda/conda_upload.sh

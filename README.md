@@ -4,7 +4,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/COMBAT-TB/vcf2neo/badge.svg?branch=master)](https://coveralls.io/github/COMBAT-TB/vcf2neo?branch=master)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219127.svg)](https://doi.org/10.5281/zenodo.1219127)
 
-A tool to import and map **[SnpEff annotated](http://snpeff.sourceforge.net/SnpEff.html)** vcf files to [COMBAT-TB NeoDB](https://github.com/COMBAT-TB/combat-tb-db) Graph database.
+A tool to import and map **[SnpEff annotated](http://snpeff.sourceforge.net/SnpEff.html)** VCF files to [COMBAT-TB NeoDB](https://github.com/COMBAT-TB/combat-tb-neodb) Graph database.
+
 
 **Prerequisites**:
 
@@ -20,7 +21,8 @@ $ git clone https://github.com/SANBI-SA/vcf2neo.git
 $ cd vcf2neo
 ```
 
-**Build [COMBAT-TB NeoDB](https://github.com/COMBAT-TB/combat-tb-db)**:
+**Build [COMBAT-TB NeoDB](https://github.com/COMBAT-TB/combat-tb-neodb)**:
+
 
 ```sh
 $ docker-compose up --build -d
@@ -50,12 +52,14 @@ Point your browser to [localhost:7474](http://0.0.0.0:7474) to access the Neo4j 
 
 To view the schema, run:
 
-```java
+```cql
 call db.schema.visualization
 ```
 
 Sample [Cypher](https://neo4j.com/developer/cypher-query-language/) query:
 
-```java
-MATCH(g:Gene)<-[r:OCCURS_IN]-(v:Variant) RETURN g.name as gene, v.consequence as variant LIMIT 25
+```cql
+MATCH(g:Gene)<-[r:OCCURS_IN]-(v:Variant)--(cs:CallSet)
+RETURN g.name as gene, v.consequence as variant, cs.name as file
+LIMIT 25
 ```
