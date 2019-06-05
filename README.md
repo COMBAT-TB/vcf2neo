@@ -6,6 +6,7 @@
 
 A tool to import and map **[SnpEff annotated](http://snpeff.sourceforge.net/SnpEff.html)** VCF files to [COMBAT-TB NeoDB](https://github.com/COMBAT-TB/combat-tb-neodb) Graph database.
 
+
 **Prerequisites**:
 
 - [`docker`](https://docs.docker.com/v17.12/install/) and [`docker-compose`](https://docs.docker.com/compose/install/) :whale:
@@ -21,6 +22,7 @@ $ cd vcf2neo
 ```
 
 **Build [COMBAT-TB NeoDB](https://github.com/COMBAT-TB/combat-tb-neodb)**:
+
 
 ```sh
 $ docker-compose up --build -d
