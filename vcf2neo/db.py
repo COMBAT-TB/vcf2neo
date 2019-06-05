@@ -11,7 +11,7 @@ from combattbmodel.core import Gene
 from combattbmodel.vcfmodel import CallSet, Variant, VariantSet
 
 
-class GraphDb(object):
+class NeoDb(object):
     def __init__(self, host, password=None, bolt_port=7687, http_port=7474,
                  use_bolt=False, debug=False):
         if password is None:
@@ -43,23 +43,19 @@ class GraphDb(object):
                 connected = True
                 break
         if not connected:
-            raise socket.timeout('timed out trying to connect to {}'.format(
+            raise socket.timeout('timed out trying to connect to {}{}'.format(
                 host, http_port))
         logging.debug(
-            "connecting graph to http port: {} bolt_port: {} host: {}".format(
-                http_port, bolt_port, host))
+            f"connecting graph to http port: {http_port} bolt_port: {bolt_port} host: {host}")
         self.bolt_port = bolt_port
         self.http_port = http_port
         time.sleep(5)
 
-        graph = Graph('http://{}:{}/db/data/'.format(host, self.http_port),
-                      'bolt://{}:{}/'.format(host, self.bolt_port),
-                      bolt=use_bolt, password=password,
-                      bolt_port=bolt_port,
-                      http_port=http_port)
+        graph = Graph(host=host, bolt=use_bolt, password=password,
+                      bolt_port=bolt_port, http_port=http_port)
         if self.debug:
             watch("neo4j.bolt")
-        logging.debug("connected", graph)
+        logging.debug("connected {}".format(graph))
         return graph
 
     def create_variant_set_nodes(self, set_name, owner, history_id):
@@ -81,27 +77,39 @@ class GraphDb(object):
         pos = record.POS
         chrom = record.CHROM
         ref_allele = record.REF
-        alt_allele = record.ALT
+        alt_allele = annotation[0]
+        gene = annotation[4]
+        consequence = annotation[10] if annotation[10] != '' else annotation[9]
+        # A variant can affect multiple genes.
+        # E.g a variant can be DOWNSTREAM from one gene and
+        # UPSTREAM from another gene.
+        gene_pos = str(pos)+gene
 
         if pos in known_sites:
             # we have already seen this variant site in another VCF file
             # data structure known_sites:
-            # key: pos (genomic position)
+            # key: pos (genomic position) and gene
             # value: VariantSite
-            v_site = known_sites[pos]
+            v_site = known_sites[gene_pos]
             # known_sites[pos][1].append(call)
         else:
             # we don't know about this variant site yet
             v_site = Variant(chrom=str(chrom), pos=pos,
                              ref_allele=str(ref_allele),
                              alt_allele=str(alt_allele),
-                             gene=annotation[4],
-                             pk=str(v_set.name) + str(pos),
+                             gene=gene,
+                             consequence=consequence,
+                             pk=v_set.name + gene_pos,
                              impact=annotation[2])
+            v_site.biotype = annotation[7]
+            v_site.effect = annotation[1]
             self.graph.create(v_site)
+            known_sites[gene_pos] = v_site
+
+        if c_set:
             v_site.belongs_to_cset.add(c_set)
             c_set.has_variants.add(v_site)
-            known_sites[pos] = v_site
+
         gene = Gene.select(self.graph, str(v_site.gene)).first()
         if gene:
             v_site.occurs_in.add(gene)
