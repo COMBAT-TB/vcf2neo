@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='vcf2neo',
-    version='0.0.7',
+    version='0.0.8',
     url='https://github.com/COMBAT-TB/vcf2neo',
     bugtrack_url='https://github.com/COMBAT-TB/vcf2neo/issues',
     description='Parses SnpEff annotated VCF files and builds a graph '
