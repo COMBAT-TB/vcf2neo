@@ -27,7 +27,7 @@ $ docker-compose up --build -d
 ...
 ```
 
-**Install and run `vcf2neo`:**
+**Install and run `vcf2neo`**:
 
 - Using `pip`
 
@@ -48,12 +48,17 @@ $ python setup.py install
 
 **Import and map SnpEff annotated VCF files to genes and drugs in NeoDB**:
 
+You change the default database location (`localhost`) by setting the
+`DATABASE_URL` environment variable to `remote`.
+
 ```sh
 $ vcf2neo --help
 Usage: vcf2neo [OPTIONS] COMMAND [ARGS]...
 ...
 $ vcf2neo load_vcf PATH/TO/VCF_DIR
 ```
+
+**Exploring variant data**:
 
 Point your browser to [localhost:7474](http://0.0.0.0:7474) to access the Neo4j browser.
 
