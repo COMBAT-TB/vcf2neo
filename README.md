@@ -6,7 +6,6 @@
 
 A tool to import and map **[SnpEff annotated](http://snpeff.sourceforge.net/SnpEff.html)** VCF files to [COMBAT-TB NeoDB](https://github.com/COMBAT-TB/combat-tb-neodb) Graph database.
 
-
 **Prerequisites**:
 
 - [`docker`](https://docs.docker.com/v17.12/install/) and [`docker-compose`](https://docs.docker.com/compose/install/) :whale:
@@ -23,13 +22,21 @@ $ cd vcf2neo
 
 **Build [COMBAT-TB NeoDB](https://github.com/COMBAT-TB/combat-tb-neodb)**:
 
-
 ```sh
 $ docker-compose up --build -d
 ...
 ```
 
 **Install and run `vcf2neo`:**
+
+- Using `pip`
+
+```sh
+$ pip install -i https://test.pypi.org/simple/ vcf2neo
+...
+```
+
+- or via `setup` in `virtualenv`
 
 ```sh
 $ virtualenv envname
@@ -59,7 +66,7 @@ call db.schema.visualization
 Sample [Cypher](https://neo4j.com/developer/cypher-query-language/) query:
 
 ```cql
-MATCH(g:Gene)<-[r:OCCURS_IN]-(v:Variant)--(cs:CallSet)
+MATCH(g:Gene)--(v:Variant)--(cs:CallSet)
 RETURN g.name as gene, v.consequence as variant, cs.name as file
 LIMIT 25
 ```
