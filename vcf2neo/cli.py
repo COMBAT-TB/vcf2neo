@@ -21,21 +21,14 @@ def cli():
     pass
 
 
-try:
-    # Python 2
-    u_str = unicode
-except NameError:
-    # Python 3
-    u_str = str
-
-
 @cli.command()
 @click.argument('vcf_dir', type=click.Path(exists=True, dir_okay=True),
                 required=True)
-@click.argument('owner', type=u_str, required=False)
-@click.argument('history_id', type=u_str, required=False)
-@click.argument('output_dir', type=click.Path(exists=True, dir_okay=True),
-                required=False)
+@click.option('--owner', required=True, default=os.environ.get('USER', ''),
+              show_default='Current $USER',  help='Specify owner.')
+# @click.argument('history_id', type=u_str, required=False)
+# @click.argument('output_dir', type=click.Path(exists=True, dir_okay=True),
+#                 required=False)
 # @click.option('--docker/--no-docker', default=False,
 #               help='Run Combat-TB-NeoDB container.')
 @click.option('--phenotype', '-p', required=True,
@@ -43,15 +36,14 @@ except NameError:
               help='Specify phenotype.')
 @click.option('--antibiotic', '-a', multiple=True, required=True,
               help='Specify antibiotic. E.g. Rifampicin')
-def load_vcf(vcf_dir, owner, history_id, phenotype=None,
-             antibiotic=None, output_dir=None):
+def load_vcf(vcf_dir, owner, phenotype=None, antibiotic=None):
     """
 
     Load SnpEff annotated VCF files to genes and drugs in NeoDb.
     """
 
     # TODO: Look into docker implemantation
-    container, docker = None, None
+    container, docker, output_dir, history_id = None, None, None, None
     if docker:
         if output_dir is None:
             exit("When running in Docker spawn mode we need an output dir.")
