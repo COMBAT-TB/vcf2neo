@@ -12,6 +12,9 @@ verify_ssl = true
 vcf2neo = {editable = true,path = "."}
 autopep8 = "*"
 pylint = "*"
+pydocstyle = "*"
+pep8 = "*"
+flake8 = "*"
 
 [packages]
 beautifulsoup4 = "==4.5.3"
@@ -38,7 +41,7 @@ tqdm = "==4.10.0"
 wrapt = "==1.10.8"
 xmltodict = "==0.10.2"
 coverage = "*"
-combattbmodel = "*"
+combattbmodel = "==0.0.8"
 
 [requires]
 python_version = "3.7"

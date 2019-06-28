@@ -120,12 +120,13 @@ class NeoDb(object):
             self.graph.push(v_set)
         return known_sites
 
-    def create_call_set_nodes(self, set_name, v_set):
+    def create_call_set_nodes(self, set_name, phenotype, antibiotic, v_set):
         """
         Create CallSet Nodes
         :return:
         """
-        c_set = CallSet(name=set_name)
+        c_set = CallSet(name=set_name, phenotype=phenotype,
+                        antibiotic=antibiotic)
         c_set.belongs_to_vset.add(v_set)
         self.graph.create(c_set)
         return c_set

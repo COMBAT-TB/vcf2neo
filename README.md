@@ -52,10 +52,20 @@ You change the default database location (`localhost`) by setting the
 `DATABASE_URL` environment variable to `remote`.
 
 ```sh
-$ vcf2neo --help
-Usage: vcf2neo [OPTIONS] COMMAND [ARGS]...
+$ vcf2neo load_vcf --help
+Usage: vcf2neo load_vcf [OPTIONS] VCF_DIR [OWNER] [HISTORY_ID] [OUTPUT_DIR]
+
+  Load SnpEff annotated VCF files to genes and drugs in NeoDb.
+
+Options:
+  -p, --phenotype [XDR|MDR|SUSCEPTIBLE|UNKNOWN]
+                                  Specify phenotype.  [required]
+  -a, --antibiotic TEXT           Specify antibiotic. E.g. Rifampicin
+                                  [required]
+  --help                          Show this message and exit.
+
 ...
-$ vcf2neo load_vcf PATH/TO/VCF_DIR
+$ vcf2neo load_vcf -p UNKNOWN -a UNKNOWN PATH/TO/VCF_DIR
 ```
 
 **Exploring variant data**:

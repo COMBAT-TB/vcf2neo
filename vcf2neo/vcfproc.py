@@ -10,7 +10,8 @@ import sys
 import vcf
 
 
-def process_vcf_files(db, vcf_dir, owner=None, history_id=None):
+def process_vcf_files(db, vcf_dir, phenotype, antibiotic, owner=None,
+                      history_id=None):
     owner = owner if owner else getpass.getuser()
     known_sites = dict()
     if os.path.isdir(vcf_dir):
@@ -31,7 +32,8 @@ def process_vcf_files(db, vcf_dir, owner=None, history_id=None):
                             c_set_name = os.path.basename(
                                 os.path.abspath(_file))
                             c_set = db.create_call_set_nodes(
-                                set_name=c_set_name, v_set=v_set
+                                set_name=c_set_name, v_set=v_set,
+                                phenotype=phenotype, antibiotic=antibiotic
                             )
                             known_sites = get_variant_sites(
                                 db, known_sites, vcf_reader, v_set=v_set,
