@@ -53,19 +53,22 @@ You change the default database location (`localhost`) by setting the
 
 ```sh
 $ vcf2neo load_vcf --help
-Usage: vcf2neo load_vcf [OPTIONS] VCF_DIR [OWNER] [HISTORY_ID] [OUTPUT_DIR]
+Usage: vcf2neo load_vcf [OPTIONS] VCF_DIR
 
   Load SnpEff annotated VCF files to genes and drugs in NeoDb.
 
 Options:
+  --owner TEXT                    Specify owner.  [default: $USER; required]
   -p, --phenotype [XDR|MDR|SUSCEPTIBLE|UNKNOWN]
                                   Specify phenotype.  [required]
   -a, --antibiotic TEXT           Specify antibiotic. E.g. Rifampicin
                                   [required]
   --help                          Show this message and exit.
+```
 
-...
+```sh
 $ vcf2neo load_vcf -p UNKNOWN -a UNKNOWN PATH/TO/VCF_DIR
+...
 ```
 
 **Exploring variant data**:
