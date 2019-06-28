@@ -10,6 +10,8 @@ from vcf2neo.db import NeoDb
 from vcf2neo.docker import Docker
 from vcf2neo.vcfproc import process_vcf_files
 
+HOST = os.environ.get("DATABASE_URL", "localhost")
+
 
 @click.group()
 def cli():
@@ -34,30 +36,42 @@ except NameError:
 @click.argument('history_id', type=u_str, required=False)
 @click.argument('output_dir', type=click.Path(exists=True, dir_okay=True),
                 required=False)
-@click.option('-d/-D', default=False, help='Run Neo4j docker container.')
-def load_vcf(vcf_dir, owner, history_id, d, output_dir=None):
+# @click.option('--docker/--no-docker', default=False,
+#               help='Run Combat-TB-NeoDB container.')
+@click.option('--phenotype', '-p', required=True,
+              type=click.Choice(['XDR', 'MDR', 'SUSCEPTIBLE', 'UNKNOWN']),
+              help='Specify phenotype.')
+@click.option('--antibiotic', '-a', multiple=True, required=True,
+              help='Specify antibiotic. E.g. Rifampicin')
+def load_vcf(vcf_dir, owner, history_id, phenotype=None,
+             antibiotic=None, output_dir=None):
     """
+
     Load SnpEff annotated VCF files to genes and drugs in NeoDb.
     """
-    docker = None
-    if d:
+
+    # TODO: Look into docker implemantation
+    container, docker = None, None
+    if docker:
         if output_dir is None:
             exit("When running in Docker spawn mode we need an output dir.")
-        docker = Docker(output_dir)
-        docker.run()
-        http_port = docker.http_port
-        bolt_port = docker.bolt_port
+        container = Docker(output_dir)
+        container.run()
+        http_port = container.http_port
+        bolt_port = container.bolt_port
     else:
         http_port = 7474
         bolt_port = 7687
 
-    neo_db = NeoDb(host=os.environ.get("DATABASE_URL", "localhost"), password="",
+    neo_db = NeoDb(host=HOST, password="",
                    use_bolt=True, bolt_port=bolt_port, http_port=http_port)
     start = time.time()
-    process_vcf_files(neo_db, vcf_dir=vcf_dir,
-                      owner=owner, history_id=history_id)
-    if d:
-        docker.stop()
+    antibiotic = '\t'.join(antibiotic)
+    process_vcf_files(neo_db, vcf_dir=vcf_dir, phenotype=phenotype,
+                      antibiotic=antibiotic, owner=owner,
+                      history_id=history_id)
+    if docker:
+        container.stop()
     end = time.time()
     sys.stdout.write(f"\nDone in {end - start} ms.\n")
 
