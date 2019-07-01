@@ -1,6 +1,6 @@
 os:
   - linux
-dist: trusty
+dist: xenial
 sudo: required
 
 language: python
@@ -36,7 +36,6 @@ before_script:
   - conda config --add channels conda-forge
   - conda config --add channels bioconda
   - conda config --add channels https://conda.anaconda.org/thoba
-  - conda update --all
   - conda info -a
   - conda install conda-build anaconda-client
 
