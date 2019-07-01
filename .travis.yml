@@ -4,11 +4,8 @@ dist: xenial
 sudo: required
 
 language: python
-cache:
-  directories:
-    - $HOME/.cache/pip
 python:
-  - "3.7"
+  - "3.6"
 
 services:
   - docker
@@ -18,15 +15,15 @@ before_install:
 
 # command to install dependencies
 install:
-  - pip install -r requirements.txt
+  - pip3 install -r requirements.txt
   # - python setup.py install
-  - pip install pipenv
+  - pip3 install pipenv
   - pipenv install
   - pipenv install -e .
 
 before_script:
   - sudo apt-get update
-  - wget https://repo.continuum.io/miniconda/Miniconda3-4.6.14-Linux-x86_64.sh -O miniconda.sh
+  - wget https://repo.continuum.io/miniconda/Miniconda3-4.5.1-Linux-x86_64.sh -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r

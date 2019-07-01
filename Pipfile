@@ -44,4 +44,4 @@ coverage = "*"
 combattbmodel = "==0.0.8"
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"
